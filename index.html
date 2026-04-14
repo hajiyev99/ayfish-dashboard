@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farm Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// Crosshair plugin for better hover interactivity
+const crosshairPlugin = {
+  id: 'crosshair',
+  afterDraw(chart) {
+    if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
+      const activePoint = chart.tooltip._active[0];
+      const ctx = chart.ctx;
+      const x = activePoint.element.x;
+      const topY = chart.chartArea.top;
+      const bottomY = chart.chartArea.bottom;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, topY);
+      ctx.lineTo(x, bottomY);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(99, 179, 237, 0.3)';
+      ctx.setLineDash([4, 3]);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+};
+</script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:#0d1117; color:#e2e8f0; min-height:100vh; }
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+.header {
+  background:linear-gradient(135deg,#0e1726,#162035);
+  padding:16px 36px 0; border-bottom:1px solid #1e2d45;
+}
+.header-top {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;
+}
+.header h1 { font-size:20px; font-weight:700; color:#63b3ed; }
+.header-meta { font-size:12px; color:#4a6080; margin-top:2px; }
+.header-right { display:flex; align-items:center; gap:12px; }
+.report-date { font-size:12px; font-weight:600; color:#76b5d8; }
+.refresh-btn {
+  background:#1e2d45; border:1px solid #2d4a6a; color:#a0c4e8;
+  padding:6px 14px; border-radius:7px; cursor:pointer; font-size:12px; transition:background .2s;
+}
+.refresh-btn:hover { background:#2d4a6a; }
+.refresh-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+/* ── TABS ────────────────────────────────────────────────────── */
+.tab-bar { display:flex; gap:0; }
+.tab-btn {
+  padding:10px 28px; cursor:pointer; border:none; background:transparent;
+  font-size:13px; font-weight:600; color:#4a6080;
+  border-bottom:3px solid transparent; transition:all .2s; white-space:nowrap;
+}
+.tab-btn:hover { color:#a0c4e8; }
+.tab-btn.active-etas { color:#63b3ed; border-bottom-color:#63b3ed; }
+.tab-btn.active-kark { color:#68d391; border-bottom-color:#68d391; }
+.tab-btn.active-fin { color:#f6ad55; border-bottom-color:#f6ad55; }
+
+/* ── LAYOUT ─────────────────────────────────────────────────── */
+.page { display:none; padding:28px 36px; max-width:1480px; margin:0 auto; }
+.page.active { display:block; }
+
+/* ── SECTION LABELS ──────────────────────────────────────────── */
+.section-label {
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+  color:#4a6080; margin-bottom:14px; margin-top:32px; display:flex; align-items:center; gap:8px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:#1a2a3a; }
+.section-label:first-child { margin-top:0; }
+
+/* ── KPI CARDS ───────────────────────────────────────────────── */
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:12px; margin-bottom:20px; }
+.kpi-card { background:#111927; border:1px solid #1e2d40; border-radius:12px; padding:14px 16px; position:relative; overflow:hidden; }
+.kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.kpi-temp::before  { background:linear-gradient(90deg,#fc8181,#f6ad55); }
+.kpi-oxy::before   { background:linear-gradient(90deg,#63b3ed,#76e4f7); }
+.kpi-mort::before  { background:linear-gradient(90deg,#e53e3e,#fc8181); }
+.kpi-feed::before  { background:linear-gradient(90deg,#b794f4,#d6bcfa); }
+.kpi-bio::before   { background:linear-gradient(90deg,#f6ad55,#fbd38d); }
+.kpi-hasat::before { background:linear-gradient(90deg,#76e4f7,#63b3ed); }
+.kpi-yem::before   { background:linear-gradient(90deg,#9ae6b4,#38a169); }
+
+.kpi-lbl  { font-size:10px; color:#4a6080; text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
+.kpi-val  { font-size:24px; font-weight:700; color:#f0f4f8; line-height:1; }
+.kpi-unit { font-size:11px; color:#4a6080; margin-left:2px; }
+.kpi-tr   { font-size:11px; margin-top:6px; }
+.tr-good   { color:#68d391; }
+.tr-bad    { color:#fc8181; }
+.tr-stable { color:#4a6080; }
+
+/* ── CHARTS ──────────────────────────────────────────────────── */
+.charts-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(400px,1fr)); gap:14px; }
+.chart-card { background:#111927; border:1px solid #1e2d40; border-radius:12px; padding:16px 18px; }
+.chart-title { font-size:12px; font-weight:600; color:#718096; margin-bottom:12px; }
+.chart-wrap  { position:relative; height:175px; cursor:crosshair; }
+
+/* ── BIOMASS WEIGHT BREAKDOWN ────────────────────────────────── */
+.bio-panels { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:4px; }
+@media(max-width:900px){ .bio-panels { grid-template-columns:1fr; } }
+
+.bio-panel { background:#111927; border:1px solid #1e2d40; border-radius:12px; overflow:hidden; }
+.bio-panel-head {
+  display:flex; align-items:center; gap:9px;
+  padding:12px 18px; border-bottom:1px solid #1a2a3a; background:#0d1520;
+}
+.bio-icon { font-size:16px; }
+.bio-title { font-size:13px; font-weight:700; color:#a0c4e8; flex:1; }
+.bio-badge {
+  font-size:11px; font-weight:700; color:#68d391;
+  background:#0a2e1a; padding:3px 10px; border-radius:20px;
+}
+.bio-sub { font-size:10px; color:#4a6080; padding:8px 18px 6px; border-bottom:1px solid #111d2a; }
+
+/* Weight rows */
+.wb-table { width:100%; padding:6px 18px 14px; }
+.wb-row { display:grid; grid-template-columns:100px 1fr 90px; align-items:center; gap:10px; padding:5px 0; border-bottom:1px solid #111d28; }
+.wb-row:last-child { border-bottom:none; }
+.wb-label { font-size:11px; color:#718096; white-space:nowrap; }
+.wb-bars { display:flex; flex-direction:column; gap:3px; }
+.wb-bar-wrap { display:flex; align-items:center; gap:6px; }
+.wb-track { flex:1; height:5px; background:#151f2e; border-radius:3px; overflow:hidden; }
+.wb-fill-count { height:100%; background:#63b3ed; border-radius:3px; min-width:1px; }
+.wb-fill-kg    { height:100%; background:#f6ad55; border-radius:3px; min-width:1px; }
+.wb-tiny { font-size:10px; color:#4a6080; white-space:nowrap; width:90px; text-align:right; }
+.wb-vals { display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
+.wb-count-val { font-size:11px; color:#63b3ed; font-weight:600; }
+.wb-kg-val    { font-size:11px; color:#f6ad55; font-weight:600; }
+
+/* Sterlet summary */
+.sterlet-summary { padding:16px 18px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.st-stat { text-align:center; }
+.st-stat-val { font-size:20px; font-weight:700; color:#e2e8f0; }
+.st-stat-lbl { font-size:10px; color:#4a6080; text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
+
+/* ── HASAT ────────────────────────────────────────────────────── */
+.hasat-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start; }
+@media(max-width:900px){ .hasat-grid { grid-template-columns:1fr; } }
+
+.hasat-table-card { background:#111927; border:1px solid #1e2d40; border-radius:12px; overflow:hidden; }
+.hasat-table-title { font-size:12px; font-weight:600; color:#718096; padding:13px 18px 10px; border-bottom:1px solid #1a2a3a; }
+
+table { width:100%; border-collapse:collapse; }
+th { font-size:10px; font-weight:700; color:#4a6080; text-transform:uppercase; letter-spacing:.06em; padding:8px 14px; text-align:left; background:#0d1520; }
+td { font-size:12px; color:#c4d4e8; padding:8px 14px; border-top:1px solid #131d2a; }
+tr:hover td { background:#131d2a; }
+.td-kg   { font-weight:700; color:#68d391; text-align:right; }
+.td-cust { font-weight:600; }
+.td-others { color:#718096; font-style:italic; }
+
+.share-bar-wrap { display:flex; align-items:center; gap:6px; }
+.share-bar { height:5px; background:#68d391; border-radius:3px; min-width:1px; }
+.share-pct { font-size:11px; color:#4a6080; white-space:nowrap; }
+
+/* ── STATES ──────────────────────────────────────────────────── */
+.loading { display:flex; align-items:center; justify-content:center; min-height:120px; gap:12px; color:#4a6080; font-size:13px; }
+.spin { width:20px; height:20px; border:3px solid #1e2d40; border-top-color:#63b3ed; border-radius:50%; animation:spin .8s linear infinite; flex-shrink:0; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.err { background:#2d1515; border:1px solid #742020; border-radius:10px; padding:14px; color:#fc8181; font-size:13px; margin-bottom:14px; }
+
+/* ── FINANCIAL TAB ──────────────────────────────────────────── */
+.fin-section { margin-bottom:32px; }
+.fin-section-title { font-size:13px; font-weight:700; color:#f6ad55; margin-bottom:14px; }
+.fin-section-note { font-size:11px; color:#4a6080; margin-bottom:12px; }
+.fin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:20px; }
+.fin-card { background:#111927; border:1px solid #1e2d40; border-radius:12px; padding:14px 16px; }
+.fin-card.card-label { font-size:10px; color:#4a6080; text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
+.fin-input-card { background:#0d1520; border:1px solid #2d4a6a; border-radius:10px; padding:12px; }
+.fin-input-label { font-size:10px; color:#4a6080; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+.fin-input { width:100%; background:#0a1119; border:1px solid #1e2d40; color:#e2e8f0; padding:8px 10px; font-size:13px; border-radius:6px; font-family:inherit; }
+.fin-input:focus { outline:none; border-color:#f6ad55; box-shadow:0 0 0 2px rgba(246,173,85,0.1); }
+.fin-display { font-size:11px; color:#4a6080; margin-top:6px; }
+.fin-value { font-size:18px; font-weight:700; color:#e2e8f0; margin-top:6px; }
+.fin-link-btn { background:#2d4a6a; border:1px solid #3d5a7a; color:#a0c4e8; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:11px; text-decoration:none; display:inline-block; transition:all .2s; white-space:nowrap; }
+.fin-link-btn:hover { background:#3d5a7a; color:#e2e8f0; }
+.fin-total-card { background:linear-gradient(135deg,#111927,#1a2a3a); border:2px solid #f6ad55; border-radius:12px; padding:24px; margin-top:24px; }
+.fin-total-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #1e2d40; }
+.fin-total-row:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.fin-total-label { font-size:12px; color:#4a6080; text-transform:uppercase; letter-spacing:.05em; }
+.fin-total-val { font-size:16px; font-weight:700; color:#e2e8f0; text-align:right; }
+.fin-grand-total { background:#0d1520; border:1px solid #f6ad55; border-radius:10px; padding:20px; text-align:center; margin-top:16px; }
+.fin-grand-label { font-size:11px; color:#4a6080; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+.fin-grand-value { font-size:42px; font-weight:900; line-height:1; margin-bottom:6px; }
+.fin-grand-value.positive { color:#68d391; }
+.fin-grand-value.negative { color:#fc8181; }
+.fin-grand-value.neutral { color:#f6ad55; }
+.fin-zero { color:#4a6080; }
+
+.footer { text-align:center; padding:18px; font-size:11px; color:#2d4060; border-top:1px solid #131929; margin-top:20px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>🐟 Farm Monitoring Dashboard</h1>
+      <div class="header-meta" id="updated">Initialising…</div>
+    </div>
+    <div class="header-right">
+      <div class="report-date" id="report-date"></div>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">⟳ Refresh</button>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active-etas" id="tab-etas" onclick="showPage('etas')">🔵 ETAS 26 — Elazig</button>
+    <button class="tab-btn" id="tab-kark" onclick="showPage('kark')">🟢 Karkamish 26 — Gaziantep</button>
+    <button class="tab-btn" id="tab-fin" onclick="showPage('fin')">💰 Financial Overview</button>
+  </div>
+</div>
+
+<div class="page active" id="page-etas">
+  <div class="loading"><div class="spin"></div>Loading ETAS 26…</div>
+</div>
+<div class="page" id="page-kark">
+  <div class="loading"><div class="spin"></div>Loading Karkamish 26…</div>
+</div>
+<div class="page" id="page-fin">
+  <div class="loading"><div class="spin"></div>Loading Financial Overview…</div>
+</div>
+
+<div class="footer">Auto-refreshes every 30 min · Shows latest available data (falls back to last entry if yesterday is blank)</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+const API_KEY = 'AIzaSyBOBksJoCH-mXWXuXxR83dySUCplIPt4K8';
+
+// ── TAB SWITCHING ──────────────────────────────────────────────────────────
+let activePage = 'etas';
+function showPage(pid) {
+  activePage = pid;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+pid).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => { b.className='tab-btn'; });
+  document.getElementById('tab-'+pid).classList.add('active-'+pid);
+  document.getElementById('refreshBtn').style.display = (pid === 'fin') ? 'none' : '';
+  if(pid === 'fin') {
+    loadFinancial();
+  }
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function parseNum(v) {
+  if (v == null || v === '' || v === '-' || v === '.') return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  const cleaned = s.includes(',')
+    ? s.replace(/\./g, '').replace(',', '.')
+    : s.replace(/\./g, '');
+  const n = parseFloat(cleaned);
+  return isNaN(n) ? null : n;
+}
+function colVal(row, idx) {
+  if (idx < 0 || idx >= row.length) return null;
+  return parseNum(row[idx]);
+}
+function latestVal(arr) { return [...(arr||[])].reverse().find(v=>v!==null)??null; }
+// Find last non-blank row index in dataRows for a given column set
+function findLastDataRow(dataRows, colIndices) {
+  for (let i = dataRows.length - 1; i >= 0; i--) {
+    const r = dataRows[i];
+    const hasAny = colIndices.some(ci => r[ci] && String(r[ci]).trim() !== '' && String(r[ci]).trim() !== '0');
+    if (hasAny) return i;
+  }
+  return -1;
+}
+function trendDir(arr) {
+  const n=(arr||[]).filter(v=>v!==null);
+  if(n.length<6) return 'stable';
+  const r=n.slice(-4).reduce((a,b)=>a+b,0)/4;
+  const p=n.slice(-8,-4).reduce((a,b)=>a+b,0)/4;
+  if(!p) return 'stable';
+  const d=(r-p)/Math.abs(p);
+  return d>0.02?'up':d<-0.02?'down':'stable';
+}
+function fmtN(v,dec=0) {
+  const n=parseNum(v);
+  return n!=null?n.toLocaleString('tr-TR',{maximumFractionDigits:dec}):'—';
+}
+function fmtKg(v)  { const n=parseNum(v); return n!=null?Math.round(n).toLocaleString('tr-TR'):'—'; }
+function fmtCnt(v) { const n=parseNum(v); return n!=null?Math.round(n).toLocaleString('tr-TR'):'—'; }
+function getYesterday() { const d=new Date(); d.setDate(d.getDate()-1); return d; }
+function parseHasatDate(str,fmt) {
+  if(!str||!str.trim()) return null;
+  const s=str.trim();
+  try {
+    if(fmt==='DD/MM/YYYY'){ const[d,m,y]=s.split('/'); return new Date(+y,+m-1,+d); }
+    else { const[d,m,y]=s.split('.'); return new Date(2000+(+y),+m-1,+d); }
+  } catch { return null; }
+}
+function monthKey(dt) {
+  if(!dt) return null;
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+}
+const TR_MONTHS=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+
+// ── CHART FACTORY ──────────────────────────────────────────────────────────
+Chart.register(crosshairPlugin);
+const charts={};
+function makeChart(cid,labels,datasets,type='line',opts={}) {
+  if(charts[cid]) charts[cid].destroy();
+  const ctx=document.getElementById(cid);
+  if(!ctx) return;
+  // Determine unit from chart title context
+  const unitMap = {'temp':'°C','oxy':'mg/L','mort':'fish','feed':'kg','hasat':'kg','bio':'kg'};
+  const chartKey = Object.keys(unitMap).find(k => cid.toLowerCase().includes(k)) || '';
+  const unit = unitMap[chartKey] || '';
+  charts[cid]=new Chart(ctx,{
+    type, data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:350},
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{display:datasets.length>1,labels:{color:'#718096',font:{size:10},boxWidth:10,padding:8}},
+        tooltip:{
+          enabled:true,
+          backgroundColor:'rgba(13,23,36,0.95)',
+          borderColor:'#2d4a6a',borderWidth:1,
+          titleColor:'#63b3ed',titleFont:{size:13,weight:'bold'},
+          bodyColor:'#e2e8f0',bodyFont:{size:12},
+          padding:12,cornerRadius:8,
+          displayColors:true,boxPadding:4,
+          callbacks:{
+            title:function(items){
+              if(!items.length) return '';
+              return '📅 ' + items[0].label;
+            },
+            label:function(ctx){
+              const v = ctx.parsed.y;
+              if(v==null) return '';
+              const fmt = v.toLocaleString('tr-TR',{maximumFractionDigits:1});
+              return ' ' + ctx.dataset.label + ': ' + fmt + (unit?' '+unit:'');
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ticks:{color:'#4a6080',maxTicksLimit:opts.maxX||12,maxRotation:0,font:{size:10}},grid:{color:'#131929'}},
+        y:{ticks:{color:'#4a6080',font:{size:10}},grid:{color:'#131929'}}
+      }
+    }
+  });
+}
+function ds(label,data,color,fill=true,dashed=false){
+  return{label,data,borderColor:color,backgroundColor:fill?color+'18':'transparent',
+    borderWidth:dashed?1.5:2,borderDash:dashed?[4,3]:[],
+    pointRadius:2,pointHoverRadius:7,
+    pointBackgroundColor:color,pointBorderColor:color,
+    pointHoverBackgroundColor:'#fff',pointHoverBorderColor:color,pointHoverBorderWidth:2,
+    fill,tension:0.3,spanGaps:true};
+}
+function dsBar(label,data,color){
+  return{label,data,backgroundColor:color+'cc',borderColor:color,borderWidth:1,borderRadius:4,
+    hoverBackgroundColor:color,hoverBorderWidth:2};
+}
+
+// ── API ────────────────────────────────────────────────────────────────────
+function api(id,tab) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent(tab)}?key=${API_KEY}`;
+  return fetch(url)
+    .then(r=>{
+      if(!r.ok) return r.json().then(j=>{throw new Error(`Sheet "${tab}": ${j.error?.message||r.statusText} (${r.status})`)});
+      return r.json();
+    })
+    .then(j=>{if(j.error)throw new Error(`Sheet "${tab}": ${j.error.message}`);return j.values||[];})
+    .catch(e=>{
+      if(e.message.includes('Sheet "')) throw e;
+      throw new Error(`Sheet "${tab}": Network error — ${e.message}. Make sure you open this file directly in Chrome (not in a preview panel).`);
+    });
+}
+
+// ── BIOMASS COMPUTATION ────────────────────────────────────────────────────
+function computeBioTotals(somonRows, mersinRows) {
+  // Somon: find Toplam row (c3='Toplam'), total is c10
+  const st = somonRows.find(r=>r[3]&&r[3].trim()==='Toplam');
+  const somonKg = st ? (parseNum(st[10])||0) : somonRows.filter(r=>r[3]&&/^Etas\s*\d/i.test(r[3].trim())).reduce((s,r)=>s+(parseNum(r[10])||0),0);
+  // Mersin: find Toplam row (c1='Toplam'), total is c8
+  const mt = mersinRows.find(r=>r[1]&&r[1].trim()==='Toplam');
+  const mersinKg = mt ? (parseNum(mt[8])||0) : mersinRows.filter(r=>r[1]&&/^Etas\s*\d/i.test(r[1].trim())).reduce((s,r)=>s+(parseNum(r[8])||0),0);
+  return { somonKg, mersinKg };
+}
+
+function computeKarkBioTotals(bioRows) {
+  // Biomass v2 summary table: rows 3-6 are systems, values in grams (÷1000 for kg)
+  // Col layout: [0]=System, [2-3]=0-200g (Adet/Kilo), [4-5]=200-500g, [6-7]=500-1000g,
+  //   [8-9]=1000-1500g, [10-11]=1500-2500g, [12-13]=2500-3500g, [14-15]=3500+g, [16-17]=TOPLAM
+  // Sterlet (side columns): row 7 col[22]=Adet, col[24]=Kilo (in grams)
+  const toplamRow = bioRows.find(r=>r[0]&&r[0].trim()==='TOPLAM');
+  // Salmon = all 4 systems combined (TOPLAM row cols 16/17)
+  const salmonKg  = toplamRow ? (parseNum(toplamRow[17])||0) / 1000 : 0;
+  const salmonCnt = toplamRow ? (parseNum(toplamRow[16])||0) : 0;
+  // Sterlet from side columns (TOPLAM row cols 22/24)
+  const sterletCnt = toplamRow ? (parseNum(toplamRow[22])||0) : 0;
+  const sterletKg  = toplamRow ? (parseNum(toplamRow[24])||0) / 1000 : 0;
+  return { salmonKg, sterletKg, salmonCnt, sterletCnt };
+}
+
+// ── RENDER: DAILY OPS ──────────────────────────────────────────────────────
+function renderOps(pid, c, rows, headerRows, bioTotals, el) {
+  const allDataRows = rows.slice(headerRows).filter(r => {
+    if(!r[0]||!String(r[0]).trim()) return false;
+    return true; // keep all rows with a date
+  });
+  // Filter to rows with actual data for charting
+  const dataRows = allDataRows.filter(r => {
+    const hasT = r[c.temperature]&&r[c.temperature]!=='';
+    const hasO = r[c.oxygen]&&r[c.oxygen]!=='';
+    const mort = r[c.somon_mort];
+    return hasT||hasO||(mort&&mort!==''&&mort!=='0');
+  });
+
+  const r   = dataRows.slice(-90);
+  const lbl = r.map(row=>String(row[c.date]||'').trim());
+  const get = idx => r.map(row=>colVal(row,idx));
+
+  const tempV  = get(c.temperature);
+  const oxyV   = get(c.oxygen);
+  const sMortV = get(c.somon_mort);
+  const mMortV = c.mersin_mort!=null ? get(c.mersin_mort) : [];
+  const feedV  = c.somon_feed!=null ? get(c.somon_feed) : (c.total_feed!=null ? get(c.total_feed) : []);
+  const mFeedV = c.mersin_feed!=null ? get(c.mersin_feed) : [];
+  const feedLbl = c.total_feed!=null ? 'Total Feed' : 'Somon Feed';
+
+  // ─ BLANK-DAY FALLBACK: find the last row that has real data ─
+  // Check if the most recent row (yesterday) is blank for key columns
+  const keyCols = [c.temperature, c.oxygen, c.somon_mort];
+  const lastRow = dataRows.length ? dataRows[dataRows.length - 1] : null;
+  const lastDate = lastRow ? String(lastRow[c.date]||'').trim() : '—';
+  // Check if we had to fall back (last data row date != yesterday in allDataRows)
+  const mostRecentAllRow = allDataRows.length ? allDataRows[allDataRows.length - 1] : null;
+  const mostRecentDate = mostRecentAllRow ? String(mostRecentAllRow[c.date]||'').trim() : null;
+  const isFallback = mostRecentDate && lastDate && mostRecentDate !== lastDate;
+  const dataDateNote = isFallback
+    ? `<span style="color:#f6ad55;font-size:11px;margin-left:8px">⚠ Latest data from: <b>${lastDate}</b> (${mostRecentDate} was blank)</span>`
+    : `<span style="color:#4a6080;font-size:11px;margin-left:8px">Data as of: <b>${lastDate}</b></span>`;
+
+  // Use computed bio totals instead of Günlük column (which is often empty/stale)
+  const somonBioDisp  = bioTotals.somonKg  ? Math.round(bioTotals.somonKg).toLocaleString('tr-TR')  : '—';
+  const sterletBioDisp = bioTotals.sterletKg ? Math.round(bioTotals.sterletKg).toLocaleString('tr-TR') : (bioTotals.mersinKg ? Math.round(bioTotals.mersinKg).toLocaleString('tr-TR') : '—');
+  const somonBioLbl  = pid==='kark' ? 'Salmon Biomass'  : 'Somon Biomass';
+  const sterletBioLbl = pid==='kark' ? 'Sterlet Biomass' : 'Mersin Biomass';
+
+  const hasMersinMort = mMortV.some(v=>v!==null);
+  const hasMersinFeed = mFeedV.some(v=>v!==null);
+
+  let html = `<div class="section-label">📊 Daily Operations — ${dataRows.length} days logged ${dataDateNote}</div>
+  <div class="kpi-grid">`;
+
+  const kpis=[
+    {lbl:'Temperature',unit:'°C',val:latestVal(tempV),vals:tempV,cls:'kpi-temp',bad:'up'},
+    {lbl:'Oxygen',unit:'mg/L',val:latestVal(oxyV),vals:oxyV,cls:'kpi-oxy',bad:'down'},
+    {lbl:'Somon Ölü',unit:'/day',val:latestVal(sMortV),vals:sMortV,cls:'kpi-mort',bad:'up'},
+    {lbl:feedLbl,unit:'kg',val:latestVal(feedV),vals:feedV,cls:'kpi-feed',bad:'down'},
+  ];
+  kpis.forEach(k=>{
+    const t=trendDir(k.vals||[]);
+    const icon=t==='up'?'▲':t==='down'?'▼':'→';
+    const tCls=t==='stable'?'tr-stable':(t===k.bad?'tr-bad':'tr-good');
+    const disp=k.val!=null?k.val.toLocaleString('tr-TR',{maximumFractionDigits:1}):'—';
+    const dateHint = isFallback ? `<div style="font-size:9px;color:#f6ad55;margin-top:2px">from ${lastDate}</div>` : '';
+    html+=`<div class="kpi-card ${k.cls}">
+      <div class="kpi-lbl">${k.lbl}</div>
+      <div class="kpi-val">${disp}<span class="kpi-unit">${k.unit}</span></div>
+      <div class="kpi-tr ${tCls}">${icon} ${t==='up'?'Rising':t==='down'?'Falling':'Stable'}</div>
+      ${dateHint}
+    </div>`;
+  });
+
+  // Biomass KPIs from detail page
+  html += `
+    <div class="kpi-card kpi-bio">
+      <div class="kpi-lbl">${somonBioLbl}</div>
+      <div class="kpi-val" style="font-size:18px">${somonBioDisp}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-tr tr-stable">→ From biomass detail</div>
+    </div>
+    <div class="kpi-card kpi-bio">
+      <div class="kpi-lbl">${sterletBioLbl}</div>
+      <div class="kpi-val" style="font-size:18px">${sterletBioDisp}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-tr tr-stable">→ From biomass detail</div>
+    </div>`;
+
+  html += '</div>';
+
+  const chartDefs=[
+    {id:`${pid}-temp`,title:'Temperature (°C)',sets:[ds('Temperature',tempV,'#fc8181')]},
+    {id:`${pid}-oxy`, title:'Oxygen (mg/L)',   sets:[ds('Oxygen',oxyV,'#63b3ed')]},
+    {id:`${pid}-mort`,title:'Daily Mortality', sets:[
+      ds('Somon',sMortV,'#fc8181'),
+      ...(hasMersinMort?[ds('Mersin',mMortV,'#f6ad55',false,true)]:[])
+    ]},
+    {id:`${pid}-feed`,title:`Feed (kg)`,       sets:[
+      ds(feedLbl,feedV,'#b794f4'),
+      ...(hasMersinFeed?[ds('Mersin Feed',mFeedV,'#d6bcfa',false,true)]:[])
+    ]},
+  ];
+
+  html+='<div class="charts-grid">';
+  chartDefs.forEach(def=>{
+    html+=`<div class="chart-card"><div class="chart-title">${def.title}</div><div class="chart-wrap"><canvas id="${def.id}"></canvas></div></div>`;
+  });
+  html+='</div>';
+
+  el.innerHTML+=html;
+  setTimeout(()=>{chartDefs.forEach(def=>makeChart(def.id,lbl,def.sets));},60);
+}
+
+// ── RENDER: BIOMASS ETAS ────────────────────────────────────────────────────
+function renderBioETAS(somonRows, mersinRows, el) {
+  // ─ SOMON weight breakdown ─
+  // KG cols: c4=<500g, c5=500g-1kg, c6=1-2kg, c7=2-3kg, c8=3-4kg, c9=4kg+
+  // Count cols: c17=<500g, c18=500g-1kg, c19=1-2kg, c20=2-3kg, c21=3-4kg, c22=4kg+
+  const sRows = somonRows.filter(r=>r[3]&&/^Etas\s*\d/i.test(r[3].trim()));
+  const sLabels = ['< 500 g','500 g – 1 kg','1 – 2 kg','2 – 3 kg','3 – 4 kg','4 kg +'];
+  const sKgCols   = [4,5,6,7,8,9];
+  const sCntCols  = [17,18,19,20,21,22];
+
+  const sSumKg  = sKgCols.map(ci => sRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0));
+  const sSumCnt = sCntCols.map(ci => sRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0));
+  const sTotalKg  = sSumKg.reduce((a,b)=>a+b,0);
+  const sTotalCnt = sSumCnt.reduce((a,b)=>a+b,0);
+
+  // ─ MERSIN weight breakdown ─
+  // Count cols (BIG fish): c15=<5kg, c16=5-15kg, c17=15-40kg, c18=40-70kg, c19=70-100kg, c20=100kg+
+  // Total KG: c8
+  const mRows = mersinRows.filter(r=>r[1]&&/^Etas\s*\d/i.test(r[1].trim()));
+  const mLabels = ['< 5 kg','5 – 15 kg','15 – 40 kg','40 – 70 kg','70 – 100 kg','100 kg +'];
+  const mCntCols = [15,16,17,18,19,20];
+
+  const mSumCnt = mCntCols.map(ci => mRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0));
+  const mTotalKg  = mRows.reduce((s,r)=>s+(parseNum(r[8])||0),0);
+  const mTotalCnt = mSumCnt.reduce((a,b)=>a+b,0);
+
+  let html = `<div class="section-label">🔬 Biomass Detail</div><div class="bio-panels">`;
+
+  // Salmon panel
+  html += buildWeightPanel('🐟','Salmon (Somon)', sTotalKg, sTotalCnt,
+    sLabels, sSumCnt, sSumKg, sTotalCnt, sTotalKg, true);
+
+  // Sturgeon panel (count breakdown by big-fish weight categories, kg totals from c8)
+  html += `<div class="bio-panel">
+    <div class="bio-panel-head">
+      <span class="bio-icon">🦈</span>
+      <span class="bio-title">Sturgeon (Mersin)</span>
+      <span class="bio-badge">${Math.round(mTotalKg).toLocaleString('tr-TR')} kg</span>
+    </div>
+    <div class="bio-sub">🔵 Fish count &nbsp;·&nbsp; Weight categories in kg (large sturgeon)</div>
+    <div class="wb-table">`;
+
+  const mMaxCnt = Math.max(...mSumCnt, 1);
+  mLabels.forEach((lbl,i)=>{
+    const cnt = mSumCnt[i];
+    const cntPct = Math.max((cnt/mMaxCnt)*100, cnt>0?2:0);
+    html += `<div class="wb-row">
+      <div class="wb-label">${lbl}</div>
+      <div class="wb-bars">
+        <div class="wb-bar-wrap">
+          <div class="wb-track"><div class="wb-fill-count" style="height:100%;width:${cntPct.toFixed(1)}%;min-width:${cnt>0?1:0}px;background:#63b3ed;border-radius:3px;"></div></div>
+          <span class="wb-tiny" style="color:#63b3ed">${cnt>0?fmtCnt(cnt):'—'}</span>
+        </div>
+      </div>
+      <div class="wb-vals"><span class="wb-count-val">${cnt>0?fmtCnt(cnt):'—'}</span></div>
+    </div>`;
+  });
+
+  html += `</div></div>`;
+  html += '</div>';
+  el.innerHTML += html;
+}
+
+// ── RENDER: BIOMASS KARK ────────────────────────────────────────────────────
+function renderBioKark(bioRows, el) {
+  // Biomass v2 summary table: rows 3-6 are systems (On/Orta/Alt/Mersin)
+  // Weight categories (paired Adet/Kilo cols):
+  //   col 2/3: 0-200g, 4/5: 200-500g, 6/7: 500-1000g, 8/9: 1000-1500g
+  //   10/11: 1500-2500g, 12/13: 2500-3500g, 14/15: 3500+g, 16/17: TOPLAM
+  // All "Kilo" values are actually in grams → ÷1000 for kg
+  // Sterlet data in side columns: rows 1-6 cols 20-24 (cage, label, adet, gram, total_g)
+  //   Sterlet TOPLAM at row 7 cols 22 (adet) / 24 (total grams)
+  const ALL_SYS = ['On sistem','Orta sistem','Alt sistem','Mersin sistem'];
+  const salmonRows = bioRows.filter(r=>r[0]&&ALL_SYS.some(s=>r[0].trim()===s));
+  const toplamRow  = bioRows.find(r=>r[0]&&r[0].trim()==='TOPLAM');
+
+  const sLabels   = ['0 – 200 g','200 – 500 g','500g – 1 kg','1 – 1.5 kg','1.5 – 2.5 kg','2.5 – 3.5 kg','3.5 kg +'];
+  const sCntCols  = [2,4,6,8,10,12,14];
+  const sKgCols   = [3,5,7,9,11,13,15];
+
+  // Salmon: sum all 4 systems
+  const sSumCnt = sCntCols.map(ci=>salmonRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0));
+  const sSumKg  = sKgCols.map(ci=>Math.round(salmonRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0)/1000)); // grams→kg
+  const sTotalKg  = sSumKg.reduce((a,b)=>a+b,0);
+  const sTotalCnt = sSumCnt.reduce((a,b)=>a+b,0);
+
+  // Sterlet: from side columns — individual D-cages in rows 1-6 cols 20-24
+  const sterletCages = bioRows.filter(r=>r[20]&&/^D\d/.test(String(r[20]).trim()));
+  const sterletTotalCnt = toplamRow ? (parseNum(toplamRow[22])||0) : 0;
+  const sterletTotalKg  = toplamRow ? Math.round((parseNum(toplamRow[24])||0)/1000) : 0;
+  const sterletAvgG = sterletTotalCnt>0 ? Math.round(sterletTotalKg*1000/sterletTotalCnt) : 0;
+
+  let html = `<div class="section-label">🔬 Biomass Detail</div><div class="bio-panels">`;
+
+  // Salmon panel — all 4 systems combined
+  html += buildWeightPanel('🐟','Salmon (All Systems)', sTotalKg, sTotalCnt,
+    sLabels, sSumCnt, sSumKg, sTotalCnt, sTotalKg, true);
+
+  // Sterlet panel — summary + per-cage breakdown
+  html += `<div class="bio-panel">
+    <div class="bio-panel-head">
+      <span class="bio-icon">🦈</span>
+      <span class="bio-title">Sterlet (Mersin Cages)</span>
+      <span class="bio-badge">${Math.round(sterletTotalKg).toLocaleString('tr-TR')} kg</span>
+    </div>
+    <div class="sterlet-summary">
+      <div class="st-stat">
+        <div class="st-stat-val">${Math.round(sterletTotalCnt).toLocaleString('tr-TR')}</div>
+        <div class="st-stat-lbl">Total Fish</div>
+      </div>
+      <div class="st-stat">
+        <div class="st-stat-val">${sterletAvgG>0 ? sterletAvgG.toLocaleString('tr-TR')+' g' : '—'}</div>
+        <div class="st-stat-lbl">Avg Weight</div>
+      </div>
+      <div class="st-stat">
+        <div class="st-stat-val">${Math.round(sterletTotalKg).toLocaleString('tr-TR')}</div>
+        <div class="st-stat-lbl">Total kg</div>
+      </div>
+    </div>`;
+
+  // Per-cage rows for sterlet
+  if(sterletCages.length) {
+    html += `<div class="bio-sub">Per-cage breakdown (D-cages)</div><div class="wb-table">`;
+    const maxCageKg = Math.max(...sterletCages.map(r=>Math.round((parseNum(r[24])||0)/1000)), 1);
+    sterletCages.forEach(r=>{
+      const cage = String(r[20]).trim();
+      const label = String(r[21]||'').trim();
+      const cnt = parseNum(r[22])||0;
+      const kg = Math.round((parseNum(r[24])||0)/1000);
+      const pct = Math.max((kg/maxCageKg)*100, kg>0?2:0);
+      html += `<div class="wb-row">
+        <div class="wb-label">${cage} <span style="color:#4a6080;font-size:9px">${label}</span></div>
+        <div class="wb-bars">
+          <div class="wb-bar-wrap">
+            <div class="wb-track"><div class="wb-fill-kg" style="height:100%;width:${pct.toFixed(1)}%;min-width:${kg>0?1:0}px;background:#68d391;border-radius:3px;"></div></div>
+            <span class="wb-tiny" style="color:#68d391">${kg>0?fmtKg(kg)+' kg':'—'}</span>
+          </div>
+        </div>
+        <div class="wb-vals">
+          <span class="wb-count-val">${cnt>0?fmtCnt(cnt)+' fish':'—'}</span>
+          <span class="wb-kg-val">${kg>0?fmtKg(kg)+' kg':'—'}</span>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+
+  html += '</div>';
+  el.innerHTML += html;
+}
+
+// ── SHARED: Weight panel builder ───────────────────────────────────────────
+function buildWeightPanel(icon, title, totalKg, totalCnt, labels, cntArr, kgArr, maxCnt, maxKg, showKg) {
+  const maxC = Math.max(...cntArr, 1);
+  const maxK = Math.max(...kgArr, 1);
+  let html = `<div class="bio-panel">
+    <div class="bio-panel-head">
+      <span class="bio-icon">${icon}</span>
+      <span class="bio-title">${title}</span>
+      <span class="bio-badge">${Math.round(totalKg).toLocaleString('tr-TR')} kg</span>
+    </div>
+    <div class="bio-sub">🔵 Fish count &nbsp;·&nbsp; 🟠 Biomass kg</div>
+    <div class="wb-table">`;
+
+  labels.forEach((lbl,i)=>{
+    const cnt = cntArr[i];
+    const kg  = kgArr[i];
+    const cPct = Math.max((cnt/maxC)*100, cnt>0?1.5:0);
+    const kPct = Math.max((kg/maxK)*100, kg>0?1.5:0);
+    html += `<div class="wb-row">
+      <div class="wb-label">${lbl}</div>
+      <div class="wb-bars">
+        <div class="wb-bar-wrap">
+          <div class="wb-track"><div class="wb-fill-count" style="height:100%;width:${cPct.toFixed(1)}%;min-width:${cnt>0?1:0}px;background:#63b3ed;border-radius:3px;"></div></div>
+          <span class="wb-tiny" style="color:#63b3ed">${cnt>0?fmtCnt(cnt):'—'}</span>
+        </div>
+        ${showKg?`<div class="wb-bar-wrap">
+          <div class="wb-track"><div class="wb-fill-kg" style="height:100%;width:${kPct.toFixed(1)}%;min-width:${kg>0?1:0}px;background:#f6ad55;border-radius:3px;"></div></div>
+          <span class="wb-tiny" style="color:#f6ad55">${kg>0?fmtKg(kg)+' kg':'—'}</span>
+        </div>`:''}
+      </div>
+      <div class="wb-vals">
+        <span class="wb-count-val">${cnt>0?fmtCnt(cnt):'—'}</span>
+        ${showKg?`<span class="wb-kg-val">${kg>0?fmtKg(kg)+' kg':'—'}</span>`:''}
+      </div>
+    </div>`;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+// ── RENDER: FEED STORAGE ───────────────────────────────────────────────────
+function getLatestDepo(rows) {
+  for(let i=rows.length-1;i>=0;i--){
+    const r=rows[i];
+    if(!r||!r.length) continue;
+    const v=parseNum(r[r.length-1]);
+    if(v!=null&&v>1000) return v;
+  }
+  return null;
+}
+
+function renderYem(pid, yemData, el) {
+  let html = `<div class="section-label">🌾 Feed Storage (Yem Depo)</div><div class="kpi-grid" style="margin-bottom:22px">`;
+  if(pid==='etas'){
+    const sd=getLatestDepo(yemData.somon);
+    const md=getLatestDepo(yemData.mersin);
+    html+=`<div class="kpi-card kpi-yem">
+      <div class="kpi-lbl">Somon Yem Deposu</div>
+      <div class="kpi-val">${sd!=null?Math.round(sd).toLocaleString('tr-TR'):'—'}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-tr tr-stable">→ Salmon feed stock</div>
+    </div>
+    <div class="kpi-card kpi-yem">
+      <div class="kpi-lbl">Mersin Yem Deposu</div>
+      <div class="kpi-val">${md!=null?Math.round(md).toLocaleString('tr-TR'):'—'}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-tr tr-stable">→ Sturgeon feed stock</div>
+    </div>`;
+  } else {
+    const kd=getLatestDepo(yemData.kark);
+    html+=`<div class="kpi-card kpi-yem">
+      <div class="kpi-lbl">Yem Deposu</div>
+      <div class="kpi-val">${kd!=null?Math.round(kd).toLocaleString('tr-TR'):'—'}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-tr tr-stable">→ Feed stock</div>
+    </div>`;
+  }
+  html+='</div>';
+  el.innerHTML+=html;
+}
+
+// ── RENDER: HASAT ──────────────────────────────────────────────────────────
+function renderHasat(pid, hasat, hasatCfg, el) {
+  const h=hasatCfg;
+  const data=hasat.slice(1).filter(r=>{
+    const d=r[h.date];const kg=r[h.kg];
+    return d&&d.trim()&&kg&&kg.trim()&&parseNum(kg)>0;
+  });
+  if(!data.length){
+    el.innerHTML+=`<div class="section-label">🎣 Hasat (Harvest)</div><p style="color:#4a6080;font-size:13px;padding:8px 0">No harvest data.</p>`;
+    return;
+  }
+  const byMonth={};
+  data.forEach(r=>{
+    const dt=parseHasatDate(r[h.date],h.dateFormat);
+    const mk=monthKey(dt);
+    if(!mk) return;
+    const kg=parseNum(r[h.kg])||0;
+    if(!byMonth[mk]) byMonth[mk]={kg:0,month:TR_MONTHS[dt.getMonth()]};
+    byMonth[mk].kg+=kg;
+  });
+  const months=Object.keys(byMonth).sort();
+  const monthKg=months.map(m=>Math.round(byMonth[m].kg));
+  const monthLabels=months.map(m=>byMonth[m].month);
+
+  const byCustomer={};
+  data.forEach(r=>{
+    const c=(r[h.customer]||'Bilinmeyen').trim();
+    const kg=parseNum(r[h.kg])||0;
+    byCustomer[c]=(byCustomer[c]||0)+kg;
+  });
+  const ytdKg=Object.values(byCustomer).reduce((a,b)=>a+b,0);
+  const curKey=monthKey(new Date());
+  const thisMonthKg=byMonth[curKey]?.kg||0;
+
+  const sorted=Object.entries(byCustomer).sort((a,b)=>b[1]-a[1]);
+  const top5=sorted.slice(0,5);
+  const othersKg=sorted.slice(5).reduce((s,[,v])=>s+v,0);
+  if(othersKg>0) top5.push(['Diğerleri',othersKg]);
+
+  let html=`<div class="section-label">🎣 Hasat (Harvest)</div>
+  <div class="kpi-grid" style="margin-bottom:16px">
+    <div class="kpi-card kpi-hasat">
+      <div class="kpi-lbl">This Month</div>
+      <div class="kpi-val">${Math.round(thisMonthKg).toLocaleString('tr-TR')}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-tr tr-good">↑ ${months.length} months active</div>
+    </div>
+    <div class="kpi-card kpi-hasat">
+      <div class="kpi-lbl">YTD Total</div>
+      <div class="kpi-val">${Math.round(ytdKg).toLocaleString('tr-TR')}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-tr tr-stable">→ ${data.length} transactions</div>
+    </div>
+  </div>
+  <div class="hasat-grid">
+    <div class="chart-card">
+      <div class="chart-title">Monthly Harvest (kg)</div>
+      <div class="chart-wrap"><canvas id="${pid}-hasat-chart"></canvas></div>
+    </div>
+    <div class="hasat-table-card">
+      <div class="hasat-table-title">Sales by Customer — YTD</div>
+      <table>
+        <thead><tr><th>Customer</th><th style="text-align:right">Total kg</th><th>Share</th></tr></thead>
+        <tbody>`;
+
+  top5.forEach(([cust,kg])=>{
+    const share=ytdKg>0?((kg/ytdKg)*100).toFixed(1):'0';
+    const barW=Math.min(parseFloat(share)*0.9,90);
+    html+=`<tr>
+      <td class="td-cust ${cust==='Diğerleri'?'td-others':''}">${cust}</td>
+      <td class="td-kg">${Math.round(kg).toLocaleString('tr-TR')}</td>
+      <td>
+        <div class="share-bar-wrap">
+          <div class="share-bar" style="width:${barW}px"></div>
+          <span class="share-pct">${share}%</span>
+        </div>
+      </td>
+    </tr>`;
+  });
+
+  html+=`</tbody></table></div></div>`;
+  el.innerHTML+=html;
+  setTimeout(()=>{
+    makeChart(`${pid}-hasat-chart`,monthLabels,[dsBar('Harvest kg',monthKg,'#68d391')],'bar',{maxX:12});
+  },80);
+}
+
+// ── FORMAT CURRENCY ────────────────────────────────────────────────────────
+function fmtUSD(v) {
+  if (typeof v === 'number') {
+    if (isNaN(v)) return '$0';
+    return '$' + Math.round(v).toLocaleString('tr-TR');
+  }
+  const n = parseNum(v);
+  if (n == null) return '$0';
+  return '$' + Math.round(n).toLocaleString('tr-TR');
+}
+
+// ── FINANCIAL DATA & STATE ─────────────────────────────────────────────────
+let finData = {
+  bankBalance: 0,
+  receivables: 0,
+  checks: 0,
+  payables: 0,
+  salmonPrice: 5,
+  sturgeonPrice: 7,
+  feedPrice: 1.6,
+  etasSomonBio: 0,
+  etasMersinBio: 0,
+  karkSalmonBio: 0,
+  karkSterletBio: 0,
+  etasSomonFeed: 0,
+  etasMersinFeed: 0,
+  karkFeed: 0
+};
+
+// IMPORTANT: parseFloat for input fields — parseNum strips "." which breaks decimals like 1.5
+function inputVal(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+
+// Load price inputs from localStorage (cash data comes from financial_data.json)
+// Defaults: salmon $5, sturgeon $7, feed $1.6
+function loadFinancialInputs() {
+  const stored = localStorage.getItem('ayfish_financial_inputs');
+  if (stored) {
+    try {
+      const d = JSON.parse(stored);
+      finData.salmonPrice = d.salmonPrice ?? 5;
+      finData.sturgeonPrice = d.sturgeonPrice ?? 7;
+      finData.feedPrice = d.feedPrice ?? 1.6;
+    } catch(e) {}
+  }
+}
+
+// Save price inputs to localStorage
+function saveFinancialInputs() {
+  localStorage.setItem('ayfish_financial_inputs', JSON.stringify({
+    salmonPrice: finData.salmonPrice, sturgeonPrice: finData.sturgeonPrice,
+    feedPrice: finData.feedPrice
+  }));
+}
+
+// Embedded financial data (from günlük rapor — updated by Claude)
+// This allows the dashboard to work when opened as file:// (no server needed)
+const EMBEDDED_FINANCIAL_DATA = {
+  "lastUpdated": "2026-04-14T14:27:21+03:00",
+  "usdKur": 44.783,
+  "euroUsd": 1.1689,
+  "receivables": {"usd": 426577.01, "euroUsd": 58.44, "tlUsd": 291835.2, "total": 718470.65},
+  "bank": {"tlUsd": 184427.6, "usd": 20552.75, "total": 204980.35},
+  "checks": {"tlUsd": 33494.85, "total": 33494.85},
+  "totalAssets": 956945.86,
+  "payables": -62760.94,
+  "netPosition": 1019706.8,
+  "topReceivables": [
+    {"name": "RADBAM DİŞ", "amount": 276689, "currency": "TL", "origAmount": 12390981},
+    {"name": "NAM SU", "amount": 180937, "currency": "USD"},
+    {"name": "STIMUL LLC", "amount": 98915, "currency": "USD"}
+  ],
+  "topPayables": [
+    {"name": "GÜMÜŞDOĞA (USD)", "amount": 2168877, "currency": "USD"},
+    {"name": "GÜMÜŞDOĞA (USD)-ALINAN", "amount": 1900000, "currency": "USD"},
+    {"name": "BİOMAR SAGUN", "amount": 191247, "currency": "USD"}
+  ]
+};
+
+// Load cash data — tries financial_data.json first, falls back to embedded data
+let finJsonMeta = { lastUpdated: null, usdKur: 0 };
+function applyFinancialData(j) {
+  finJsonMeta.lastUpdated = j.lastUpdated;
+  finJsonMeta.usdKur = j.usdKur || 0;
+  finData.receivables = j.receivables?.total || 0;
+  finData.bankBalance = j.bank?.total || 0;
+  finData.checks = j.checks?.total || 0;
+  finData.payables = j.payables || 0;
+  finJsonMeta.recvUsd = j.receivables?.usd || 0;
+  finJsonMeta.recvEur = j.receivables?.euroUsd || 0;
+  finJsonMeta.recvTl = j.receivables?.tlUsd || 0;
+  finJsonMeta.bankTl = j.bank?.tlUsd || 0;
+  finJsonMeta.bankUsd = j.bank?.usd || 0;
+  finJsonMeta.checksTl = j.checks?.tlUsd || 0;
+  finJsonMeta.topReceivables = j.topReceivables || [];
+  finJsonMeta.topPayables = j.topPayables || [];
+}
+async function loadFinancialJSON() {
+  try {
+    const resp = await fetch('financial_data.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('not ok');
+    const j = await resp.json();
+    applyFinancialData(j);
+    return true;
+  } catch(e) {
+    console.info('Using embedded financial data (file:// mode or fetch failed)');
+    applyFinancialData(EMBEDDED_FINANCIAL_DATA);
+    return true;
+  }
+}
+
+// Recalculate all financial values
+function recalcFinancials() {
+  const totalAssets = finData.bankBalance + finData.receivables + finData.checks;
+  const netCash = totalAssets - finData.payables;
+
+  const totalSalmon = finData.etasSomonBio + finData.karkSalmonBio;
+  const totalSturgeon = finData.etasMersinBio + finData.karkSterletBio;
+  const salmonValue = totalSalmon * finData.salmonPrice;
+  const sturgeonValue = totalSturgeon * finData.sturgeonPrice;
+  const stockValue = salmonValue + sturgeonValue;
+
+  const totalFeed = finData.etasSomonFeed + finData.etasMersinFeed + finData.karkFeed;
+  const feedValue = totalFeed * finData.feedPrice;
+
+  const totalEquity = netCash + stockValue + feedValue;
+
+  // Helper to set element text
+  const set = (id, txt) => { const e=document.getElementById(id); if(e) e.textContent=txt; };
+  const setColor = (id, color) => { const e=document.getElementById(id); if(e) e.style.color=color; };
+
+  // Cash section — breakdown lines
+  set('fin-recv-line', fmtUSD(finData.receivables));
+  set('fin-bank-line', fmtUSD(finData.bankBalance));
+  set('fin-checks-line', fmtUSD(finData.checks));
+  set('fin-total-assets', fmtUSD(totalAssets));
+  set('fin-payables-line', fmtUSD(finData.payables));
+  set('fin-net-cash', fmtUSD(netCash));
+  setColor('fin-net-cash', netCash >= 0 ? '#68d391' : '#fc8181');
+
+  // Biomass section
+  set('fin-total-salmon', Math.round(totalSalmon).toLocaleString('tr-TR'));
+  set('fin-salmon-value', fmtUSD(salmonValue));
+  set('fin-total-sturgeon', Math.round(totalSturgeon).toLocaleString('tr-TR'));
+  set('fin-sturgeon-value', fmtUSD(sturgeonValue));
+
+  // Feed section
+  set('fin-total-feed', Math.round(totalFeed).toLocaleString('tr-TR'));
+  set('fin-feed-value', fmtUSD(feedValue));
+
+  // Grand summary
+  set('fin-nc-summary', fmtUSD(netCash));
+  setColor('fin-nc-summary', netCash >= 0 ? '#68d391' : '#fc8181');
+  set('fin-sv-salmon-summary', fmtUSD(salmonValue));
+  set('fin-sv-sturgeon-summary', fmtUSD(sturgeonValue));
+  set('fin-fv-summary', fmtUSD(feedValue));
+
+  const gv = document.getElementById('fin-grand-value');
+  if (gv) {
+    gv.textContent = fmtUSD(totalEquity);
+    gv.className = 'fin-grand-value ' + (totalEquity > 0 ? 'positive' : totalEquity < 0 ? 'negative' : 'neutral');
+  }
+}
+
+// Fetch biomass and feed data
+async function loadFinancialData() {
+  const ID_ETAS = '1d5auEs3o0st7z3Bt46uuVzuHK0Bw-K70Lb1R5m4ok4Y';
+  const ID_KARK = '15Ck8hhqdYMsmBju1wTznQOsiNuEFQPMg_y3X7sCTA4o';
+
+  try {
+    const [somonBio, mersinBio, karkBio, yemETAS, yemETAS_M, yemKark] = await Promise.all([
+      api(ID_ETAS, 'Somon Biomass'),
+      api(ID_ETAS, 'Mersin Biomass'),
+      api(ID_KARK, 'Biomass'),
+      api(ID_ETAS, 'Yem Depo'),
+      api(ID_ETAS, 'Yem Depo MERSİN'),
+      api(ID_KARK, 'YEM'),
+    ]);
+
+    const bioETAS = computeBioTotals(somonBio, mersinBio);
+    const bioKark = computeKarkBioTotals(karkBio);
+
+    finData.etasSomonBio = bioETAS.somonKg;
+    finData.etasMersinBio = bioETAS.mersinKg;
+    finData.karkSalmonBio = bioKark.salmonKg;
+    finData.karkSterletBio = bioKark.sterletKg;
+
+    finData.etasSomonFeed = getLatestDepo(yemETAS) || 0;
+    finData.etasMersinFeed = getLatestDepo(yemETAS_M) || 0;
+    finData.karkFeed = getLatestDepo(yemKark) || 0;
+
+    return true;
+  } catch(e) {
+    console.error('Error loading financial data:', e);
+    return false;
+  }
+}
+
+// Render the Financial Overview page
+async function loadFinancial() {
+  const el = document.getElementById('page-fin');
+  el.innerHTML = '<div class="loading"><div class="spin"></div>Loading Financial Overview…</div>';
+
+  loadFinancialInputs();
+  const [success, jsonOk] = await Promise.all([loadFinancialData(), loadFinancialJSON()]);
+
+  if (!success) {
+    el.innerHTML = '<div class="err">❌ Failed to load financial data. Please try again.</div>';
+    return;
+  }
+
+  const lastUp = finJsonMeta.lastUpdated ? new Date(finJsonMeta.lastUpdated).toLocaleString('tr-TR', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'N/A';
+  const kurTxt = finJsonMeta.usdKur ? finJsonMeta.usdKur.toFixed(2) : '—';
+
+  // Pre-compute values for the summary bar
+  const totalAssets = finData.bankBalance + finData.receivables + finData.checks;
+  const netCash = totalAssets - finData.payables;
+  const totalSalmon = finData.etasSomonBio + finData.karkSalmonBio;
+  const totalSturgeon = finData.etasMersinBio + finData.karkSterletBio;
+  const salmonVal = totalSalmon * finData.salmonPrice;
+  const sturgeonVal = totalSturgeon * finData.sturgeonPrice;
+  const totalFeedKg = finData.etasSomonFeed + finData.etasMersinFeed + finData.karkFeed;
+  const feedVal = totalFeedKg * finData.feedPrice;
+  const totalEquity = netCash + salmonVal + sturgeonVal + feedVal;
+
+  // Build top-3 receivables HTML
+  const topRecvHtml = (finJsonMeta.topReceivables || []).map(c =>
+    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:#a0aec0"><span>' + (c.name||'—') + '</span><span style="color:#68d391">' + fmtUSD(c.amount||0) + '</span></div>'
+  ).join('');
+  const topPayHtml = (finJsonMeta.topPayables || []).map(c =>
+    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:#a0aec0"><span>' + (c.name||'—') + '</span><span style="color:#fc8181">' + fmtUSD(c.amount||0) + '</span></div>'
+  ).join('');
+
+  let html = `
+    <!-- ═══ SUMMARY BAR ═══ -->
+    <div style="background:linear-gradient(135deg,rgba(99,179,237,0.08),rgba(246,173,85,0.08));border:1px solid rgba(246,173,85,0.25);border-radius:14px;padding:20px 24px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:12px;color:#718096;text-transform:uppercase;letter-spacing:1px">Financial Snapshot</div>
+        <div style="font-size:11px;color:#718096">USD/TRY: ${kurTxt} · ${lastUp}</div>
+      </div>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:13px;color:#a0aec0;margin-bottom:4px">Total Equity Position</div>
+        <div class="fin-grand-value ${totalEquity > 0 ? 'positive' : totalEquity < 0 ? 'negative' : 'neutral'}" id="fin-grand-value" style="font-size:32px">${fmtUSD(totalEquity)}</div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:28px;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#718096">Net Cash</div>
+          <div style="font-size:18px;font-weight:700;color:${netCash >= 0 ? '#68d391' : '#fc8181'}" id="fin-nc-summary">${fmtUSD(netCash)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#63b3ed">Salmon</div>
+          <div style="font-size:18px;font-weight:700;color:#63b3ed" id="fin-sv-salmon-summary">${fmtUSD(salmonVal)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#b794f4">Sturgeon</div>
+          <div style="font-size:18px;font-weight:700;color:#b794f4" id="fin-sv-sturgeon-summary">${fmtUSD(sturgeonVal)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#f6ad55">Feed</div>
+          <div style="font-size:18px;font-weight:700;color:#f6ad55" id="fin-fv-summary">${fmtUSD(feedVal)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CASH & RECEIVABLES ═══ -->
+    <div class="fin-section">
+      <div class="fin-section-title">💵 Cash & Receivables</div>
+      <div class="fin-grid">
+        <div class="fin-card">
+          <div class="fin-card card-label">Müşteri Alacak</div>
+          <div class="fin-value" style="color:#68d391">${fmtUSD(finData.receivables)}</div>
+          <div style="font-size:10px;color:#718096;margin-top:4px">USD: ${fmtUSD(finJsonMeta.recvUsd)} · EUR: ${fmtUSD(finJsonMeta.recvEur)} · TL: ${fmtUSD(finJsonMeta.recvTl)}</div>
+        </div>
+        <div class="fin-card">
+          <div class="fin-card card-label">Banka Bakiye</div>
+          <div class="fin-value" style="color:#63b3ed">${fmtUSD(finData.bankBalance)}</div>
+          <div style="font-size:10px;color:#718096;margin-top:4px">TL→USD: ${fmtUSD(finJsonMeta.bankTl)} · USD: ${fmtUSD(finJsonMeta.bankUsd)}</div>
+        </div>
+        <div class="fin-card">
+          <div class="fin-card card-label">Çek / Senet</div>
+          <div class="fin-value" style="color:#b794f4">${fmtUSD(finData.checks)}</div>
+        </div>
+        <div class="fin-card">
+          <div class="fin-card card-label">Firma Borç</div>
+          <div class="fin-value" style="color:${finData.payables < 0 ? '#68d391' : '#fc8181'}">${fmtUSD(finData.payables)}</div>
+        </div>
+      </div>
+      <div class="fin-total-card">
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#a0aec0;border-bottom:1px solid rgba(255,255,255,0.06)"><span>Receivables</span><span id="fin-recv-line">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#a0aec0;border-bottom:1px solid rgba(255,255,255,0.06)"><span>Bank Balance</span><span id="fin-bank-line">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#a0aec0;border-bottom:1px solid rgba(255,255,255,0.06)"><span>Checks</span><span id="fin-checks-line">$0</span></div>
+        <div class="fin-total-row" style="margin-top:4px"><div class="fin-total-label">Total Assets</div><div class="fin-total-val" id="fin-total-assets">$0</div></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#fc8181;border-bottom:1px solid rgba(255,255,255,0.06)"><span>− Payables</span><span id="fin-payables-line">$0</span></div>
+        <div class="fin-total-row" style="border-top:2px solid rgba(255,255,255,0.15);padding-top:10px;margin-top:6px">
+          <div class="fin-total-label" style="font-weight:700">Net Cash Position</div>
+          <div class="fin-total-val" id="fin-net-cash" style="color:#68d391;font-weight:700">$0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:14px">
+        <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px">
+          <div style="font-size:11px;color:#68d391;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Top Receivables (owed to us)</div>
+          ${topRecvHtml || '<div style="font-size:12px;color:#4a5568">Ask Claude to refresh</div>'}
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px">
+          <div style="font-size:11px;color:#fc8181;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Top Payables (we owe)</div>
+          ${topPayHtml || '<div style="font-size:12px;color:#4a5568">Ask Claude to refresh</div>'}
+        </div>
+      </div>
+      <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:#718096">Data from Günlük Rapor · Ask Claude to refresh</div>
+        <a href="https://ayfish2018-my.sharepoint.com/:x:/r/personal/abdulla_ayfish_com_tr/_layouts/15/Doc.aspx?sourcedoc=%7B07D7C7A1-E08B-4CDC-919C-D2079374162F%7D&file=2026%20G%C3%9CNL%C3%9CK%20RAPOR%20v5.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1" target="_blank" class="fin-link-btn">Open Günlük Rapor →</a>
+      </div>
+    </div>
+
+    <!-- ═══ SALMON ═══ -->
+    <div class="fin-section">
+      <div class="fin-section-title">🐟 Salmon Stock</div>
+      <div class="fin-grid">
+        <div class="fin-card"><div class="fin-card card-label">ETAS Somon</div><div class="fin-value">${Math.round(finData.etasSomonBio).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card"><div class="fin-card card-label">Karkamış Salmon</div><div class="fin-value">${Math.round(finData.karkSalmonBio).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card" style="border-color:#63b3ed;border-width:2px"><div class="fin-card card-label">Total Salmon</div><div class="fin-value" id="fin-total-salmon" style="color:#63b3ed">0<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+      </div>
+      <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+        <div class="fin-input-card" style="flex:1"><div class="fin-input-label">Salmon Price ($/kg)</div><input type="number" id="fin-salmon-price" class="fin-input" value="${finData.salmonPrice}" placeholder="5" step="0.01"></div>
+        <div class="fin-total-card" style="flex:1;margin-top:0"><div class="fin-total-row"><div class="fin-total-label">Salmon Value</div><div class="fin-total-val" id="fin-salmon-value" style="color:#63b3ed">$0</div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ STURGEON ═══ -->
+    <div class="fin-section">
+      <div class="fin-section-title">🦈 Sturgeon Stock</div>
+      <div class="fin-grid">
+        <div class="fin-card"><div class="fin-card card-label">ETAS Mersin</div><div class="fin-value">${Math.round(finData.etasMersinBio).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card"><div class="fin-card card-label">Karkamış Sterlet</div><div class="fin-value">${Math.round(finData.karkSterletBio).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card" style="border-color:#b794f4;border-width:2px"><div class="fin-card card-label">Total Sturgeon</div><div class="fin-value" id="fin-total-sturgeon" style="color:#b794f4">0<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+      </div>
+      <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+        <div class="fin-input-card" style="flex:1"><div class="fin-input-label">Sturgeon Price ($/kg)</div><input type="number" id="fin-sturgeon-price" class="fin-input" value="${finData.sturgeonPrice}" placeholder="7" step="0.01"></div>
+        <div class="fin-total-card" style="flex:1;margin-top:0"><div class="fin-total-row"><div class="fin-total-label">Sturgeon Value</div><div class="fin-total-val" id="fin-sturgeon-value" style="color:#b794f4">$0</div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ FEED ═══ -->
+    <div class="fin-section">
+      <div class="fin-section-title">🌾 Feed Inventory</div>
+      <div class="fin-grid">
+        <div class="fin-card"><div class="fin-card card-label">ETAS Somon Feed</div><div class="fin-value">${Math.round(finData.etasSomonFeed).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card"><div class="fin-card card-label">ETAS Mersin Feed</div><div class="fin-value">${Math.round(finData.etasMersinFeed).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card"><div class="fin-card card-label">Karkamış Feed</div><div class="fin-value">${Math.round(finData.karkFeed).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card" style="border-color:#f6ad55;border-width:2px"><div class="fin-card card-label">Total Feed</div><div class="fin-value" id="fin-total-feed" style="color:#f6ad55">0<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+      </div>
+      <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+        <div class="fin-input-card" style="flex:1"><div class="fin-input-label">Feed Price ($/kg)</div><input type="number" id="fin-feed-price" class="fin-input" value="${finData.feedPrice}" placeholder="1.6" step="0.01"></div>
+        <div class="fin-total-card" style="flex:1;margin-top:0"><div class="fin-total-row"><div class="fin-total-label">Total Feed Value</div><div class="fin-total-val" id="fin-feed-value">$0</div></div></div>
+      </div>
+    </div>
+  `;
+
+  el.innerHTML = html;
+
+  // Attach event listeners for price inputs only (cash data comes from JSON)
+  ['fin-salmon-price', 'fin-sturgeon-price', 'fin-feed-price'].forEach(id => {
+    const elem = document.getElementById(id);
+    if (elem) {
+      elem.addEventListener('input', () => {
+        finData.salmonPrice = inputVal('fin-salmon-price');
+        finData.sturgeonPrice = inputVal('fin-sturgeon-price');
+        finData.feedPrice = inputVal('fin-feed-price');
+        saveFinancialInputs();
+        recalcFinancials();
+      });
+    }
+  });
+
+  // Initial calculation
+  recalcFinancials();
+}
+
+// ── LOAD FARM ──────────────────────────────────────────────────────────────
+async function loadETAS() {
+  const el = document.getElementById('page-etas');
+  el.innerHTML='<div class="loading"><div class="spin"></div>Loading ETAS 26…</div>';
+  const ID='1d5auEs3o0st7z3Bt46uuVzuHK0Bw-K70Lb1R5m4ok4Y';
+  try {
+    const [gunluk,hasat,somonBio,mersinBio,yem,yemM] = await Promise.all([
+      api(ID,'Gunluk'),
+      api(ID,'Hasat'),
+      api(ID,'Somon Biomass'),
+      api(ID,'Mersin Biomass'),
+      api(ID,'Yem Depo'),
+      api(ID,'Yem Depo MERSİN'),
+    ]);
+    const bioTotals = computeBioTotals(somonBio, mersinBio);
+    const c = {
+      date:0,somon_mort:2,hasat:4,mersin_mort:11,
+      somon_feed:16,somon_biomass:17,mersin_feed:18,mersin_biomass:19,
+      temperature:23,oxygen:24
+    };
+    el.innerHTML='';
+    renderOps('etas', c, gunluk, 3, { somonKg:bioTotals.somonKg, mersinKg:bioTotals.mersinKg }, el);
+    renderBioETAS(somonBio, mersinBio, el);
+    renderYem('etas', {somon:yem, mersin:yemM}, el);
+    renderHasat('etas', hasat,
+      {date:1,customer:2,kg:3,product:4,dateFormat:'DD.MM.YY'}, el);
+  } catch(e) {
+    el.innerHTML=`<div class="err">❌ ETAS 26 failed: ${e.message}</div>`;
+  }
+}
+
+async function loadKark() {
+  const el = document.getElementById('page-kark');
+  el.innerHTML='<div class="loading"><div class="spin"></div>Loading Karkamish 26…</div>';
+  const ID='15Ck8hhqdYMsmBju1wTznQOsiNuEFQPMg_y3X7sCTA4o';
+  try {
+    const [gunluk,hasat,bio,yem] = await Promise.all([
+      api(ID,'GÜNLÜK'),
+      api(ID,'HASAT'),
+      api(ID,'Biomass'),
+      api(ID,'YEM'),
+    ]);
+    const bioTotals = computeKarkBioTotals(bio);
+    const c = {
+      date:0,somon_mort:2,hasat:5,mersin_mort:12,
+      total_feed:17,somon_biomass:18,mersin_feed:19,
+      temperature:24,oxygen:25
+    };
+    el.innerHTML='';
+    renderOps('kark', c, gunluk, 3, { somonKg:bioTotals.salmonKg, sterletKg:bioTotals.sterletKg }, el);
+    renderBioKark(bio, el);
+    renderYem('kark', {kark:yem}, el);
+    renderHasat('kark', hasat,
+      {date:0,customer:1,kg:2,product:3,dateFormat:'DD/MM/YYYY'}, el);
+  } catch(e) {
+    el.innerHTML=`<div class="err">❌ Karkamish 26 failed: ${e.message}</div>`;
+  }
+}
+
+async function loadAll() {
+  const btn=document.getElementById('refreshBtn');
+  btn.disabled=true; btn.textContent='⟳ Loading…';
+  document.getElementById('updated').textContent='Loading…';
+  await Promise.all([loadETAS(), loadKark()]);
+  if(activePage === 'fin') {
+    await loadFinancial();
+  }
+  document.getElementById('updated').textContent=`Last updated: ${new Date().toLocaleTimeString()}`;
+  btn.disabled=false; btn.textContent='⟳ Refresh';
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+const finDate = new Date(EMBEDDED_FINANCIAL_DATA.lastUpdated);
+document.getElementById('report-date').textContent =
+  `Data pulled: ${finDate.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'})} at ${finDate.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}`;
+
+loadAll();
+setInterval(loadAll, 30*60*1000);
+</script>
+</body>
+</html>
