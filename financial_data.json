@@ -1,0 +1,33 @@
+{
+  "lastUpdated": "2026-04-14T14:41:49+03:00",
+  "usdKur": 44.783,
+  "euroUsd": 1.1689,
+  "receivables": {
+    "usd": 426577.01,
+    "euroUsd": 58.44,
+    "tlUsd": 291835.2,
+    "total": 718470.65
+  },
+  "bank": {
+    "tlUsd": 184427.6,
+    "usd": 20552.75,
+    "total": 204980.35
+  },
+  "checks": {
+    "tlUsd": 33494.85,
+    "total": 33494.85
+  },
+  "totalAssets": 956945.86,
+  "payables": -62760.94,
+  "netPosition": 1019706.8,
+  "topReceivables": [
+    {"name": "RADBAM DİŞ", "amount": 276689, "currency": "TL", "origAmount": 12390981},
+    {"name": "NAM SU", "amount": 180937, "currency": "USD"},
+    {"name": "STIMUL LLC", "amount": 98915, "currency": "USD"}
+  ],
+  "topPayables": [
+    {"name": "GÜMÜŞDOĞA (USD)", "amount": 2168877, "currency": "USD"},
+    {"name": "GÜMÜŞDOĞA (USD)-ALINAN", "amount": 1900000, "currency": "USD"},
+    {"name": "BİOMAR SAGUN", "amount": 191247, "currency": "USD"}
+  ]
+}
