@@ -893,25 +893,69 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-04-17T12:21:28.054456+03:00",
+  "lastUpdated": "2026-04-17T13:01:14.981805+03:00",
   "usdKur": 44.7593,
   "euroUsd": 1.1787,
-  "receivables": {"usd": 687051.22, "euroUsd": 58.94, "tlUsd": 196903.34, "total": 884013.5},
-  "bank": {"tlUsd": 190619.63, "usd": 20554.19, "total": 211173.82},
-  "checks": {"tlUsd": 93835.25, "total": 93835.25},
-  "totalAssets": 1189022.57,
+  "receivables": {
+    "usd": 687051.22,
+    "euroUsd": 58.94,
+    "tlUsd": 196903.34,
+    "total": 884013.5
+  },
+  "bank": {
+    "tlUsd": 191075.71,
+    "usd": 20554.19,
+    "total": 211629.9
+  },
+  "checks": {
+    "tlUsd": 93835.25,
+    "total": 93835.25
+  },
+  "totalAssets": 1189478.65,
   "payables": 314168.88,
-  "netPosition": 874853.69,
+  "netPosition": 875309.76,
   "topReceivables": [
-    {"name": "GÜMÜŞDOĞA", "amount": 224867, "currency": "USD"},
-    {"name": "RADBAM DİŞ", "amount": 183001, "currency": "TL", "origAmount": 8190981},
-    {"name": "NAM SU", "amount": 180937, "currency": "USD"}
+    {
+      "name": "GÜMÜŞDOĞA",
+      "amount": 224867,
+      "currency": "USD"
+    },
+    {
+      "name": "RADBAM DIŞ",
+      "amount": 183001,
+      "currency": "TL",
+      "origAmount": 8190981
+    },
+    {
+      "name": "NAM SU",
+      "amount": 180937,
+      "currency": "USD"
+    }
   ],
   "topPayables": [
-    {"name": "BİOMAR SAGUN", "amount": 191247, "currency": "USD"},
-    {"name": "TK FISH", "amount": 63674, "currency": "USD"},
-    {"name": "AKVAPLAST PLASTİK", "amount": 53659, "currency": "EURO", "origAmount": 45522}
-  ]
+    {
+      "name": "BİOMAR SAGUN",
+      "amount": 191247,
+      "currency": "USD",
+      "note": "− Kemal rec $36K = net $155K owed"
+    },
+    {
+      "name": "TK FISH",
+      "amount": 63674,
+      "currency": "USD"
+    },
+    {
+      "name": "AKVAPLAST PLASTİK",
+      "amount": 53659,
+      "currency": "EURO",
+      "origAmount": 45522
+    }
+  ],
+  "_biomarKemalOffset": {
+    "payUsd": 191247,
+    "recUsd": 36468,
+    "netUsd": 154780
+  }
 };
 
 // Load cash data — tries financial_data.json first, falls back to embedded data
@@ -1060,13 +1104,21 @@ async function loadFinancial() {
   const feedVal = totalFeedKg * finData.feedPrice;
   const totalEquity = netCash + salmonVal + sturgeonVal + feedVal;
 
-  // Build top-3 receivables HTML
-  const topRecvHtml = (finJsonMeta.topReceivables || []).map(c =>
-    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:#a0aec0"><span>' + (c.name||'—') + '</span><span style="color:#68d391">' + fmtUSD(c.amount||0) + '</span></div>'
-  ).join('');
-  const topPayHtml = (finJsonMeta.topPayables || []).map(c =>
-    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:#a0aec0"><span>' + (c.name||'—') + '</span><span style="color:#fc8181">' + fmtUSD(c.amount||0) + '</span></div>'
-  ).join('');
+  // Build top-3 receivables HTML (with offset note, e.g. Biomar/Kemal net)
+  const topRecvHtml = (finJsonMeta.topReceivables || []).map(c => {
+    const noteHtml = c.note ? `<div style="font-size:10px;color:#f6ad55;font-style:italic;margin-top:2px;text-align:right">${c.note}</div>` : '';
+    return `<div style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#a0aec0">
+        <span>${c.name||'—'}</span><span style="color:#68d391">${fmtUSD(c.amount||0)}</span>
+      </div>${noteHtml}</div>`;
+  }).join('');
+  const topPayHtml = (finJsonMeta.topPayables || []).map(c => {
+    const noteHtml = c.note ? `<div style="font-size:10px;color:#f6ad55;font-style:italic;margin-top:2px;text-align:right">${c.note}</div>` : '';
+    return `<div style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#a0aec0">
+        <span>${c.name||'—'}</span><span style="color:#fc8181">${fmtUSD(c.amount||0)}</span>
+      </div>${noteHtml}</div>`;
+  }).join('');
 
   let html = `
     <!-- ═══ SUMMARY BAR ═══ -->
