@@ -1,36 +1,36 @@
 {
-  "lastUpdated": "2026-04-15T11:10:07.624186+03:00",
-  "usdKur": 44.7278,
-  "euroUsd": 1.1788,
+  "lastUpdated": "2026-04-17T12:21:28.054456+03:00",
+  "usdKur": 44.7593,
+  "euroUsd": 1.1787,
   "receivables": {
-    "usd": 731061.22,
+    "usd": 687051.22,
     "euroUsd": 58.94,
-    "tlUsd": 294073.39,
-    "total": 1025193.55
+    "tlUsd": 196903.34,
+    "total": 884013.5
   },
   "bank": {
-    "tlUsd": 135434.89,
-    "usd": 20553.469999999998,
-    "total": 155988.36
+    "tlUsd": 190619.63,
+    "usd": 20554.19,
+    "total": 211173.82
   },
   "checks": {
-    "tlUsd": 33536.19,
-    "total": 33536.19
+    "tlUsd": 93835.25,
+    "total": 93835.25
   },
-  "totalAssets": 1214718.1,
-  "payables": 314170.43,
-  "netPosition": 900547.67,
+  "totalAssets": 1189022.57,
+  "payables": 314168.88,
+  "netPosition": 874853.69,
   "topReceivables": [
     {
-      "name": "RADBAM DI\u015e",
-      "amount": 277031,
-      "currency": "TL",
-      "origAmount": 12390981
+      "name": "G\u00dcM\u00dc\u015eDO\u011eA",
+      "amount": 224867,
+      "currency": "USD"
     },
     {
-      "name": "G\u00dcM\u00dc\u015eDO\u011eA",
-      "amount": 268877,
-      "currency": "USD"
+      "name": "RADBAM DI\u015e",
+      "amount": 183001,
+      "currency": "TL",
+      "origAmount": 8190981
     },
     {
       "name": "NAM SU",
