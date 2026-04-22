@@ -1,40 +1,40 @@
 {
-  "lastUpdated": "2026-04-19T15:31:58.450214+03:00",
-  "usdKur": 44.7593,
-  "euroUsd": 1.1787,
+  "lastUpdated": "2026-04-22T08:19:11.236688+02:00",
+  "usdKur": 44.876,
+  "euroUsd": 1.1765,
   "receivables": {
-    "usd": 687051.22,
-    "euroUsd": 58.94,
-    "tlUsd": 199590.54,
-    "total": 886700.69
+    "usd": 618048.52,
+    "euroUsd": 58.82,
+    "tlUsd": 250504.15,
+    "total": 868611.5
   },
   "bank": {
-    "tlUsd": 191075.71,
-    "usd": 20554.19,
-    "total": 211629.9
+    "tlUsd": 168855.42,
+    "usd": 25853.15,
+    "total": 194708.57
   },
   "checks": {
-    "tlUsd": 93835.25,
-    "total": 93835.25
+    "tlUsd": 93591.23,
+    "total": 93591.23
   },
-  "totalAssets": 1192165.84,
-  "payables": 319437.73,
-  "netPosition": 872728.11,
+  "totalAssets": 1156911.29,
+  "payables": 319315.63,
+  "netPosition": 837595.66,
   "topReceivables": [
     {
-      "name": "GÜMÜŞDOĞA",
-      "amount": 224867,
+      "name": "NAM SU",
+      "amount": 250284,
       "currency": "USD"
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 183001,
+      "amount": 229936,
       "currency": "TL",
-      "origAmount": 8190981
+      "origAmount": 10318621
     },
     {
-      "name": "NAM SU",
-      "amount": 180937,
+      "name": "STIMUL LLC",
+      "amount": 98915,
       "currency": "USD"
     }
   ],
@@ -52,7 +52,7 @@
     },
     {
       "name": "AKVAPLAST PLASTİK",
-      "amount": 53659,
+      "amount": 53556,
       "currency": "EURO",
       "origAmount": 45522
     }
