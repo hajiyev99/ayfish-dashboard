@@ -1,26 +1,31 @@
 {
-  "lastUpdated": "2026-04-22T08:19:11.236688+02:00",
-  "usdKur": 44.876,
+  "lastUpdated": "2026-04-23T08:05:39.935165+02:00",
+  "usdKur": 44.8908,
   "euroUsd": 1.1765,
   "receivables": {
-    "usd": 618048.52,
-    "euroUsd": 58.82,
-    "tlUsd": 250504.15,
-    "total": 868611.5
+    "usd": 1612654.52,
+    "euroUsd": 58.83,
+    "tlUsd": 245966.31,
+    "total": 1858679.66
   },
   "bank": {
-    "tlUsd": 168855.42,
+    "tlUsd": 158075.16,
     "usd": 25853.15,
-    "total": 194708.57
+    "total": 183928.31
   },
   "checks": {
-    "tlUsd": 93591.23,
-    "total": 93591.23
+    "tlUsd": 93560.37,
+    "total": 93560.37
   },
-  "totalAssets": 1156911.29,
-  "payables": 319315.63,
-  "netPosition": 837595.66,
+  "totalAssets": 2136168.34,
+  "payables": 1499138.0,
+  "netPosition": 637030.33,
   "topReceivables": [
+    {
+      "name": "GÜMÜŞDOĞA",
+      "amount": 996787,
+      "currency": "USD"
+    },
     {
       "name": "NAM SU",
       "amount": 250284,
@@ -28,38 +33,33 @@
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 229936,
+      "amount": 229860,
       "currency": "TL",
       "origAmount": 10318621
-    },
-    {
-      "name": "STIMUL LLC",
-      "amount": 98915,
-      "currency": "USD"
     }
   ],
   "topPayables": [
     {
-      "name": "BİOMAR SAGUN",
-      "amount": 191247,
-      "currency": "USD",
-      "note": "− Kemal rec $36K = net $155K owed"
-    },
-    {
-      "name": "TK FISH",
-      "amount": 63674,
+      "name": "GÜMÜŞDOĞA (USD)",
+      "amount": 958330,
       "currency": "USD"
     },
     {
-      "name": "AKVAPLAST PLASTİK",
-      "amount": 53556,
-      "currency": "EURO",
-      "origAmount": 45522
+      "name": "KEMAL BALIKÇILIK",
+      "amount": 193569,
+      "currency": "USD",
+      "note": "− Kemal rec $121K = net $73K owed"
+    },
+    {
+      "name": "BİOMAR SAGUN",
+      "amount": 191247,
+      "currency": "USD",
+      "note": "− Kemal rec $121K = net $70K owed"
     }
   ],
   "_biomarKemalOffset": {
-    "payUsd": 191247,
-    "recUsd": 36468,
-    "netUsd": 154780
+    "payUsd": 384816,
+    "recUsd": 120804,
+    "netUsd": 264013
   }
 }
