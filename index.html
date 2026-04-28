@@ -1064,11 +1064,11 @@ async function loadFinancialData() {
 
   try {
     const [somonBio, mersinBio, karkBio, yemETAS, yemETAS_M, yemKark] = await Promise.all([
-      api(ID_ETAS, 'Somon Biomass v2'),
-      api(ID_ETAS, 'Mersin Biomass'),
+      api(ID_ETAS, 'Somon Biomass v2').then(normalizeETAS),
+      api(ID_ETAS, 'Mersin Biomass').then(normalizeETAS),
       api(ID_KARK, 'Biomass'),
-      api(ID_ETAS, 'Yem Depo'),
-      api(ID_ETAS, 'Yem Depo MERSİN'),
+      api(ID_ETAS, 'Yem Depo').then(normalizeETAS),
+      api(ID_ETAS, 'Yem Depo MERSİN').then(normalizeETAS),
       api(ID_KARK, 'YEM'),
     ]);
 
