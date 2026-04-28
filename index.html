@@ -292,6 +292,7 @@ function parseHasatDate(str,fmt) {
   const s=str.trim();
   try {
     if(fmt==='DD/MM/YYYY'){ const[d,m,y]=s.split('/'); return new Date(+y,+m-1,+d); }
+    else if(fmt==='DD.MM.YYYY'){ const[d,m,y]=s.split('.'); return new Date(+y,+m-1,+d); }
     else { const[d,m,y]=s.split('.'); return new Date(2000+(+y),+m-1,+d); }
   } catch { return null; }
 }
@@ -754,9 +755,10 @@ function renderYem(pid, yemData, el) {
 // ── RENDER: HASAT ──────────────────────────────────────────────────────────
 function renderHasat(pid, hasat, hasatCfg, el) {
   const h=hasatCfg;
+  const kgParse = h.kgParse || parseNum;
   const data=hasat.slice(1).filter(r=>{
     const d=r[h.date];const kg=r[h.kg];
-    return d&&d.trim()&&kg&&kg.trim()&&parseNum(kg)>0;
+    return d&&d.trim()&&kg&&kg.trim()&&kgParse(kg)>0;
   });
   if(!data.length){
     el.innerHTML+=`<div class="section-label">🎣 Hasat (Harvest)</div><p style="color:#4a6080;font-size:13px;padding:8px 0">No harvest data.</p>`;
@@ -767,7 +769,7 @@ function renderHasat(pid, hasat, hasatCfg, el) {
     const dt=parseHasatDate(r[h.date],h.dateFormat);
     const mk=monthKey(dt);
     if(!mk) return;
-    const kg=parseNum(r[h.kg])||0;
+    const kg=kgParse(r[h.kg])||0;
     if(!byMonth[mk]) byMonth[mk]={kg:0,month:TR_MONTHS[dt.getMonth()]};
     byMonth[mk].kg+=kg;
   });
@@ -778,7 +780,7 @@ function renderHasat(pid, hasat, hasatCfg, el) {
   const byCustomer={};
   data.forEach(r=>{
     const c=(r[h.customer]||'Bilinmeyen').trim();
-    const kg=parseNum(r[h.kg])||0;
+    const kg=kgParse(r[h.kg])||0;
     byCustomer[c]=(byCustomer[c]||0)+kg;
   });
   const ytdKg=Object.values(byCustomer).reduce((a,b)=>a+b,0);
@@ -893,7 +895,7 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-04-28T08:23:43.235916+00:00",
+  "lastUpdated": "2026-04-28T09:58:54.640565+00:00",
   "usdKur": 44.9349,
   "euroUsd": 1.1694,
   "receivables": {
@@ -939,16 +941,15 @@ const EMBEDDED_FINANCIAL_DATA = {
       "currency": "USD"
     },
     {
-      "name": "KEMAL BALIKÇILIK",
-      "amount": 193569,
+      "name": "BIOMAR/KEMAL (combined)",
+      "amount": 384816,
       "currency": "USD",
-      "note": "− Kemal rec $121K = net $73K owed"
+      "note": "gross $385K − Kemal rec $121K = net $264K owed"
     },
     {
-      "name": "BİOMAR SAGUN",
-      "amount": 191247,
-      "currency": "USD",
-      "note": "− Kemal rec $121K = net $70K owed"
+      "name": "TK FISH",
+      "amount": 63674,
+      "currency": "USD"
     }
   ],
   "_biomarKemalOffset": {
@@ -1273,7 +1274,7 @@ async function loadETAS() {
   try {
     const [gunluk,hasat,somonBio,mersinBio,yem,yemM] = await Promise.all([
       api(ID,'Gunluk'),
-      api(ID,'Hasat'),
+      api(ID,'Hasat log'),
       api(ID,'Somon Biomass v2'),
       api(ID,'Mersin Biomass'),
       api(ID,'Yem Depo'),
@@ -1290,7 +1291,8 @@ async function loadETAS() {
     renderBioETAS(somonBio, mersinBio, el);
     renderYem('etas', {somon:yem, mersin:yemM}, el);
     renderHasat('etas', hasat,
-      {date:1,customer:2,kg:3,product:4,dateFormat:'DD.MM.YY'}, el);
+      {date:0,customer:1,kg:6,product:8,dateFormat:'DD.MM.YYYY',
+       kgParse:v=>{const n=parseFloat(String(v||'').replace(/,/g,''));return isNaN(n)?null:n;}}, el);
   } catch(e) {
     el.innerHTML=`<div class="err">❌ ETAS 26 failed: ${e.message}</div>`;
   }
