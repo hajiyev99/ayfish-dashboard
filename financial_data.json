@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-28T08:23:43.235916+00:00",
+  "lastUpdated": "2026-04-28T09:58:54.640565+00:00",
   "usdKur": 44.9349,
   "euroUsd": 1.1694,
   "receivables": {
@@ -45,16 +45,15 @@
       "currency": "USD"
     },
     {
-      "name": "KEMAL BALIKÇILIK",
-      "amount": 193569,
+      "name": "BIOMAR/KEMAL (combined)",
+      "amount": 384816,
       "currency": "USD",
-      "note": "− Kemal rec $121K = net $73K owed"
+      "note": "gross $385K − Kemal rec $121K = net $264K owed"
     },
     {
-      "name": "BİOMAR SAGUN",
-      "amount": 191247,
-      "currency": "USD",
-      "note": "− Kemal rec $121K = net $70K owed"
+      "name": "TK FISH",
+      "amount": 63674,
+      "currency": "USD"
     }
   ],
   "_biomarKemalOffset": {
