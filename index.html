@@ -261,6 +261,19 @@ function colVal(row, idx) {
   if (idx < 0 || idx >= row.length) return null;
   return parseNum(row[idx]);
 }
+// ETAS 26 workbook is en_US locale (comma=thousands, dot=decimal); the rest of the
+// dashboard expects tr_TR strings. Convert numeric-looking cells on the API response
+// before downstream parsing. Leaves dates ("20.04.2026"), text, and ranges alone.
+function enToTrCell(v) {
+  if (typeof v !== 'string') return v;
+  const s = v.trim();
+  if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) return s.replace(/,/g,'').replace('.',',');
+  if (/^-?\d+\.\d+$/.test(s)) return s.replace('.',',');
+  return v;
+}
+function normalizeETAS(rows) {
+  return Array.isArray(rows) ? rows.map(r => Array.isArray(r) ? r.map(enToTrCell) : r) : rows;
+}
 function latestVal(arr) { return [...(arr||[])].reverse().find(v=>v!==null)??null; }
 // Find last non-blank row index in dataRows for a given column set
 function findLastDataRow(dataRows, colIndices) {
@@ -755,10 +768,9 @@ function renderYem(pid, yemData, el) {
 // ── RENDER: HASAT ──────────────────────────────────────────────────────────
 function renderHasat(pid, hasat, hasatCfg, el) {
   const h=hasatCfg;
-  const kgParse = h.kgParse || parseNum;
   const data=hasat.slice(1).filter(r=>{
     const d=r[h.date];const kg=r[h.kg];
-    return d&&d.trim()&&kg&&kg.trim()&&kgParse(kg)>0;
+    return d&&d.trim()&&kg&&kg.trim()&&parseNum(kg)>0;
   });
   if(!data.length){
     el.innerHTML+=`<div class="section-label">🎣 Hasat (Harvest)</div><p style="color:#4a6080;font-size:13px;padding:8px 0">No harvest data.</p>`;
@@ -769,7 +781,7 @@ function renderHasat(pid, hasat, hasatCfg, el) {
     const dt=parseHasatDate(r[h.date],h.dateFormat);
     const mk=monthKey(dt);
     if(!mk) return;
-    const kg=kgParse(r[h.kg])||0;
+    const kg=parseNum(r[h.kg])||0;
     if(!byMonth[mk]) byMonth[mk]={kg:0,month:TR_MONTHS[dt.getMonth()]};
     byMonth[mk].kg+=kg;
   });
@@ -780,7 +792,7 @@ function renderHasat(pid, hasat, hasatCfg, el) {
   const byCustomer={};
   data.forEach(r=>{
     const c=(r[h.customer]||'Bilinmeyen').trim();
-    const kg=kgParse(r[h.kg])||0;
+    const kg=parseNum(r[h.kg])||0;
     byCustomer[c]=(byCustomer[c]||0)+kg;
   });
   const ytdKg=Object.values(byCustomer).reduce((a,b)=>a+b,0);
@@ -1272,14 +1284,14 @@ async function loadETAS() {
   el.innerHTML='<div class="loading"><div class="spin"></div>Loading ETAS 26…</div>';
   const ID='1d5auEs3o0st7z3Bt46uuVzuHK0Bw-K70Lb1R5m4ok4Y';
   try {
-    const [gunluk,hasat,somonBio,mersinBio,yem,yemM] = await Promise.all([
+    const [gunluk,hasat,somonBio,mersinBio,yem,yemM] = (await Promise.all([
       api(ID,'Gunluk'),
       api(ID,'Hasat log'),
       api(ID,'Somon Biomass v2'),
       api(ID,'Mersin Biomass'),
       api(ID,'Yem Depo'),
       api(ID,'Yem Depo MERSİN'),
-    ]);
+    ])).map(normalizeETAS);
     const bioTotals = computeBioTotals(somonBio, mersinBio);
     const c = {
       date:0,somon_mort:2,hasat:4,mersin_mort:11,
@@ -1291,8 +1303,7 @@ async function loadETAS() {
     renderBioETAS(somonBio, mersinBio, el);
     renderYem('etas', {somon:yem, mersin:yemM}, el);
     renderHasat('etas', hasat,
-      {date:0,customer:1,kg:6,product:8,dateFormat:'DD.MM.YYYY',
-       kgParse:v=>{const n=parseFloat(String(v||'').replace(/,/g,''));return isNaN(n)?null:n;}}, el);
+      {date:0,customer:1,kg:6,product:8,dateFormat:'DD.MM.YYYY'}, el);
   } catch(e) {
     el.innerHTML=`<div class="err">❌ ETAS 26 failed: ${e.message}</div>`;
   }
