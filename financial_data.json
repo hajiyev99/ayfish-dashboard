@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-04-23T08:05:39.935165+02:00",
-  "usdKur": 44.8908,
-  "euroUsd": 1.1765,
+  "lastUpdated": "2026-04-28T08:23:43.235916+00:00",
+  "usdKur": 44.9349,
+  "euroUsd": 1.1694,
   "receivables": {
-    "usd": 1612654.52,
-    "euroUsd": 58.83,
-    "tlUsd": 245966.31,
-    "total": 1858679.66
+    "usd": 1698996.36,
+    "euroUsd": 58.47,
+    "tlUsd": 239567.04,
+    "total": 1938621.87
   },
   "bank": {
-    "tlUsd": 158075.16,
-    "usd": 25853.15,
-    "total": 183928.31
+    "tlUsd": 70990.61,
+    "usd": 36403.15,
+    "total": 107393.76
   },
   "checks": {
-    "tlUsd": 93560.37,
-    "total": 93560.37
+    "tlUsd": 93468.55,
+    "total": 93468.55
   },
-  "totalAssets": 2136168.34,
-  "payables": 1499138.0,
-  "netPosition": 637030.33,
+  "totalAssets": 2139484.18,
+  "payables": 1516467.85,
+  "netPosition": 623016.33,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -28,14 +28,14 @@
     },
     {
       "name": "NAM SU",
-      "amount": 250284,
+      "amount": 318676,
       "currency": "USD"
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 229860,
+      "amount": 227535,
       "currency": "TL",
-      "origAmount": 10318621
+      "origAmount": 10224262
     }
   ],
   "topPayables": [
