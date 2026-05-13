@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-05-08T10:29:18.676647+00:00",
-  "usdKur": 45.225,
-  "euroUsd": 1.1762,
+  "lastUpdated": "2026-05-13T06:50:59.006706+00:00",
+  "usdKur": 45.3767,
+  "euroUsd": 1.1769,
   "receivables": {
-    "usd": 1451117.95,
-    "euroUsd": 58.81,
-    "tlUsd": 240363.6,
-    "total": 1691540.35
+    "usd": 1513942.37,
+    "euroUsd": 58.85,
+    "tlUsd": 197230.99,
+    "total": 1711232.21
   },
   "bank": {
-    "tlUsd": 193174.63,
+    "tlUsd": 247728.24,
     "usd": 47693.32000000001,
-    "total": 240867.95
+    "total": 295421.56
   },
   "checks": {
-    "tlUsd": 46434.49,
-    "total": 46434.49
+    "tlUsd": 61705.68,
+    "total": 61705.68
   },
-  "totalAssets": 1978842.8,
-  "payables": 1677529.83,
-  "netPosition": 301312.97,
+  "totalAssets": 2068359.45,
+  "payables": 1682329.3,
+  "netPosition": 386030.14,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -33,9 +33,9 @@
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 231096,
+      "amount": 184829,
       "currency": "TL",
-      "origAmount": 10451298
+      "origAmount": 8386926
     }
   ],
   "topPayables": [
@@ -46,7 +46,7 @@
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 210422,
+      "amount": 209718,
       "currency": "TL",
       "origAmount": 9516317
     },
