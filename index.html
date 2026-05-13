@@ -274,6 +274,44 @@ function enToTrCell(v) {
 function normalizeETAS(rows) {
   return Array.isArray(rows) ? rows.map(r => Array.isArray(r) ? r.map(enToTrCell) : r) : rows;
 }
+// ── CAGE-LEVEL AGGREGATION ─────────────────────────────────────────────────
+// As of 11 May 2026 both farms log mortality + feed per-cage via the new cage tracker
+// (Karkamış: deployed 06.05; Elazığ: mid-deployment with stale gaps per Saman's logging).
+// `Olum-kafes baz` (col D = Ölüm adet) and `Yem-kafes baz` (col F = Yem kg) are the
+// PRIMARY sources for mortality + feed. Günlük/GÜNLÜK is now an audit/fallback tool only.
+function cageDateToISO(s) {
+  if (!s) return null;
+  const m = String(s).trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if (!m) return null;
+  return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+}
+function gunlukDateToISO(s, year) {
+  if (!s) return null;
+  const m = String(s).trim().match(/^(\d{1,2})\s*([A-Za-zĞŞÜĞçşöğüı]+)$/);
+  if (!m) return null;
+  const months = {
+    Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12',
+    Oca:'01',Şub:'02',Nis:'04',Haz:'06',Tem:'07',Ağu:'08',Eyl:'09',Eki:'10',Kas:'11',Ara:'12'
+  };
+  const mm = months[m[2]];
+  if (!mm) return null;
+  return `${year}-${mm}-${m[1].padStart(2,'0')}`;
+}
+function aggCageByDate(rows, valColIdx) {
+  const out = {};
+  for (let i = 1; i < (rows||[]).length; i++) {
+    const r = rows[i]; if (!r || !r[0]) continue;
+    const k = cageDateToISO(r[0]); if (!k) continue;
+    const v = parseNum(r[valColIdx]); if (v == null) continue;
+    out[k] = (out[k] || 0) + v;
+  }
+  return out;
+}
+function lastCageDate(map) {
+  const keys = Object.keys(map||{});
+  if (!keys.length) return null;
+  return keys.sort().pop();
+}
 function latestVal(arr) { return [...(arr||[])].reverse().find(v=>v!==null)??null; }
 // Find last non-blank row index in dataRows for a given column set
 function findLastDataRow(dataRows, colIndices) {
@@ -425,30 +463,58 @@ function computeKarkBioTotals(bioRows) {
 }
 
 // ── RENDER: DAILY OPS ──────────────────────────────────────────────────────
-function renderOps(pid, c, rows, headerRows, bioTotals, el) {
+function renderOps(pid, c, rows, headerRows, bioTotals, el, cageData) {
+  cageData = cageData || {};
+  const useCageMort = !!cageData.useCageMort;
+  const useCageFeed = !!cageData.useCageFeed;
+  const cageMortMap = useCageMort ? (cageData.mortByDate || {}) : {};
+  const cageFeedMap = useCageFeed ? (cageData.feedByDate || {}) : {};
+  const cageMortLast = lastCageDate(cageMortMap);
+  const cageFeedLast = lastCageDate(cageFeedMap);
+  const hasCageMort = Object.keys(cageMortMap).length > 0;
+  const hasCageFeed = Object.keys(cageFeedMap).length > 0;
+
   const allDataRows = rows.slice(headerRows).filter(r => {
     if(!r[0]||!String(r[0]).trim()) return false;
     return true; // keep all rows with a date
   });
   // Filter to rows with actual data for charting
+  // Now also include rows where cage-level data is available (Günlük can be 0/blank
+  // while cage tracker has the truth — see methodology note in LIVE_DATA_HUB_OVERRIDE)
   const dataRows = allDataRows.filter(r => {
     const hasT = r[c.temperature]&&r[c.temperature]!=='';
     const hasO = r[c.oxygen]&&r[c.oxygen]!=='';
     const mort = r[c.somon_mort];
-    return hasT||hasO||(mort&&mort!==''&&mort!=='0');
+    const k = gunlukDateToISO(r[c.date], 2026);
+    const hasCage = k && (cageMortMap[k] != null || cageFeedMap[k] != null);
+    return hasT||hasO||(mort&&mort!==''&&mort!=='0')||hasCage;
   });
 
   const r   = dataRows.slice(-90);
   const lbl = r.map(row=>String(row[c.date]||'').trim());
   const get = idx => r.map(row=>colVal(row,idx));
 
+  // For mortality + feed: cage-level data is PRIMARY; Günlük fills the gap on dates
+  // where the cage tracker hasn't been populated yet (Elazığ's discipline issue).
+  const sMortV = r.map(row => {
+    const k = gunlukDateToISO(row[c.date], 2026);
+    if (k && cageMortMap[k] != null) return cageMortMap[k];
+    return colVal(row, c.somon_mort);
+  });
+  const feedV = r.map(row => {
+    const k = gunlukDateToISO(row[c.date], 2026);
+    if (k && cageFeedMap[k] != null) return cageFeedMap[k];
+    if (c.somon_feed != null) return colVal(row, c.somon_feed);
+    if (c.total_feed != null) return colVal(row, c.total_feed);
+    return null;
+  });
+
   const tempV  = get(c.temperature);
   const oxyV   = get(c.oxygen);
-  const sMortV = get(c.somon_mort);
   const mMortV = c.mersin_mort!=null ? get(c.mersin_mort) : [];
-  const feedV  = c.somon_feed!=null ? get(c.somon_feed) : (c.total_feed!=null ? get(c.total_feed) : []);
   const mFeedV = c.mersin_feed!=null ? get(c.mersin_feed) : [];
-  const feedLbl = c.total_feed!=null ? 'Total Feed' : 'Somon Feed';
+  const feedLbl = (hasCageFeed ? 'Somon Feed (cage)' : (c.total_feed!=null ? 'Total Feed' : 'Somon Feed'));
+  const sMortLbl = hasCageMort ? 'Somon (cage)' : 'Somon';
 
   // ─ BLANK-DAY FALLBACK: find the last row that has real data ─
   // Check if the most recent row (yesterday) is blank for key columns
@@ -472,13 +538,22 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el) {
   const hasMersinMort = mMortV.some(v=>v!==null);
   const hasMersinFeed = mFeedV.some(v=>v!==null);
 
-  let html = `<div class="section-label">📊 Daily Operations — ${dataRows.length} days logged ${dataDateNote}</div>
+  // Cage-data source indicator — separate Mort + Feed since each can have its own source
+  const mortSrcBadge = hasCageMort
+    ? `<span style="color:#48bb78;font-size:11px;margin-left:6px;background:#0a3a1f;padding:2px 6px;border-radius:3px">📍 Mort: cage (last ${cageMortLast||'—'})</span>`
+    : `<span style="color:#a0aec0;font-size:11px;margin-left:6px">Mort: Günlük</span>`;
+  const feedSrcBadge = hasCageFeed
+    ? `<span style="color:#48bb78;font-size:11px;margin-left:4px;background:#0a3a1f;padding:2px 6px;border-radius:3px">📍 Feed: cage (last ${cageFeedLast||'—'})</span>`
+    : `<span style="color:#a0aec0;font-size:11px;margin-left:4px">Feed: Günlük</span>`;
+  const cageBadge = mortSrcBadge + feedSrcBadge;
+
+  let html = `<div class="section-label">📊 Daily Operations — ${dataRows.length} days logged ${dataDateNote} ${cageBadge}</div>
   <div class="kpi-grid">`;
 
   const kpis=[
     {lbl:'Temperature',unit:'°C',val:latestVal(tempV),vals:tempV,cls:'kpi-temp',bad:'up'},
     {lbl:'Oxygen',unit:'mg/L',val:latestVal(oxyV),vals:oxyV,cls:'kpi-oxy',bad:'down'},
-    {lbl:'Somon Ölü',unit:'/day',val:latestVal(sMortV),vals:sMortV,cls:'kpi-mort',bad:'up'},
+    {lbl:hasCageMort?'Somon Ölü (cage)':'Somon Ölü',unit:'/day',val:latestVal(sMortV),vals:sMortV,cls:'kpi-mort',bad:'up'},
     {lbl:feedLbl,unit:'kg',val:latestVal(feedV),vals:feedV,cls:'kpi-feed',bad:'down'},
   ];
   kpis.forEach(k=>{
@@ -514,7 +589,7 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el) {
     {id:`${pid}-temp`,title:'Temperature (°C)',sets:[ds('Temperature',tempV,'#fc8181')]},
     {id:`${pid}-oxy`, title:'Oxygen (mg/L)',   sets:[ds('Oxygen',oxyV,'#63b3ed')]},
     {id:`${pid}-mort`,title:'Daily Mortality', sets:[
-      ds('Somon',sMortV,'#fc8181'),
+      ds(sMortLbl,sMortV,'#fc8181'),
       ...(hasMersinMort?[ds('Mersin',mMortV,'#f6ad55',false,true)]:[])
     ]},
     {id:`${pid}-feed`,title:`Feed (kg)`,       sets:[
@@ -907,27 +982,27 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-05-08T10:29:18.676647+00:00",
-  "usdKur": 45.225,
-  "euroUsd": 1.1762,
+  "lastUpdated": "2026-05-13T06:50:59.006706+00:00",
+  "usdKur": 45.3767,
+  "euroUsd": 1.1769,
   "receivables": {
-    "usd": 1451117.95,
-    "euroUsd": 58.81,
-    "tlUsd": 240363.6,
-    "total": 1691540.35
+    "usd": 1513942.37,
+    "euroUsd": 58.85,
+    "tlUsd": 197230.99,
+    "total": 1711232.21
   },
   "bank": {
-    "tlUsd": 193174.63,
+    "tlUsd": 247728.24,
     "usd": 47693.32000000001,
-    "total": 240867.95
+    "total": 295421.56
   },
   "checks": {
-    "tlUsd": 46434.49,
-    "total": 46434.49
+    "tlUsd": 61705.68,
+    "total": 61705.68
   },
-  "totalAssets": 1978842.8,
-  "payables": 1677529.83,
-  "netPosition": 301312.97,
+  "totalAssets": 2068359.45,
+  "payables": 1682329.3,
+  "netPosition": 386030.14,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -941,9 +1016,9 @@ const EMBEDDED_FINANCIAL_DATA = {
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 231096,
+      "amount": 184829,
       "currency": "TL",
-      "origAmount": 10451298
+      "origAmount": 8386926
     }
   ],
   "topPayables": [
@@ -954,7 +1029,7 @@ const EMBEDDED_FINANCIAL_DATA = {
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 210422,
+      "amount": 209718,
       "currency": "TL",
       "origAmount": 9516317
     },
@@ -1285,13 +1360,15 @@ async function loadETAS() {
   el.innerHTML='<div class="loading"><div class="spin"></div>Loading ETAS 26…</div>';
   const ID='1d5auEs3o0st7z3Bt46uuVzuHK0Bw-K70Lb1R5m4ok4Y';
   try {
-    const [gunluk,hasat,somonBio,mersinBio,yem,yemM] = (await Promise.all([
+    const [gunluk,hasat,somonBio,mersinBio,yem,yemM,olumCage,yemCage] = (await Promise.all([
       api(ID,'Gunluk'),
       api(ID,'Hasat log'),
       api(ID,'Somon Biomass v2'),
       api(ID,'Mersin Biomass'),
       api(ID,'Yem Depo'),
       api(ID,'Yem Depo MERSİN'),
+      api(ID,'Olum-kafes baz'),
+      api(ID,'Yem-kafes baz'),
     ])).map(normalizeETAS);
     const bioTotals = computeBioTotals(somonBio, mersinBio);
     const c = {
@@ -1299,8 +1376,20 @@ async function loadETAS() {
       somon_feed:16,somon_biomass:17,mersin_feed:18,mersin_biomass:19,
       temperature:23,oxygen:24
     };
+    // Cage-level aggregates (salmon only — Mersin sturgeon stays from Günlük).
+    // ETAS as of 11 May 2026: mortality cage discipline OK through ~08.05, feed cage discipline
+    // poor (Saman not logging — last Yem-kafes baz entry 04.05). So:
+    //   - useCageMort: true (cage data closer to truth than Günlük)
+    //   - useCageFeed: false (Günlük is more complete until Saman catches up)
+    const cageData = {
+      mortByDate: aggCageByDate(olumCage, 3),  // col D = Ölüm adet
+      feedByDate: aggCageByDate(yemCage, 5),   // col F = Yem kg
+      useCageMort: true,
+      useCageFeed: false,
+      farm: 'etas'
+    };
     el.innerHTML='';
-    renderOps('etas', c, gunluk, 3, { somonKg:bioTotals.somonKg, mersinKg:bioTotals.mersinKg }, el);
+    renderOps('etas', c, gunluk, 3, { somonKg:bioTotals.somonKg, mersinKg:bioTotals.mersinKg }, el, cageData);
     renderBioETAS(somonBio, mersinBio, el);
     renderYem('etas', {somon:yem, mersin:yemM}, el);
     renderHasat('etas', hasat,
@@ -1315,11 +1404,13 @@ async function loadKark() {
   el.innerHTML='<div class="loading"><div class="spin"></div>Loading Karkamish 26…</div>';
   const ID='15Ck8hhqdYMsmBju1wTznQOsiNuEFQPMg_y3X7sCTA4o';
   try {
-    const [gunluk,hasat,bio,yem] = await Promise.all([
+    const [gunluk,hasat,bio,yem,olumCage,yemCage] = await Promise.all([
       api(ID,'GÜNLÜK'),
       api(ID,'HASAT'),
       api(ID,'Biomass'),
       api(ID,'YEM'),
+      api(ID,'Olum-kafes baz'),
+      api(ID,'Yem-kafes baz'),
     ]);
     const bioTotals = computeKarkBioTotals(bio);
     const c = {
@@ -1327,8 +1418,18 @@ async function loadKark() {
       total_feed:17,somon_biomass:18,mersin_feed:19,
       temperature:24,oxygen:25
     };
+    // Cage-level aggregates — Karkamış cage app is salmon-only (Sterlet tab ignored).
+    // All 4 systems (On / Orta / Alt / Mersin Sistem) are salmon despite "Mersin" name.
+    // Karkamış cage tracker is the primary source of truth (deployed 06.05.2026, clean discipline).
+    const cageData = {
+      mortByDate: aggCageByDate(olumCage, 3),  // col D = Ölüm adet
+      feedByDate: aggCageByDate(yemCage, 5),   // col F = Yem kg
+      useCageMort: true,
+      useCageFeed: true,
+      farm: 'kark'
+    };
     el.innerHTML='';
-    renderOps('kark', c, gunluk, 3, { somonKg:bioTotals.salmonKg, sterletKg:bioTotals.sterletKg }, el);
+    renderOps('kark', c, gunluk, 3, { somonKg:bioTotals.salmonKg, sterletKg:bioTotals.sterletKg }, el, cageData);
     renderBioKark(bio, el);
     renderYem('kark', {kark:yem}, el);
     renderHasat('kark', hasat,
