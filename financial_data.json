@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-21T06:46:37.363011+00:00",
+  "lastUpdated": "2026-05-21T08:30:24.447710+00:00",
   "usdKur": 45.5909,
   "euroUsd": 1.1595,
   "receivables": {
@@ -18,8 +18,8 @@
     "total": 96510.49
   },
   "totalAssets": 2049601.27,
-  "payables": 2238490.4,
-  "netPosition": -188889.13,
+  "payables": 2260168.41,
+  "netPosition": -210567.14,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -46,9 +46,9 @@
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 247204,
+      "amount": 258195,
       "currency": "TL",
-      "origAmount": 11270237
+      "origAmount": 11771357
     },
     {
       "name": "KEMAL BALIKÇILIK",
