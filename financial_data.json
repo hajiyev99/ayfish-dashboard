@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-04T15:12:25.348775+00:00",
+  "lastUpdated": "2026-06-04T15:12:41.889188+00:00",
   "usdKur": 45.9073,
   "euroUsd": 1.1654,
   "receivables": {
@@ -53,7 +53,7 @@
       "name": "KEMAL BALIKÇILIK",
       "amount": 226997,
       "currency": "USD",
-      "note": "− Kemal rec $77K = net $150K owed"
+      "note": "- Kemal rec $77K = net $150K owed"
     }
   ],
   "_biomarKemalOffset": {
