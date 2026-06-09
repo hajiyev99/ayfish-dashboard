@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-06-05T09:34:54.122222+03:00",
-  "usdKur": 45.6097,
-  "euroUsd": 1.1614,
+  "lastUpdated": "2026-06-09T12:01:29.634949+00:00",
+  "usdKur": 45.9911,
+  "euroUsd": 1.1635,
   "receivables": {
-    "usd": 1086237.87,
-    "euroUsd": 58.07,
-    "tlUsd": 130233.21,
-    "total": 1216529.15
+    "usd": 1262091.32,
+    "euroUsd": 58.18,
+    "tlUsd": 96021.39,
+    "total": 1358170.89
   },
   "bank": {
-    "tlUsd": 440972.35,
-    "usd": 301293.32,
-    "total": 742265.67
+    "tlUsd": 4264.18,
+    "usd": 31293.310000000005,
+    "total": 35557.49
   },
   "checks": {
-    "tlUsd": 96470.71,
-    "total": 96470.71
+    "tlUsd": 84799.02,
+    "total": 84799.02
   },
-  "totalAssets": 2055265.53,
-  "payables": 2251741.12,
-  "netPosition": -196475.59,
+  "totalAssets": 1478527.4,
+  "payables": 3016041.66,
+  "netPosition": -1537514.26,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -32,23 +32,22 @@
       "currency": "USD"
     },
     {
-      "name": "RADBAM DIŞ",
-      "amount": 129072,
-      "currency": "TL",
-      "origAmount": 5886926
+      "name": "PAKYÜREK TARIM",
+      "amount": 124446,
+      "currency": "USD"
     }
   ],
   "topPayables": [
     {
       "name": "GÜMÜŞDOĞA (USD)",
-      "amount": 1421028,
+      "amount": 2190334,
       "currency": "USD"
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 258089,
+      "amount": 261195,
       "currency": "TL",
-      "origAmount": 11771357
+      "origAmount": 12012637
     },
     {
       "name": "KEMAL BALIKÇILIK",
