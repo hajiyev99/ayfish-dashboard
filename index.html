@@ -437,15 +437,16 @@ function api(id,tab) {
 
 // ── BIOMASS COMPUTATION ────────────────────────────────────────────────────
 function computeBioTotals(somonRows, mersinRows) {
-  // Somon (v2 layout): find TOPLAM row (c0='TOPLAM'); Kilo columns are 3,5,7,9,11,13,15
-  // Pairs are Adet/Kilo for weight buckets 0-200g, 200-500g, 500-1000g, 1000-1500g, 1500-2500g, 2500-3500g, 3500+g
+  // Somon (v2 layout): find TOPLAM row (c0='TOPLAM'); Kilo columns are 3,7,9,11,15,17,19
+  // (summary table has gap cols E/G/M/O — Adet/Kilo pairs for buckets 0-200g … 3500+g are NOT contiguous)
   const st = somonRows.find(r=>r[0]&&String(r[0]).trim().toUpperCase()==='TOPLAM');
-  const kiloCols = [3,5,7,9,11,13,15];
+  const kiloCols = [3,7,9,11,15,17,19];
   let somonKg = st ? kiloCols.reduce((s,i)=>s+(parseNum(st[i])||0),0) : 0;
   if (!somonKg) {
-    // Fallback: sum system rows (ETAS 2, ETAS 4, ETAS 5, …) the same way
+    // Fallback: sum system rows (ETAS 1, ETAS 2, ETAS 4, ETAS 5, …) the same way.
+    // Exclude block-total rows like 'ETAS 2 TOPLAM' that also live in col A.
     somonKg = somonRows
-      .filter(r=>r[0]&&/^ETAS\s*\d/i.test(String(r[0]).trim()))
+      .filter(r=>r[0]&&/^ETAS\s*\d/i.test(String(r[0]).trim())&&!/TOPLAM/i.test(String(r[0])))
       .reduce((s,r)=>s+kiloCols.reduce((t,i)=>t+(parseNum(r[i])||0),0),0);
   }
   // Mersin: find Toplam row (c1='Toplam'), total is c8
@@ -620,11 +621,15 @@ function renderBioETAS(somonRows, mersinRows, el) {
   // ─ SOMON weight breakdown (v2 layout) ─
   // Row 2 is header: ['Sistem','','Adet','Kilo','Adet','Kilo',...] for 7 weight buckets
   // System rows have r[0] = 'ETAS 2', 'ETAS 4', 'ETAS 5', etc.
-  // Adet cols: 2,4,6,8,10,12,14  Kilo cols: 3,5,7,9,11,13,15
-  const sRows = somonRows.filter(r=>r[0]&&/^ETAS\s*\d/i.test(String(r[0]).trim()));
+  // Adet cols: 2,5,8,10,13,16,18  Kilo cols: 3,7,9,11,15,17,19 (v2 summary has gap cols E/G/M/O)
+  // Only rows ABOVE the summary TOPLAM row — col A further down holds block labels
+  // ('ETAS 2' at row 12) and block totals ('ETAS 2 TOPLAM') that must not be summed.
+  const sTopIdx = somonRows.findIndex(r=>r[0]&&String(r[0]).trim().toUpperCase()==='TOPLAM');
+  const sSearch = sTopIdx>0 ? somonRows.slice(0,sTopIdx) : somonRows;
+  const sRows = sSearch.filter(r=>r[0]&&/^ETAS\s*\d/i.test(String(r[0]).trim())&&!/TOPLAM/i.test(String(r[0])));
   const sLabels = ['0 – 200 g','200 – 500 g','500 – 1000 g','1000 – 1500 g','1500 – 2500 g','2500 – 3500 g','3500 g +'];
-  const sKgCols  = [3,5,7,9,11,13,15];
-  const sCntCols = [2,4,6,8,10,12,14];
+  const sKgCols  = [3,7,9,11,15,17,19];
+  const sCntCols = [2,5,8,10,13,16,18];
 
   const sSumKg  = sKgCols.map(ci => sRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0));
   const sSumCnt = sCntCols.map(ci => sRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0));
