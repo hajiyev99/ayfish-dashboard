@@ -344,6 +344,10 @@ function fmtN(v,dec=0) {
 }
 function fmtKg(v)  { const n=parseNum(v); return n!=null?Math.round(n).toLocaleString('tr-TR'):'—'; }
 function fmtCnt(v) { const n=parseNum(v); return n!=null?Math.round(n).toLocaleString('tr-TR'):'—'; }
+// Weights are stored in kg; show tonnes for large totals to avoid "811 kg" misreads (811 t).
+function fmtTonnes(kg){ const n=parseNum(kg); if(n==null) return '—';
+  return n>=1000 ? (n/1000).toLocaleString('tr-TR',{maximumFractionDigits:1})+' t'
+                 : Math.round(n).toLocaleString('tr-TR')+' kg'; }
 function getYesterday() { const d=new Date(); d.setDate(d.getDate()-1); return d; }
 function parseHasatDate(str,fmt) {
   if(!str||!str.trim()) return null;
@@ -538,8 +542,8 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el, cageData) {
     : `<span style="color:#4a6080;font-size:11px;margin-left:8px">Data as of: <b>${lastDate}</b></span>`;
 
   // Use computed bio totals instead of Günlük column (which is often empty/stale)
-  const somonBioDisp  = bioTotals.somonKg  ? Math.round(bioTotals.somonKg).toLocaleString('tr-TR')  : '—';
-  const sterletBioDisp = bioTotals.sterletKg ? Math.round(bioTotals.sterletKg).toLocaleString('tr-TR') : (bioTotals.mersinKg ? Math.round(bioTotals.mersinKg).toLocaleString('tr-TR') : '—');
+  const somonBioDisp  = bioTotals.somonKg  ? fmtTonnes(bioTotals.somonKg)  : '—';
+  const sterletBioDisp = bioTotals.sterletKg ? fmtTonnes(bioTotals.sterletKg) : (bioTotals.mersinKg ? fmtTonnes(bioTotals.mersinKg) : '—');
   const somonBioLbl  = pid==='kark' ? 'Salmon Biomass'  : 'Somon Biomass';
   const sterletBioLbl = pid==='kark' ? 'Sterlet Biomass' : 'Mersin Biomass';
 
@@ -582,12 +586,12 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el, cageData) {
   html += `
     <div class="kpi-card kpi-bio">
       <div class="kpi-lbl">${somonBioLbl}</div>
-      <div class="kpi-val" style="font-size:18px">${somonBioDisp}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-val" style="font-size:18px">${somonBioDisp}</div>
       <div class="kpi-tr tr-stable">→ From biomass detail</div>
     </div>
     <div class="kpi-card kpi-bio">
       <div class="kpi-lbl">${sterletBioLbl}</div>
-      <div class="kpi-val" style="font-size:18px">${sterletBioDisp}<span class="kpi-unit">kg</span></div>
+      <div class="kpi-val" style="font-size:18px">${sterletBioDisp}</div>
       <div class="kpi-tr tr-stable">→ From biomass detail</div>
     </div>`;
 
@@ -658,7 +662,7 @@ function renderBioETAS(somonRows, mersinRows, el) {
     <div class="bio-panel-head">
       <span class="bio-icon">🦈</span>
       <span class="bio-title">Sturgeon (Mersin)</span>
-      <span class="bio-badge">${Math.round(mTotalKg).toLocaleString('tr-TR')} kg</span>
+      <span class="bio-badge">${fmtCnt(mTotalCnt)} fish · ${fmtTonnes(mTotalKg)}</span>
     </div>
     <div class="bio-sub">🔵 Fish count &nbsp;·&nbsp; Weight categories in kg (large sturgeon)</div>
     <div class="wb-table">`;
@@ -724,7 +728,7 @@ function renderBioKark(bioRows, el) {
     <div class="bio-panel-head">
       <span class="bio-icon">🦈</span>
       <span class="bio-title">Sterlet (Mersin Cages)</span>
-      <span class="bio-badge">${Math.round(sterletTotalKg).toLocaleString('tr-TR')} kg</span>
+      <span class="bio-badge">${fmtCnt(sterletTotalCnt)} fish · ${fmtTonnes(sterletTotalKg)}</span>
     </div>
     <div class="sterlet-summary">
       <div class="st-stat">
@@ -781,7 +785,7 @@ function buildWeightPanel(icon, title, totalKg, totalCnt, labels, cntArr, kgArr,
     <div class="bio-panel-head">
       <span class="bio-icon">${icon}</span>
       <span class="bio-title">${title}</span>
-      <span class="bio-badge">${Math.round(totalKg).toLocaleString('tr-TR')} kg</span>
+      <span class="bio-badge">${fmtCnt(totalCnt)} fish · ${fmtTonnes(totalKg)}</span>
     </div>
     <div class="bio-sub">🔵 Fish count &nbsp;·&nbsp; 🟠 Biomass kg</div>
     <div class="wb-table">`;
@@ -1367,18 +1371,175 @@ async function loadFinancial() {
 
 // ── LOAD FARM ──────────────────────────────────────────────────────────────
 // ── MORTALITY RATE (normalized by stock) ────────────────────────────────────
-// Reads mortality_snapshot.json (written daily by the farm_snapshot.py scheduled task).
 // Metric = deaths per 10,000 fish, so the two farms are comparable regardless of size.
+// EMBEDDED_MORTALITY_DATA is refreshed daily by farm_snapshot.py (same mechanism as
+// EMBEDDED_FINANCIAL_DATA) so the page renders offline / on file:// too.
+const EMBEDDED_MORTALITY_DATA = {
+  "lastUpdated": "2026-06-12T13:46:42.677301+00:00",
+  "metric": "per10k",
+  "metricLabel": "per 10,000 fish",
+  "farms": {
+    "etas": {
+      "farm": "Elazig",
+      "date": "2026-06-11",
+      "total_fish": 1109892,
+      "total_kg": 192908,
+      "mortality": 2548,
+      "per10k": 22.96,
+      "weightMeasuredPct": 0.0
+    },
+    "kark": {
+      "farm": "Karkamis",
+      "date": "2026-06-12",
+      "total_fish": 1262940,
+      "total_kg": 811146,
+      "mortality": 1826,
+      "per10k": 14.46,
+      "weightMeasuredPct": 0.0
+    }
+  },
+  "history": [
+    {
+      "date": "2026-06-11",
+      "etas_per10k": 22.96,
+      "etas_mort": 2548,
+      "etas_fish": 1109892
+    },
+    {
+      "date": "2026-06-12",
+      "kark_per10k": 14.46,
+      "kark_mort": 1826,
+      "kark_fish": 1262940
+    }
+  ],
+  "systems": {
+    "etas": [
+      {
+        "system": "ETAS 1",
+        "fish": 455389,
+        "mort": 1233,
+        "per10k": 27.08
+      },
+      {
+        "system": "ETAS 2",
+        "fish": 353901,
+        "mort": 995,
+        "per10k": 28.12
+      },
+      {
+        "system": "ETAS 4",
+        "fish": 300602,
+        "mort": 320,
+        "per10k": 10.65
+      }
+    ],
+    "kark": [
+      {
+        "system": "On sistem",
+        "fish": 441806,
+        "mort": 765,
+        "per10k": 17.32
+      },
+      {
+        "system": "Orta sistem",
+        "fish": 252605,
+        "mort": 459,
+        "per10k": 18.17
+      },
+      {
+        "system": "Alt sistem",
+        "fish": 237921,
+        "mort": 393,
+        "per10k": 16.52
+      },
+      {
+        "system": "Mersin sistem",
+        "fish": 203936,
+        "mort": 145,
+        "per10k": 7.11
+      },
+      {
+        "system": "Incedere sistem",
+        "fish": 126672,
+        "mort": 64,
+        "per10k": 5.05
+      }
+    ]
+  },
+  "weightClass": {
+    "etas": [
+      {
+        "bucket": "0-200g",
+        "mort": 2228,
+        "fish": 809290,
+        "per10k": 27.53
+      },
+      {
+        "bucket": "200-500g",
+        "mort": 35,
+        "fish": 32895,
+        "per10k": 10.64
+      },
+      {
+        "bucket": "500-1000g",
+        "mort": 285,
+        "fish": 267707,
+        "per10k": 10.65
+      }
+    ],
+    "kark": [
+      {
+        "bucket": "0-200g",
+        "mort": 678,
+        "fish": 412315,
+        "per10k": 16.44
+      },
+      {
+        "bucket": "200-500g",
+        "mort": 419,
+        "fish": 398833,
+        "per10k": 10.51
+      },
+      {
+        "bucket": "500-1000g",
+        "mort": 18,
+        "fish": 24868,
+        "per10k": 7.24
+      },
+      {
+        "bucket": "1000-1500g",
+        "mort": 561,
+        "fish": 330147,
+        "per10k": 16.99
+      },
+      {
+        "bucket": "1500-2500g",
+        "mort": 124,
+        "fish": 68158,
+        "per10k": 18.19
+      },
+      {
+        "bucket": "2500-3500g",
+        "mort": 26,
+        "fish": 28619,
+        "per10k": 9.08
+      }
+    ]
+  }
+};
 async function loadMortality() {
   const el = document.getElementById('page-mort');
   el.innerHTML='<div class="loading"><div class="spin"></div>Loading Mortality Rate…</div>';
-  let d;
+  // Try the live JSON first (fresh on GitHub Pages); fall back to embedded data so the
+  // page also works when opened as a local file:// (where fetching a local file is blocked).
+  let d = null;
   try {
     const resp = await fetch('mortality_snapshot.json?t='+Date.now());
-    if(!resp.ok) throw new Error('not ok');
-    d = await resp.json();
-  } catch(e) {
-    el.innerHTML='<div class="err">❌ mortality_snapshot.json not found. It is generated by the daily snapshot task (farm_snapshot.py).</div>';
+    if(resp.ok) d = await resp.json();
+  } catch(e) { /* file:// or offline — use embedded */ }
+  if(!d) d = (typeof EMBEDDED_MORTALITY_DATA!=='undefined') ? EMBEDDED_MORTALITY_DATA : null;
+  if(!d) {
+    el.innerHTML='<div class="err">❌ No mortality data. It is generated by the daily snapshot task (farm_snapshot.py).</div>';
     return;
   }
   const E = d.farms.etas, K = d.farms.kark;
