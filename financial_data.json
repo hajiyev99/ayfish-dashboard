@@ -1,27 +1,27 @@
 {
-  "lastUpdated": "2026-06-12T14:14:12.617413+00:00",
-  "usdKur": 46.238,
-  "euroUsd": 1.1575,
-  "eurKur": 53.5182,
-  "rateSource": "TCMB efektif satış 12.06.2026",
+  "lastUpdated": "2026-06-17T06:13:40.847163+00:00",
+  "usdKur": 46.3652,
+  "euroUsd": 1.16,
+  "eurKur": 53.7848,
+  "rateSource": "TCMB efektif satış 16.06.2026",
   "receivables": {
-    "usd": 1252091.32,
-    "euroUsd": 57.87,
-    "tlUsd": 104493.66,
-    "total": 1356642.85
+    "usd": 1023582.02,
+    "euroUsd": 58.0,
+    "tlUsd": 137144.75,
+    "total": 1160784.77
   },
   "bank": {
-    "tlUsd": 73739.78,
-    "usd": 39293.310000000005,
-    "total": 113033.09
+    "tlUsd": 225649.58,
+    "usd": 28994.030000000002,
+    "total": 254643.61
   },
   "checks": {
-    "tlUsd": 60556.25,
-    "total": 60556.25
+    "tlUsd": 60390.12,
+    "total": 60390.12
   },
-  "totalAssets": 1530232.19,
-  "payables": 3231651.49,
-  "netPosition": -1701419.29,
+  "totalAssets": 1475818.5,
+  "payables": 3246916.7,
+  "netPosition": -1771098.2,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -30,7 +30,7 @@
     },
     {
       "name": "NAM SU",
-      "amount": 386788,
+      "amount": 158279,
       "currency": "USD"
     },
     {
@@ -47,7 +47,7 @@
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 456888,
+      "amount": 455635,
       "currency": "TL",
       "origAmount": 21125597
     },
