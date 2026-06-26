@@ -1,31 +1,31 @@
 {
-  "lastUpdated": "2026-06-25T13:04:31.368950+00:00",
+  "lastUpdated": "2026-06-26T10:01:41.169078+00:00",
   "usdKur": 46.5837,
   "euroUsd": 1.1354,
   "eurKur": 52.8919,
   "rateSource": "TCMB efektif satış 25.06.2026",
   "receivables": {
-    "usd": 2074476.76,
+    "usd": 2015487.72,
     "euroUsd": 56.77,
-    "tlUsd": 131574.81,
-    "total": 2206108.35
+    "tlUsd": 238944.23,
+    "total": 2254488.73
   },
   "bank": {
-    "tlUsd": 13919.23,
-    "usd": 24233.310000000005,
-    "total": 38152.54
+    "tlUsd": 13307.22,
+    "usd": 3833.3099999999995,
+    "total": 17140.53
   },
   "checks": {
     "tlUsd": 17173.39,
     "total": 17173.39
   },
-  "totalAssets": 2261434.28,
-  "payables": 3062089.6,
-  "netPosition": -800655.33,
+  "totalAssets": 2288802.64,
+  "payables": 3463222.05,
+  "netPosition": -1174419.4,
   "topReceivables": [
     {
       "name": "TK FİSH",
-      "amount": 1050895,
+      "amount": 1054730,
       "currency": "USD"
     },
     {
@@ -34,9 +34,10 @@
       "currency": "USD"
     },
     {
-      "name": "NAM SU",
-      "amount": 158279,
-      "currency": "USD"
+      "name": "RADBAM DIŞ",
+      "amount": 170991,
+      "currency": "TL",
+      "origAmount": 7965400
     }
   ],
   "topPayables": [
@@ -52,15 +53,14 @@
       "origAmount": 21125597
     },
     {
-      "name": "KEMAL BALIKÇILIK",
-      "amount": 226997,
-      "currency": "USD",
-      "note": "− Kemal rec $77K = net $150K owed"
+      "name": "TK FISH",
+      "amount": 389078,
+      "currency": "USD"
     }
   ],
   "_biomarKemalOffset": {
-    "payUsd": 418244,
+    "payUsd": 466463,
     "recUsd": 76879,
-    "netUsd": 341365
+    "netUsd": 389585
   }
 }
