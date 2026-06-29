@@ -1,27 +1,27 @@
 {
-  "lastUpdated": "2026-06-26T10:01:41.169078+00:00",
-  "usdKur": 46.5837,
-  "euroUsd": 1.1354,
-  "eurKur": 52.8919,
-  "rateSource": "TCMB efektif satış 25.06.2026",
+  "lastUpdated": "2026-06-29T10:16:33.490589+00:00",
+  "usdKur": 46.6017,
+  "euroUsd": 1.1395,
+  "eurKur": 53.1038,
+  "rateSource": "TCMB efektif satış 26.06.2026",
   "receivables": {
     "usd": 2015487.72,
-    "euroUsd": 56.77,
-    "tlUsd": 238944.23,
-    "total": 2254488.73
+    "euroUsd": 56.98,
+    "tlUsd": 436071.09,
+    "total": 2451615.78
   },
   "bank": {
-    "tlUsd": 13307.22,
+    "tlUsd": 13302.08,
     "usd": 3833.3099999999995,
-    "total": 17140.53
+    "total": 17135.39
   },
   "checks": {
-    "tlUsd": 17173.39,
-    "total": 17173.39
+    "tlUsd": 17166.76,
+    "total": 17166.76
   },
-  "totalAssets": 2288802.64,
-  "payables": 3463222.05,
-  "netPosition": -1174419.4,
+  "totalAssets": 2485917.93,
+  "payables": 3475749.75,
+  "netPosition": -989831.82,
   "topReceivables": [
     {
       "name": "TK FİSH",
@@ -34,10 +34,10 @@
       "currency": "USD"
     },
     {
-      "name": "RADBAM DIŞ",
-      "amount": 170991,
+      "name": "TK FİSH",
+      "amount": 197219,
       "currency": "TL",
-      "origAmount": 7965400
+      "origAmount": 9190748
     }
   ],
   "topPayables": [
@@ -48,7 +48,7 @@
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 453498,
+      "amount": 453322,
       "currency": "TL",
       "origAmount": 21125597
     },
