@@ -1377,17 +1377,17 @@ async function loadFinancial() {
 // EMBEDDED_MORTALITY_DATA is refreshed daily by farm_snapshot.py (same mechanism as
 // EMBEDDED_FINANCIAL_DATA) so the page renders offline / on file:// too.
 const EMBEDDED_MORTALITY_DATA = {
-  "lastUpdated": "2026-06-29T10:21:17.485745+00:00",
+  "lastUpdated": "2026-06-30T05:42:34.166843+00:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
     "etas": {
       "farm": "Elazig",
-      "date": "2026-06-28",
-      "total_fish": 905203,
-      "total_kg": 281400,
-      "mortality": 5077,
-      "per10k": 56.09,
+      "date": "2026-06-29",
+      "total_fish": 894844,
+      "total_kg": 278808,
+      "mortality": 5282,
+      "per10k": 59.03,
       "weightMeasuredPct": 0.0
     },
     "kark": {
@@ -1511,6 +1511,9 @@ const EMBEDDED_MORTALITY_DATA = {
     },
     {
       "date": "2026-06-29",
+      "etas_per10k": 59.03,
+      "etas_mort": 5282,
+      "etas_fish": 894844,
       "kark_per10k": 30.2,
       "kark_mort": 3547,
       "kark_fish": 1174561
@@ -1520,9 +1523,9 @@ const EMBEDDED_MORTALITY_DATA = {
     "etas": [
       {
         "system": "ETAS 2",
-        "fish": 905203,
-        "mort": 5077,
-        "per10k": 56.09
+        "fish": 894844,
+        "mort": 5282,
+        "per10k": 59.03
       }
     ],
     "kark": [
@@ -1562,21 +1565,21 @@ const EMBEDDED_MORTALITY_DATA = {
     "etas": [
       {
         "bucket": "0-200g",
-        "mort": 3584,
-        "fish": 638982,
-        "per10k": 56.09
+        "mort": 3725,
+        "fish": 631079,
+        "per10k": 59.03
       },
       {
         "bucket": "500-1000g",
-        "mort": 196,
-        "fish": 34901,
-        "per10k": 56.16
+        "mort": 204,
+        "fish": 34644,
+        "per10k": 58.88
       },
       {
         "bucket": "1000-1500g",
-        "mort": 1297,
-        "fish": 231320,
-        "per10k": 56.07
+        "mort": 1352,
+        "fish": 229121,
+        "per10k": 59.01
       }
     ],
     "kark": [
