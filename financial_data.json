@@ -1,27 +1,27 @@
 {
-  "lastUpdated": "2026-06-29T10:16:33.490589+00:00",
-  "usdKur": 46.6017,
-  "euroUsd": 1.1395,
-  "eurKur": 53.1038,
-  "rateSource": "TCMB efektif satış 26.06.2026",
+  "lastUpdated": "2026-07-01T06:04:19.890842+00:00",
+  "usdKur": 46.7286,
+  "euroUsd": 1.1398,
+  "eurKur": 53.262,
+  "rateSource": "TCMB efektif satış 30.06.2026",
   "receivables": {
-    "usd": 2015487.72,
-    "euroUsd": 56.98,
-    "tlUsd": 436071.09,
-    "total": 2451615.78
+    "usd": 1803956.72,
+    "euroUsd": 56.99,
+    "tlUsd": 332425.18,
+    "total": 2136438.89
   },
   "bank": {
-    "tlUsd": 13302.08,
+    "tlUsd": 52315.94,
     "usd": 3833.3099999999995,
-    "total": 17135.39
+    "total": 56149.25
   },
   "checks": {
-    "tlUsd": 17166.76,
-    "total": 17166.76
+    "tlUsd": 71690.57,
+    "total": 71690.57
   },
-  "totalAssets": 2485917.93,
-  "payables": 3475749.75,
-  "netPosition": -989831.82,
+  "totalAssets": 2264278.71,
+  "payables": 3321014.0,
+  "netPosition": -1056735.29,
   "topReceivables": [
     {
       "name": "TK FİSH",
@@ -30,25 +30,25 @@
     },
     {
       "name": "GÜMÜŞDOĞA",
-      "amount": 546787,
+      "amount": 450667,
       "currency": "USD"
     },
     {
       "name": "TK FİSH",
-      "amount": 197219,
+      "amount": 221978,
       "currency": "TL",
-      "origAmount": 9190748
+      "origAmount": 10372740
     }
   ],
   "topPayables": [
     {
       "name": "GÜMÜŞDOĞA (USD)",
-      "amount": 2190334,
+      "amount": 2094214,
       "currency": "USD"
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 453322,
+      "amount": 452091,
       "currency": "TL",
       "origAmount": 21125597
     },
@@ -59,8 +59,8 @@
     }
   ],
   "_biomarKemalOffset": {
-    "payUsd": 466463,
-    "recUsd": 76879,
+    "payUsd": 426052,
+    "recUsd": 36468,
     "netUsd": 389585
   }
 }
