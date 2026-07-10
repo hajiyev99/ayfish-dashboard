@@ -998,7 +998,7 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-07-09T16:30:24.919101+03:00",
+  "lastUpdated": "2026-07-10T10:03:45.004664+03:00",
   "usdKur": 46.94,
   "euroUsd": 1.1431,
   "eurKur": 53.6587,
@@ -1006,8 +1006,8 @@ const EMBEDDED_FINANCIAL_DATA = {
   "receivables": {
     "usd": 1803956.72,
     "euroUsd": 57.16,
-    "tlUsd": 221352.91,
-    "total": 2025366.79
+    "tlUsd": 225690.72,
+    "total": 2029704.6
   },
   "bank": {
     "tlUsd": 10623.31,
@@ -1018,9 +1018,9 @@ const EMBEDDED_FINANCIAL_DATA = {
     "tlUsd": 101193.01,
     "total": 101193.01
   },
-  "totalAssets": 2138959.45,
+  "totalAssets": 2143297.26,
   "payables": 3330673.99,
-  "netPosition": -1191714.54,
+  "netPosition": -1187376.73,
   "topReceivables": [
     {
       "name": "TK FİSH",
@@ -1377,17 +1377,17 @@ async function loadFinancial() {
 // EMBEDDED_MORTALITY_DATA is refreshed daily by farm_snapshot.py (same mechanism as
 // EMBEDDED_FINANCIAL_DATA) so the page renders offline / on file:// too.
 const EMBEDDED_MORTALITY_DATA = {
-  "lastUpdated": "2026-07-09T16:29:49.678530+03:00",
+  "lastUpdated": "2026-07-10T10:04:07.239762+03:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
     "etas": {
       "farm": "Elazig",
       "date": "2026-07-09",
-      "total_fish": 854793,
-      "total_kg": 270662,
+      "total_fish": 924793,
+      "total_kg": 272412,
       "mortality": 3693,
-      "per10k": 43.2,
+      "per10k": 39.93,
       "weightMeasuredPct": 0.0
     },
     "kark": {
@@ -1562,9 +1562,9 @@ const EMBEDDED_MORTALITY_DATA = {
     },
     {
       "date": "2026-07-09",
-      "etas_per10k": 43.2,
+      "etas_per10k": 39.93,
       "etas_mort": 3693,
-      "etas_fish": 854793,
+      "etas_fish": 924793,
       "kark_per10k": 9.53,
       "kark_mort": 1103,
       "kark_fish": 1157291
@@ -1574,9 +1574,9 @@ const EMBEDDED_MORTALITY_DATA = {
     "etas": [
       {
         "system": "ETAS 2",
-        "fish": 854793,
+        "fish": 924793,
         "mort": 3693,
-        "per10k": 43.2
+        "per10k": 39.93
       }
     ],
     "kark": [
@@ -1616,21 +1616,21 @@ const EMBEDDED_MORTALITY_DATA = {
     "etas": [
       {
         "bucket": "0-200g",
-        "mort": 2604,
-        "fish": 602765,
-        "per10k": 43.2
+        "mort": 2687,
+        "fish": 672765,
+        "per10k": 39.94
       },
       {
         "bucket": "500-1000g",
-        "mort": 138,
+        "mort": 128,
         "fish": 31962,
-        "per10k": 43.18
+        "per10k": 40.05
       },
       {
         "bucket": "1000-1500g",
-        "mort": 951,
+        "mort": 879,
         "fish": 220066,
-        "per10k": 43.21
+        "per10k": 39.94
       }
     ],
     "kark": [
