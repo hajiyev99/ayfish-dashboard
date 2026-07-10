@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-09T16:30:24.919101+03:00",
+  "lastUpdated": "2026-07-10T10:03:45.004664+03:00",
   "usdKur": 46.94,
   "euroUsd": 1.1431,
   "eurKur": 53.6587,
@@ -7,8 +7,8 @@
   "receivables": {
     "usd": 1803956.72,
     "euroUsd": 57.16,
-    "tlUsd": 221352.91,
-    "total": 2025366.79
+    "tlUsd": 225690.72,
+    "total": 2029704.6
   },
   "bank": {
     "tlUsd": 10623.31,
@@ -19,9 +19,9 @@
     "tlUsd": 101193.01,
     "total": 101193.01
   },
-  "totalAssets": 2138959.45,
+  "totalAssets": 2143297.26,
   "payables": 3330673.99,
-  "netPosition": -1191714.54,
+  "netPosition": -1187376.73,
   "topReceivables": [
     {
       "name": "TK FİSH",
