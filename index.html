@@ -1377,26 +1377,26 @@ async function loadFinancial() {
 // EMBEDDED_MORTALITY_DATA is refreshed daily by farm_snapshot.py (same mechanism as
 // EMBEDDED_FINANCIAL_DATA) so the page renders offline / on file:// too.
 const EMBEDDED_MORTALITY_DATA = {
-  "lastUpdated": "2026-07-18T08:40:17.749164+03:00",
+  "lastUpdated": "2026-07-19T08:22:27.831581+03:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
     "etas": {
       "farm": "Elazig",
-      "date": "2026-07-17",
-      "total_fish": 1068893,
-      "total_kg": 265910,
-      "mortality": 4525,
-      "per10k": 42.33,
+      "date": "2026-07-18",
+      "total_fish": 1066574,
+      "total_kg": 265302,
+      "mortality": 2319,
+      "per10k": 21.74,
       "weightMeasuredPct": 0.0
     },
     "kark": {
       "farm": "Karkamis",
-      "date": "2026-07-17",
-      "total_fish": 1145746,
-      "total_kg": 1707175,
-      "mortality": 1186,
-      "per10k": 10.35,
+      "date": "2026-07-18",
+      "total_fish": 1144529,
+      "total_kg": 1705417,
+      "mortality": 1217,
+      "per10k": 10.63,
       "weightMeasuredPct": 0.0
     }
   },
@@ -1613,47 +1613,56 @@ const EMBEDDED_MORTALITY_DATA = {
       "kark_per10k": 10.35,
       "kark_mort": 1186,
       "kark_fish": 1145746
+    },
+    {
+      "date": "2026-07-18",
+      "etas_per10k": 21.74,
+      "etas_mort": 2319,
+      "etas_fish": 1066574,
+      "kark_per10k": 10.63,
+      "kark_mort": 1217,
+      "kark_fish": 1144529
     }
   ],
   "systems": {
     "etas": [
       {
         "system": "ETAS 2",
-        "fish": 1068893,
-        "mort": 4525,
-        "per10k": 42.33
+        "fish": 1066574,
+        "mort": 2319,
+        "per10k": 21.74
       }
     ],
     "kark": [
       {
         "system": "On sistem",
-        "fish": 346680,
-        "mort": 453,
-        "per10k": 13.07
+        "fish": 346242,
+        "mort": 438,
+        "per10k": 12.65
       },
       {
         "system": "Orta sistem",
-        "fish": 239015,
-        "mort": 282,
-        "per10k": 11.8
+        "fish": 238777,
+        "mort": 238,
+        "per10k": 9.97
       },
       {
         "system": "Alt sistem",
-        "fish": 238238,
-        "mort": 154,
-        "per10k": 6.46
+        "fish": 238110,
+        "mort": 128,
+        "per10k": 5.38
       },
       {
         "system": "Mersin sistem",
-        "fish": 197610,
-        "mort": 155,
-        "per10k": 7.84
+        "fish": 197318,
+        "mort": 292,
+        "per10k": 14.8
       },
       {
         "system": "Incedere sistem",
-        "fish": 124203,
-        "mort": 142,
-        "per10k": 11.43
+        "fish": 124082,
+        "mort": 121,
+        "per10k": 9.75
       }
     ]
   },
@@ -1661,41 +1670,41 @@ const EMBEDDED_MORTALITY_DATA = {
     "etas": [
       {
         "bucket": "0-200g",
-        "mort": 3495,
-        "fish": 825526,
-        "per10k": 42.34
+        "mort": 1791,
+        "fish": 823768,
+        "per10k": 21.74
       },
       {
         "bucket": "500-1000g",
-        "mort": 128,
-        "fish": 30134,
-        "per10k": 42.48
+        "mort": 65,
+        "fish": 30088,
+        "per10k": 21.6
       },
       {
         "bucket": "1000-1500g",
-        "mort": 903,
-        "fish": 213233,
-        "per10k": 42.35
+        "mort": 463,
+        "fish": 212718,
+        "per10k": 21.77
       }
     ],
     "kark": [
       {
         "bucket": "0-200g",
-        "mort": 378,
-        "fish": 289197,
-        "per10k": 13.07
+        "mort": 365,
+        "fish": 288801,
+        "per10k": 12.64
       },
       {
         "bucket": "1500-2500g",
-        "mort": 782,
-        "fish": 827930,
-        "per10k": 9.45
+        "mort": 814,
+        "fish": 827194,
+        "per10k": 9.84
       },
       {
         "bucket": "3500g+",
-        "mort": 26,
-        "fish": 28619,
-        "per10k": 9.08
+        "mort": 38,
+        "fish": 28534,
+        "per10k": 13.32
       }
     ]
   }
