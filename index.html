@@ -103,6 +103,21 @@ body { font-family:'Segoe UI',system-ui,sans-serif; background:#0d1117; color:#e
 .chart-title { font-size:12px; font-weight:600; color:#718096; margin-bottom:12px; }
 .chart-wrap  { position:relative; height:175px; cursor:crosshair; }
 
+/* ── DATE RANGE BAR ──────────────────────────────────────────── */
+.range-bar { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:4px 0 12px; }
+.range-lbl { font-size:11px; color:#4a6080; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-right:2px; }
+.range-btn {
+  background:#111927; border:1px solid #1e2d40; color:#718096;
+  padding:4px 12px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:600; transition:all .15s;
+}
+.range-btn:hover { border-color:#2d4a6a; color:#a0c4e8; }
+.range-btn.active { background:#1e2d45; border-color:#63b3ed; color:#63b3ed; }
+.range-date {
+  background:#0a1119; border:1px solid #1e2d40; color:#a0c4e8; padding:3px 8px;
+  border-radius:6px; font-size:11px; font-family:inherit; color-scheme:dark;
+}
+.range-date:focus { outline:none; border-color:#2d4a6a; }
+
 /* ── BIOMASS WEIGHT BREAKDOWN ────────────────────────────────── */
 .bio-panels { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:4px; }
 @media(max-width:900px){ .bio-panels { grid-template-columns:1fr; } }
@@ -213,7 +228,7 @@ tr:hover td { background:#131d2a; }
   <div class="tab-bar">
     <button class="tab-btn active-etas" id="tab-etas" onclick="showPage('etas')">🔵 ETAS 26 — Elazig</button>
     <button class="tab-btn" id="tab-kark" onclick="showPage('kark')">🟢 Karkamish 26 — Gaziantep</button>
-    <button class="tab-btn" id="tab-mort" onclick="showPage('mort')">📉 Mortality Rate</button>
+    <button class="tab-btn" id="tab-mort" onclick="showPage('mort')">📉 Mortality & Stock</button>
     <button class="tab-btn" id="tab-fin" onclick="showPage('fin')">💰 Financial Overview</button>
   </div>
 </div>
@@ -250,6 +265,9 @@ function showPage(pid) {
     loadFinancial();
   } else if(pid === 'mort') {
     loadMortality();
+  } else if (rangeState[pid] && rangeState[pid].redraw) {
+    // Charts created while this tab was hidden rendered into a 0-size canvas — redraw on reveal.
+    rangeState[pid].redraw();
   }
 }
 
@@ -372,7 +390,7 @@ function makeChart(cid,labels,datasets,type='line',opts={}) {
   const ctx=document.getElementById(cid);
   if(!ctx) return;
   // Determine unit from chart title context
-  const unitMap = {'temp':'°C','oxy':'mg/L','mort':'fish','feed':'kg','hasat':'kg','bio':'kg'};
+  const unitMap = {'count':'fish','tonnes':'t','temp':'°C','oxy':'mg/L','mort':'fish','feed':'kg','hasat':'kg','bio':'kg'};
   const chartKey = Object.keys(unitMap).find(k => cid.toLowerCase().includes(k)) || '';
   const unit = unitMap[chartKey] || '';
   charts[cid]=new Chart(ctx,{
@@ -445,33 +463,97 @@ function computeBioTotals(somonRows, mersinRows) {
   // (summary table has gap cols E/G/M/O — Adet/Kilo pairs for buckets 0-200g … 3500+g are NOT contiguous)
   const st = somonRows.find(r=>r[0]&&String(r[0]).trim().toUpperCase()==='TOPLAM');
   const kiloCols = [3,7,9,11,15,17,19];
+  const adetCols = [2,5,8,10,13,16,18];
   let somonKg = st ? kiloCols.reduce((s,i)=>s+(parseNum(st[i])||0),0) : 0;
+  let somonCnt = st ? adetCols.reduce((s,i)=>s+(parseNum(st[i])||0),0) : 0;
   if (!somonKg) {
     // Fallback: sum system rows (ETAS 1, ETAS 2, ETAS 4, ETAS 5, …) the same way.
     // Exclude block-total rows like 'ETAS 2 TOPLAM' that also live in col A.
-    somonKg = somonRows
-      .filter(r=>r[0]&&/^ETAS\s*\d/i.test(String(r[0]).trim())&&!/TOPLAM/i.test(String(r[0])))
-      .reduce((s,r)=>s+kiloCols.reduce((t,i)=>t+(parseNum(r[i])||0),0),0);
+    const sysRows = somonRows
+      .filter(r=>r[0]&&/^ETAS\s*\d/i.test(String(r[0]).trim())&&!/TOPLAM/i.test(String(r[0])));
+    somonKg  = sysRows.reduce((s,r)=>s+kiloCols.reduce((t,i)=>t+(parseNum(r[i])||0),0),0);
+    somonCnt = sysRows.reduce((s,r)=>s+adetCols.reduce((t,i)=>t+(parseNum(r[i])||0),0),0);
   }
   // Mersin: find Toplam row (c1='Toplam'), total is c8
   const mt = mersinRows.find(r=>r[1]&&r[1].trim()==='Toplam');
   const mersinKg = mt ? (parseNum(mt[8])||0) : mersinRows.filter(r=>r[1]&&/^Etas\s*\d/i.test(r[1].trim())).reduce((s,r)=>s+(parseNum(r[8])||0),0);
-  return { somonKg, mersinKg };
+  return { somonKg, somonCnt, mersinKg };
 }
 
 function computeKarkBioTotals(bioRows) {
-  // Biomass v2 summary table: rows 3-6 are systems, values in grams (÷1000 for kg)
-  // Col layout: [0]=System, [2-3]=0-200g (Adet/Kilo), [4-5]=200-500g, [6-7]=500-1000g,
-  //   [8-9]=1000-1500g, [10-11]=1500-2500g, [12-13]=2500-3500g, [14-15]=3500+g, [16-17]=TOPLAM
-  // Sterlet (side columns): row 7 col[22]=Adet, col[24]=Kilo (in grams)
+  // Biomass OZET (re-verified against the live sheet 21.07.2026):
+  //   [0]=System, then Adet/Kilo pairs per bucket, [16]=TOPLAM Adet, [17]=TOPLAM Kilo.
+  //   ⚠ Kilo columns are in KG (NOT grams — a ÷1000 here once showed 1,700 t as 1,701 kg).
+  //   TOPLAM row includes all systems (incl. Incedere sistem, added Jul 2026).
+  // Sterlet side block moved to cols 25-29: [25]=cage, [27]=Adet, [29]=Kg;
+  //   the TOPLAM row carries sterlet totals in c27/c29.
   const toplamRow = bioRows.find(r=>r[0]&&r[0].trim()==='TOPLAM');
-  // Salmon = all 4 systems combined (TOPLAM row cols 16/17)
-  const salmonKg  = toplamRow ? (parseNum(toplamRow[17])||0) / 1000 : 0;
+  const salmonKg  = toplamRow ? (parseNum(toplamRow[17])||0) : 0;
   const salmonCnt = toplamRow ? (parseNum(toplamRow[16])||0) : 0;
-  // Sterlet from side columns (TOPLAM row cols 22/24)
-  const sterletCnt = toplamRow ? (parseNum(toplamRow[22])||0) : 0;
-  const sterletKg  = toplamRow ? (parseNum(toplamRow[24])||0) / 1000 : 0;
+  const sterletCnt = toplamRow ? (parseNum(toplamRow[27])||0) : 0;
+  const sterletKg  = toplamRow ? (parseNum(toplamRow[29])||0) : 0;
   return { salmonKg, sterletKg, salmonCnt, sterletCnt };
+}
+
+// ── DATE-RANGE CONTROL (shared by farm tabs + mortality tab) ───────────────
+// rangeState[pid] = { range: {days:N} | {from,to} } — survives refresh re-renders.
+const rangeState = {};
+function rangeBarHtml(pid, activeDays) {
+  const presets = [30, 60, 90, 0];
+  return `<div class="range-bar" id="${pid}-rangebar">
+    <span class="range-lbl">📅 Range</span>
+    ${presets.map(d=>`<button class="range-btn${d===activeDays?' active':''}" data-days="${d}">${d===0?'All':d+'d'}</button>`).join('')}
+    <input type="date" class="range-date" id="${pid}-range-from" title="From">
+    <span style="color:#4a6080;font-size:11px">→</span>
+    <input type="date" class="range-date" id="${pid}-range-to" title="To">
+    <button class="range-btn" data-custom="1">Apply</button>
+  </div>`;
+}
+function attachRangeBar(pid, redraw) {
+  const bar = document.getElementById(`${pid}-rangebar`);
+  if (!bar) return;
+  bar.querySelectorAll('.range-btn[data-days]').forEach(b=>{
+    b.onclick = () => {
+      rangeState[pid].range = { days: +b.dataset.days };
+      bar.querySelectorAll('.range-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      redraw();
+    };
+  });
+  const applyBtn = bar.querySelector('.range-btn[data-custom]');
+  if (applyBtn) applyBtn.onclick = () => {
+    const f = document.getElementById(`${pid}-range-from`).value || null;
+    const t = document.getElementById(`${pid}-range-to`).value || null;
+    if (!f && !t) return;
+    rangeState[pid].range = { from: f, to: t };
+    bar.querySelectorAll('.range-btn').forEach(x=>x.classList.remove('active'));
+    applyBtn.classList.add('active');
+    redraw();
+  };
+}
+// Returns [lo,hi) slice bounds over an ascending array of ISO dates (nulls allowed).
+function sliceByRange(pid, isoDates) {
+  const r = (rangeState[pid] && rangeState[pid].range) || { days: 60 };
+  const n = isoDates.length;
+  let lo = 0, hi = n;
+  if (r.days != null) {
+    if (r.days > 0) {
+      const lastIso = [...isoDates].reverse().find(d=>d) || null;
+      if (lastIso) {
+        const cut = new Date(lastIso); cut.setDate(cut.getDate() - r.days + 1);
+        const cutIso = cut.toISOString().slice(0,10);
+        const i = isoDates.findIndex(d => d && d >= cutIso);
+        if (i >= 0) lo = i;
+      }
+    }
+  } else {
+    if (r.from) { const i = isoDates.findIndex(d => d && d >= r.from); lo = i >= 0 ? i : n; }
+    if (r.to) {
+      hi = lo;
+      for (let i = n - 1; i >= lo; i--) { if (isoDates[i] && isoDates[i] <= r.to) { hi = i + 1; break; } }
+    }
+  }
+  return [lo, hi];
 }
 
 // ── RENDER: DAILY OPS ──────────────────────────────────────────────────────
@@ -481,6 +563,11 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el, cageData) {
   const useCageFeed = !!cageData.useCageFeed;
   const cageMortMap = useCageMort ? (cageData.mortByDate || {}) : {};
   const cageFeedMap = useCageFeed ? (cageData.feedByDate || {}) : {};
+  // Cage mortality before cageMortFrom is ignored: the ETAS cage log's first days are a
+  // migration backfill (23.04 carries a 56,585 lump covering the whole 17–23 Apr die-off,
+  // while Günlük has the true 8-11k/day shape). Günlük is used for those early dates.
+  const cageMortFrom = cageData.cageMortFrom || null;
+  const cageMortAt = k => (k && cageMortMap[k] != null && (!cageMortFrom || k >= cageMortFrom)) ? cageMortMap[k] : null;
   const cageMortLast = lastCageDate(cageMortMap);
   const cageFeedLast = lastCageDate(cageFeedMap);
   const hasCageMort = Object.keys(cageMortMap).length > 0;
@@ -498,22 +585,23 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el, cageData) {
     const hasO = r[c.oxygen]&&r[c.oxygen]!=='';
     const mort = r[c.somon_mort];
     const k = gunlukDateToISO(r[c.date], 2026);
-    const hasCage = k && (cageMortMap[k] != null || cageFeedMap[k] != null);
+    const hasCage = k && (cageMortAt(k) != null || cageFeedMap[k] != null);
     return hasT||hasO||(mort&&mort!==''&&mort!=='0')||hasCage;
   });
 
-  const r   = dataRows.slice(-90);
-  const lbl = r.map(row=>String(row[c.date]||'').trim());
-  const get = idx => r.map(row=>colVal(row,idx));
+  // Full-history series — the visible window is cut by the range bar (default 60d).
+  const lbl = dataRows.map(row=>String(row[c.date]||'').trim());
+  const isoDates = dataRows.map(row=>gunlukDateToISO(row[c.date], 2026));
+  const get = idx => dataRows.map(row=>colVal(row,idx));
 
   // For mortality + feed: cage-level data is PRIMARY; Günlük fills the gap on dates
-  // where the cage tracker hasn't been populated yet (Elazığ's discipline issue).
-  const sMortV = r.map(row => {
-    const k = gunlukDateToISO(row[c.date], 2026);
-    if (k && cageMortMap[k] != null) return cageMortMap[k];
+  // where the cage tracker hasn't been populated yet (or pre-dates it).
+  const sMortV = dataRows.map(row => {
+    const cv = cageMortAt(gunlukDateToISO(row[c.date], 2026));
+    if (cv != null) return cv;
     return colVal(row, c.somon_mort);
   });
-  const feedV = r.map(row => {
+  const feedV = dataRows.map(row => {
     const k = gunlukDateToISO(row[c.date], 2026);
     if (k && cageFeedMap[k] != null) return cageFeedMap[k];
     if (c.somon_feed != null) return colVal(row, c.somon_feed);
@@ -528,17 +616,17 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el, cageData) {
   const feedLbl = (hasCageFeed ? 'Somon Feed (cage)' : (c.total_feed!=null ? 'Total Feed' : 'Somon Feed'));
   const sMortLbl = hasCageMort ? 'Somon (cage)' : 'Somon';
 
-  // ─ BLANK-DAY FALLBACK: find the last row that has real data ─
-  // Check if the most recent row (yesterday) is blank for key columns
-  const keyCols = [c.temperature, c.oxygen, c.somon_mort];
+  // ─ STALE-DATA NOTE ─ warn only when the last data date is older than yesterday.
+  // (The Günlük sheets pre-create empty rows through 31 Dec, so "last row is blank"
+  // is the normal state and must not trigger a warning.)
   const lastRow = dataRows.length ? dataRows[dataRows.length - 1] : null;
   const lastDate = lastRow ? String(lastRow[c.date]||'').trim() : '—';
-  // Check if we had to fall back (last data row date != yesterday in allDataRows)
-  const mostRecentAllRow = allDataRows.length ? allDataRows[allDataRows.length - 1] : null;
-  const mostRecentDate = mostRecentAllRow ? String(mostRecentAllRow[c.date]||'').trim() : null;
-  const isFallback = mostRecentDate && lastDate && mostRecentDate !== lastDate;
+  const lastIso = [...isoDates].reverse().find(d=>d) || null;
+  const yd = new Date(Date.now() - 86400000);
+  const yestISO = `${yd.getFullYear()}-${String(yd.getMonth()+1).padStart(2,'0')}-${String(yd.getDate()).padStart(2,'0')}`;
+  const isFallback = !!lastIso && lastIso < yestISO;
   const dataDateNote = isFallback
-    ? `<span style="color:#f6ad55;font-size:11px;margin-left:8px">⚠ Latest data from: <b>${lastDate}</b> (${mostRecentDate} was blank)</span>`
+    ? `<span style="color:#f6ad55;font-size:11px;margin-left:8px">⚠ Latest data from: <b>${lastDate}</b></span>`
     : `<span style="color:#4a6080;font-size:11px;margin-left:8px">Data as of: <b>${lastDate}</b></span>`;
 
   // Use computed bio totals instead of Günlük column (which is often empty/stale)
@@ -597,19 +685,23 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el, cageData) {
 
   html += '</div>';
 
+  // Chart builders take a slicer so the range bar can redraw any window instantly.
   const chartDefs=[
-    {id:`${pid}-temp`,title:'Temperature (°C)',sets:[ds('Temperature',tempV,'#fc8181')]},
-    {id:`${pid}-oxy`, title:'Oxygen (mg/L)',   sets:[ds('Oxygen',oxyV,'#63b3ed')]},
-    {id:`${pid}-mort`,title:'Daily Mortality', sets:[
-      ds(sMortLbl,sMortV,'#fc8181'),
-      ...(hasMersinMort?[ds('Mersin',mMortV,'#f6ad55',false,true)]:[])
+    {id:`${pid}-temp`,title:'Temperature (°C)',sets:sl=>[ds('Temperature',sl(tempV),'#fc8181')]},
+    {id:`${pid}-oxy`, title:'Oxygen (mg/L)',   sets:sl=>[ds('Oxygen',sl(oxyV),'#63b3ed')]},
+    {id:`${pid}-mort`,title:'Daily Mortality', sets:sl=>[
+      ds(sMortLbl,sl(sMortV),'#fc8181'),
+      ...(hasMersinMort?[ds('Mersin',sl(mMortV),'#f6ad55',false,true)]:[])
     ]},
-    {id:`${pid}-feed`,title:`Feed (kg)`,       sets:[
-      ds(feedLbl,feedV,'#b794f4'),
-      ...(hasMersinFeed?[ds('Mersin Feed',mFeedV,'#d6bcfa',false,true)]:[])
+    {id:`${pid}-feed`,title:`Feed (kg)`,       sets:sl=>[
+      ds(feedLbl,sl(feedV),'#b794f4'),
+      ...(hasMersinFeed?[ds('Mersin Feed',sl(mFeedV),'#d6bcfa',false,true)]:[])
     ]},
   ];
 
+  if (!rangeState[pid]) rangeState[pid] = {};
+  if (!rangeState[pid].range) rangeState[pid].range = { days: 60 };
+  html += rangeBarHtml(pid, rangeState[pid].range.days ?? null);
   html+='<div class="charts-grid">';
   chartDefs.forEach(def=>{
     html+=`<div class="chart-card"><div class="chart-title">${def.title}</div><div class="chart-wrap"><canvas id="${def.id}"></canvas></div></div>`;
@@ -617,7 +709,13 @@ function renderOps(pid, c, rows, headerRows, bioTotals, el, cageData) {
   html+='</div>';
 
   el.innerHTML+=html;
-  setTimeout(()=>{chartDefs.forEach(def=>makeChart(def.id,lbl,def.sets));},60);
+  const redraw = () => {
+    const [lo,hi] = sliceByRange(pid, isoDates);
+    const sl = a => a.slice(lo,hi);
+    chartDefs.forEach(def=>makeChart(def.id, lbl.slice(lo,hi), def.sets(sl)));
+  };
+  rangeState[pid].redraw = redraw;
+  setTimeout(()=>{ attachRangeBar(pid, redraw); redraw(); },60);
 }
 
 // ── RENDER: BIOMASS ETAS ────────────────────────────────────────────────────
@@ -690,31 +788,33 @@ function renderBioETAS(somonRows, mersinRows, el) {
 
 // ── RENDER: BIOMASS KARK ────────────────────────────────────────────────────
 function renderBioKark(bioRows, el) {
-  // Biomass v2 summary table: rows 3-6 are systems (On/Orta/Alt/Mersin)
+  // Biomass OZET (re-verified 21.07.2026):
   // Weight categories (paired Adet/Kilo cols):
   //   col 2/3: 0-200g, 4/5: 200-500g, 6/7: 500-1000g, 8/9: 1000-1500g
   //   10/11: 1500-2500g, 12/13: 2500-3500g, 14/15: 3500+g, 16/17: TOPLAM
-  // All "Kilo" values are actually in grams → ÷1000 for kg
-  // Sterlet data in side columns: rows 1-6 cols 20-24 (cage, label, adet, gram, total_g)
-  //   Sterlet TOPLAM at row 7 cols 22 (adet) / 24 (total grams)
-  const ALL_SYS = ['On sistem','Orta sistem','Alt sistem','Mersin sistem'];
-  const salmonRows = bioRows.filter(r=>r[0]&&ALL_SYS.some(s=>r[0].trim()===s));
-  const toplamRow  = bioRows.find(r=>r[0]&&r[0].trim()==='TOPLAM');
+  // ⚠ Kilo values are KG (not grams). System rows are read dynamically from above the
+  // TOPLAM row so new systems (Incedere sistem, Jul 2026) are included automatically;
+  // col-A cells BELOW the TOPLAM row are per-cage block labels and must not be summed.
+  // Sterlet side block: cols 25-29 (cage / note / Adet / Ort Kg / Kg); totals on TOPLAM row c27/c29.
+  const topIdx = bioRows.findIndex(r=>r[0]&&r[0].trim()==='TOPLAM');
+  const searchRows = topIdx>0 ? bioRows.slice(0,topIdx) : bioRows;
+  const salmonRows = searchRows.filter(r=>r[0]&&/sistem/i.test(String(r[0]))&&String(r[0]).trim().toLowerCase()!=='sistem');
+  const toplamRow  = topIdx>=0 ? bioRows[topIdx] : null;
 
   const sLabels   = ['0 – 200 g','200 – 500 g','500g – 1 kg','1 – 1.5 kg','1.5 – 2.5 kg','2.5 – 3.5 kg','3.5 kg +'];
   const sCntCols  = [2,4,6,8,10,12,14];
   const sKgCols   = [3,5,7,9,11,13,15];
 
-  // Salmon: sum all 4 systems
+  // Salmon: sum all systems (values already in kg)
   const sSumCnt = sCntCols.map(ci=>salmonRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0));
-  const sSumKg  = sKgCols.map(ci=>Math.round(salmonRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0)/1000)); // grams→kg
+  const sSumKg  = sKgCols.map(ci=>Math.round(salmonRows.reduce((s,r)=>s+(parseNum(r[ci])||0),0)));
   const sTotalKg  = sSumKg.reduce((a,b)=>a+b,0);
   const sTotalCnt = sSumCnt.reduce((a,b)=>a+b,0);
 
-  // Sterlet: from side columns — individual D-cages in rows 1-6 cols 20-24
-  const sterletCages = bioRows.filter(r=>r[20]&&/^D\d/.test(String(r[20]).trim()));
-  const sterletTotalCnt = toplamRow ? (parseNum(toplamRow[22])||0) : 0;
-  const sterletTotalKg  = toplamRow ? Math.round((parseNum(toplamRow[24])||0)/1000) : 0;
+  // Sterlet: side block D-cages (col 25 = cage, 27 = adet, 29 = kg)
+  const sterletCages = bioRows.filter(r=>r[25]&&/^D\d/.test(String(r[25]).trim()));
+  const sterletTotalCnt = toplamRow ? (parseNum(toplamRow[27])||0) : 0;
+  const sterletTotalKg  = toplamRow ? Math.round(parseNum(toplamRow[29])||0) : 0;
   const sterletAvgG = sterletTotalCnt>0 ? Math.round(sterletTotalKg*1000/sterletTotalCnt) : 0;
 
   let html = `<div class="section-label">🔬 Biomass Detail</div><div class="bio-panels">`;
@@ -748,12 +848,12 @@ function renderBioKark(bioRows, el) {
   // Per-cage rows for sterlet
   if(sterletCages.length) {
     html += `<div class="bio-sub">Per-cage breakdown (D-cages)</div><div class="wb-table">`;
-    const maxCageKg = Math.max(...sterletCages.map(r=>Math.round((parseNum(r[24])||0)/1000)), 1);
+    const maxCageKg = Math.max(...sterletCages.map(r=>Math.round(parseNum(r[29])||0)), 1);
     sterletCages.forEach(r=>{
-      const cage = String(r[20]).trim();
-      const label = String(r[21]||'').trim();
-      const cnt = parseNum(r[22])||0;
-      const kg = Math.round((parseNum(r[24])||0)/1000);
+      const cage = String(r[25]).trim();
+      const label = String(r[26]||'').trim();
+      const cnt = parseNum(r[27])||0;
+      const kg = Math.round(parseNum(r[29])||0);
       const pct = Math.max((kg/maxCageKg)*100, kg>0?2:0);
       html += `<div class="wb-row">
         <div class="wb-label">${cage} <span style="color:#4a6080;font-size:9px">${label}</span></div>
@@ -820,9 +920,12 @@ function buildWeightPanel(icon, title, totalKg, totalCnt, labels, cntArr, kgArr,
 
 // ── RENDER: FEED STORAGE ───────────────────────────────────────────────────
 function getLatestDepo(rows) {
+  // Only DATED rows count. Undated trailing rows are grand totals — e.g. Karkamış YEM's
+  // last row holds YTD consumption (~2,024 t), which is NOT the depo stock (~585 t).
   for(let i=rows.length-1;i>=0;i--){
     const r=rows[i];
     if(!r||!r.length) continue;
+    if(!r[0]||!String(r[0]).trim()) continue;
     const v=parseNum(r[r.length-1]);
     if(v!=null&&v>1000) return v;
   }
@@ -1125,14 +1228,14 @@ function recalcFinancials() {
   set('fin-net-cash', fmtUSD(netCash));
   setColor('fin-net-cash', netCash >= 0 ? '#68d391' : '#fc8181');
 
-  // Biomass section
-  set('fin-total-salmon', Math.round(totalSalmon).toLocaleString('tr-TR'));
+  // Biomass section (values are kg; shown as tonnes)
+  set('fin-total-salmon', fmtTonnes(totalSalmon));
   set('fin-salmon-value', fmtUSD(salmonValue));
-  set('fin-total-sturgeon', Math.round(totalSturgeon).toLocaleString('tr-TR'));
+  set('fin-total-sturgeon', fmtTonnes(totalSturgeon));
   set('fin-sturgeon-value', fmtUSD(sturgeonValue));
 
   // Feed section
-  set('fin-total-feed', Math.round(totalFeed).toLocaleString('tr-TR'));
+  set('fin-total-feed', fmtTonnes(totalFeed));
   set('fin-feed-value', fmtUSD(feedValue));
 
   // Grand summary
@@ -1311,9 +1414,9 @@ async function loadFinancial() {
     <div class="fin-section">
       <div class="fin-section-title">🐟 Salmon Stock</div>
       <div class="fin-grid">
-        <div class="fin-card"><div class="fin-card card-label">ETAS Somon</div><div class="fin-value">${Math.round(finData.etasSomonBio).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
-        <div class="fin-card"><div class="fin-card card-label">Karkamış Salmon</div><div class="fin-value">${Math.round(finData.karkSalmonBio).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
-        <div class="fin-card" style="border-color:#63b3ed;border-width:2px"><div class="fin-card card-label">Total Salmon</div><div class="fin-value" id="fin-total-salmon" style="color:#63b3ed">0<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card"><div class="fin-card card-label">ETAS Somon</div><div class="fin-value">${fmtTonnes(finData.etasSomonBio)}</div></div>
+        <div class="fin-card"><div class="fin-card card-label">Karkamış Salmon</div><div class="fin-value">${fmtTonnes(finData.karkSalmonBio)}</div></div>
+        <div class="fin-card" style="border-color:#63b3ed;border-width:2px"><div class="fin-card card-label">Total Salmon</div><div class="fin-value" id="fin-total-salmon" style="color:#63b3ed">0</div></div>
       </div>
       <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
         <div class="fin-input-card" style="flex:1"><div class="fin-input-label">Salmon Price ($/kg)</div><input type="number" id="fin-salmon-price" class="fin-input" value="${finData.salmonPrice}" placeholder="5" step="0.01"></div>
@@ -1325,9 +1428,9 @@ async function loadFinancial() {
     <div class="fin-section">
       <div class="fin-section-title">🦈 Sturgeon Stock</div>
       <div class="fin-grid">
-        <div class="fin-card"><div class="fin-card card-label">ETAS Mersin</div><div class="fin-value">${Math.round(finData.etasMersinBio).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
-        <div class="fin-card"><div class="fin-card card-label">Karkamış Sterlet</div><div class="fin-value">${Math.round(finData.karkSterletBio).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
-        <div class="fin-card" style="border-color:#b794f4;border-width:2px"><div class="fin-card card-label">Total Sturgeon</div><div class="fin-value" id="fin-total-sturgeon" style="color:#b794f4">0<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card"><div class="fin-card card-label">ETAS Mersin</div><div class="fin-value">${fmtTonnes(finData.etasMersinBio)}</div></div>
+        <div class="fin-card"><div class="fin-card card-label">Karkamış Sterlet</div><div class="fin-value">${fmtTonnes(finData.karkSterletBio)}</div></div>
+        <div class="fin-card" style="border-color:#b794f4;border-width:2px"><div class="fin-card card-label">Total Sturgeon</div><div class="fin-value" id="fin-total-sturgeon" style="color:#b794f4">0</div></div>
       </div>
       <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
         <div class="fin-input-card" style="flex:1"><div class="fin-input-label">Sturgeon Price ($/kg)</div><input type="number" id="fin-sturgeon-price" class="fin-input" value="${finData.sturgeonPrice}" placeholder="7" step="0.01"></div>
@@ -1339,10 +1442,10 @@ async function loadFinancial() {
     <div class="fin-section">
       <div class="fin-section-title">🌾 Feed Inventory</div>
       <div class="fin-grid">
-        <div class="fin-card"><div class="fin-card card-label">ETAS Somon Feed</div><div class="fin-value">${Math.round(finData.etasSomonFeed).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
-        <div class="fin-card"><div class="fin-card card-label">ETAS Mersin Feed</div><div class="fin-value">${Math.round(finData.etasMersinFeed).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
-        <div class="fin-card"><div class="fin-card card-label">Karkamış Feed</div><div class="fin-value">${Math.round(finData.karkFeed).toLocaleString('tr-TR')}<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
-        <div class="fin-card" style="border-color:#f6ad55;border-width:2px"><div class="fin-card card-label">Total Feed</div><div class="fin-value" id="fin-total-feed" style="color:#f6ad55">0<span class="kpi-unit" style="font-size:9px">kg</span></div></div>
+        <div class="fin-card"><div class="fin-card card-label">ETAS Somon Feed</div><div class="fin-value">${fmtTonnes(finData.etasSomonFeed)}</div></div>
+        <div class="fin-card"><div class="fin-card card-label">ETAS Mersin Feed</div><div class="fin-value">${fmtTonnes(finData.etasMersinFeed)}</div></div>
+        <div class="fin-card"><div class="fin-card card-label">Karkamış Feed</div><div class="fin-value">${fmtTonnes(finData.karkFeed)}</div></div>
+        <div class="fin-card" style="border-color:#f6ad55;border-width:2px"><div class="fin-card card-label">Total Feed</div><div class="fin-value" id="fin-total-feed" style="color:#f6ad55">0</div></div>
       </div>
       <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
         <div class="fin-input-card" style="flex:1"><div class="fin-input-label">Feed Price ($/kg)</div><input type="number" id="fin-feed-price" class="fin-input" value="${finData.feedPrice}" placeholder="1.6" step="0.01"></div>
@@ -1372,31 +1475,53 @@ async function loadFinancial() {
 }
 
 // ── LOAD FARM ──────────────────────────────────────────────────────────────
+// ── LIVE FARM STATS CACHE ──────────────────────────────────────────────────
+// Filled by loadETAS/loadKark on every load; the Mortality & Stock tab reads it so its
+// KPIs are computed from TODAY's sheets even when the daily snapshot task hasn't fired.
+// If the farm tabs haven't loaded yet (or failed), it fetches the needed tabs itself.
+const _liveFarm = { etas: null, kark: null };
+async function getLiveFarmStats() {
+  if (_liveFarm.etas && _liveFarm.kark) return _liveFarm;
+  const ID_ETAS = '1d5auEs3o0st7z3Bt46uuVzuHK0Bw-K70Lb1R5m4ok4Y';
+  const ID_KARK = '15Ck8hhqdYMsmBju1wTznQOsiNuEFQPMg_y3X7sCTA4o';
+  const [eBio, eMersin, eOlum, kBio, kOlum] = await Promise.all([
+    api(ID_ETAS,'Somon Biomass v2').then(normalizeETAS),
+    api(ID_ETAS,'Mersin Biomass').then(normalizeETAS),
+    api(ID_ETAS,'Olum-kafes baz').then(normalizeETAS),
+    api(ID_KARK,'Biomass'),
+    api(ID_KARK,'Olum-kafes baz'),
+  ]);
+  const eb = computeBioTotals(eBio, eMersin);
+  const kb = computeKarkBioTotals(kBio);
+  _liveFarm.etas = { fish: eb.somonCnt, kg: eb.somonKg, mortByDate: aggCageByDate(eOlum,3), mortFrom: '2026-04-24' };
+  _liveFarm.kark = { fish: kb.salmonCnt, kg: kb.salmonKg, mortByDate: aggCageByDate(kOlum,3), mortFrom: null };
+  return _liveFarm;
+}
 // ── MORTALITY RATE (normalized by stock) ────────────────────────────────────
 // Metric = deaths per 10,000 fish, so the two farms are comparable regardless of size.
 // EMBEDDED_MORTALITY_DATA is refreshed daily by farm_snapshot.py (same mechanism as
 // EMBEDDED_FINANCIAL_DATA) so the page renders offline / on file:// too.
 const EMBEDDED_MORTALITY_DATA = {
-  "lastUpdated": "2026-07-19T08:22:27.831581+03:00",
+  "lastUpdated": "2026-07-21T18:10:14.657319+03:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
     "etas": {
       "farm": "Elazig",
-      "date": "2026-07-18",
-      "total_fish": 1066574,
-      "total_kg": 265302,
-      "mortality": 2319,
-      "per10k": 21.74,
+      "date": "2026-07-21",
+      "total_fish": 1060790,
+      "total_kg": 264256,
+      "mortality": 2107,
+      "per10k": 19.86,
       "weightMeasuredPct": 0.0
     },
     "kark": {
       "farm": "Karkamis",
-      "date": "2026-07-18",
-      "total_fish": 1144529,
-      "total_kg": 1705417,
-      "mortality": 1217,
-      "per10k": 10.63,
+      "date": "2026-07-21",
+      "total_fish": 1141209,
+      "total_kg": 1700520,
+      "mortality": 1019,
+      "per10k": 8.93,
       "weightMeasuredPct": 0.0
     }
   },
@@ -1405,264 +1530,321 @@ const EMBEDDED_MORTALITY_DATA = {
       "date": "2026-06-11",
       "etas_per10k": 22.96,
       "etas_mort": 2548,
-      "etas_fish": 1109892
+      "etas_fish": 1109892,
+      "etas_kg": 192908
     },
     {
       "date": "2026-06-12",
       "kark_per10k": 14.46,
       "kark_mort": 1826,
-      "kark_fish": 1262940
+      "kark_fish": 1262940,
+      "kark_kg": 811146
     },
     {
       "date": "2026-06-13",
       "etas_per10k": 16.47,
       "etas_mort": 1841,
-      "etas_fish": 1118109
+      "etas_fish": 1118109,
+      "etas_kg": 192949
     },
     {
       "date": "2026-06-14",
       "kark_per10k": 11.42,
       "kark_mort": 1439,
-      "kark_fish": 1259645
+      "kark_fish": 1259645,
+      "kark_kg": 809076
     },
     {
       "date": "2026-06-15",
       "kark_per10k": 15.82,
       "kark_mort": 1986,
-      "kark_fish": 1255298
+      "kark_fish": 1255298,
+      "kark_kg": 850763
     },
     {
       "date": "2026-06-16",
       "etas_per10k": 0.23,
       "etas_mort": 25,
       "etas_fish": 1104285,
+      "etas_kg": 191732,
       "kark_per10k": 39.18,
       "kark_mort": 4899,
-      "kark_fish": 1250399
+      "kark_fish": 1250399,
+      "kark_kg": 849808
     },
     {
       "date": "2026-06-17",
       "etas_per10k": 32.09,
       "etas_mort": 3532,
       "etas_fish": 1100753,
+      "etas_kg": 191407,
       "kark_per10k": 41.58,
       "kark_mort": 5178,
-      "kark_fish": 1245221
+      "kark_fish": 1245221,
+      "kark_kg": 848921
     },
     {
       "date": "2026-06-19",
       "etas_per10k": 48.04,
       "etas_mort": 4686,
       "etas_fish": 975517,
+      "etas_kg": 201243,
       "kark_per10k": 46.44,
       "kark_mort": 5735,
-      "kark_fish": 1234948
+      "kark_fish": 1234948,
+      "kark_kg": 847363
     },
     {
       "date": "2026-06-21",
       "etas_per10k": 20.69,
       "etas_mort": 1950,
       "etas_fish": 942406,
+      "etas_kg": 208000,
       "kark_per10k": 57.57,
       "kark_mort": 7013,
-      "kark_fish": 1218113
+      "kark_fish": 1218113,
+      "kark_kg": 845866
     },
     {
       "date": "2026-06-22",
       "kark_per10k": 49.06,
       "kark_mort": 5947,
-      "kark_fish": 1212166
+      "kark_fish": 1212166,
+      "kark_kg": 845117
     },
     {
       "date": "2026-06-23",
       "etas_per10k": 473.52,
       "etas_mort": 42296,
-      "etas_fish": 893229
+      "etas_fish": 893229,
+      "etas_kg": 206588
     },
     {
       "date": "2026-06-25",
       "kark_per10k": 42.62,
       "kark_mort": 5101,
-      "kark_fish": 1196970
+      "kark_fish": 1196970,
+      "kark_kg": 842806
     },
     {
       "date": "2026-06-26",
       "kark_per10k": 47.35,
       "kark_mort": 5641,
-      "kark_fish": 1191329
+      "kark_fish": 1191329,
+      "kark_kg": 841834
     },
     {
       "date": "2026-06-27",
       "etas_per10k": 53.41,
       "etas_mort": 4835,
       "etas_fish": 905203,
+      "etas_kg": 281400,
       "kark_per10k": 67.67,
       "kark_mort": 8007,
-      "kark_fish": 1183322
+      "kark_fish": 1183322,
+      "kark_kg": 840880
     },
     {
       "date": "2026-06-28",
       "etas_per10k": 56.09,
       "etas_mort": 5077,
       "etas_fish": 905203,
+      "etas_kg": 281400,
       "kark_per10k": 44.26,
       "kark_mort": 5214,
-      "kark_fish": 1178108
+      "kark_fish": 1178108,
+      "kark_kg": 840087
     },
     {
       "date": "2026-06-29",
       "etas_per10k": 59.03,
       "etas_mort": 5282,
       "etas_fish": 894844,
+      "etas_kg": 278808,
       "kark_per10k": 30.2,
       "kark_mort": 3547,
-      "kark_fish": 1174561
+      "kark_fish": 1174561,
+      "kark_kg": 839372
     },
     {
       "date": "2026-07-01",
       "etas_per10k": 48.19,
       "etas_mort": 4289,
       "etas_fish": 890090,
+      "etas_kg": 281215,
       "kark_per10k": 20.23,
       "kark_mort": 2365,
-      "kark_fish": 1169274
+      "kark_fish": 1169274,
+      "kark_kg": 837674
     },
     {
       "date": "2026-07-04",
       "etas_per10k": 36.49,
       "etas_mort": 3173,
       "etas_fish": 869481,
+      "etas_kg": 270117,
       "kark_per10k": 13.58,
       "kark_mort": 1581,
-      "kark_fish": 1163856
+      "kark_fish": 1163856,
+      "kark_kg": 835798
     },
     {
       "date": "2026-07-05",
       "etas_per10k": 53.11,
       "etas_mort": 4622,
-      "etas_fish": 870222
+      "etas_fish": 870222,
+      "etas_kg": 272493
     },
     {
       "date": "2026-07-06",
       "etas_per10k": 60.29,
       "etas_mort": 5215,
       "etas_fish": 865007,
+      "etas_kg": 271894,
       "kark_per10k": 10.71,
       "kark_mort": 1243,
-      "kark_fish": 1161126
+      "kark_fish": 1161126,
+      "kark_kg": 834535
     },
     {
       "date": "2026-07-07",
       "etas_per10k": 35.01,
       "etas_mort": 3018,
       "etas_fish": 861989,
+      "etas_kg": 271464,
       "kark_per10k": 11.04,
       "kark_mort": 1281,
-      "kark_fish": 1159845
+      "kark_fish": 1159845,
+      "kark_kg": 833988
     },
     {
       "date": "2026-07-09",
       "etas_per10k": 39.93,
       "etas_mort": 3693,
       "etas_fish": 924793,
+      "etas_kg": 272412,
       "kark_per10k": 9.53,
       "kark_mort": 1103,
-      "kark_fish": 1157291
+      "kark_fish": 1157291,
+      "kark_kg": 832774
     },
     {
       "date": "2026-07-11",
       "etas_per10k": 43.49,
       "etas_mort": 3985,
       "etas_fish": 916348,
+      "etas_kg": 271692,
       "kark_per10k": 11.75,
       "kark_mort": 1357,
-      "kark_fish": 1154998
+      "kark_fish": 1154998,
+      "kark_kg": 831664
     },
     {
       "date": "2026-07-12",
       "etas_per10k": 57.56,
       "etas_mort": 5244,
       "etas_fish": 911104,
+      "etas_kg": 271198,
       "kark_per10k": 9.33,
       "kark_mort": 1075,
-      "kark_fish": 1152210
+      "kark_fish": 1152210,
+      "kark_kg": 823642
     },
     {
       "date": "2026-07-14",
       "etas_per10k": 48.32,
       "etas_mort": 5260,
       "etas_fish": 1088493,
+      "etas_kg": 271780,
       "kark_per10k": 10.1,
       "kark_mort": 1161,
-      "kark_fish": 1149550
+      "kark_fish": 1149550,
+      "kark_kg": 1712282
     },
     {
       "date": "2026-07-16",
       "etas_per10k": 77.11,
       "etas_mort": 8277,
       "etas_fish": 1073418,
+      "etas_kg": 267361,
       "kark_per10k": 11.91,
       "kark_mort": 1366,
-      "kark_fish": 1146932
+      "kark_fish": 1146932,
+      "kark_kg": 1708820
     },
     {
       "date": "2026-07-17",
       "etas_per10k": 42.33,
       "etas_mort": 4525,
       "etas_fish": 1068893,
+      "etas_kg": 265910,
       "kark_per10k": 10.35,
       "kark_mort": 1186,
-      "kark_fish": 1145746
+      "kark_fish": 1145746,
+      "kark_kg": 1707175
     },
     {
       "date": "2026-07-18",
       "etas_per10k": 21.74,
       "etas_mort": 2319,
       "etas_fish": 1066574,
+      "etas_kg": 265302,
       "kark_per10k": 10.63,
       "kark_mort": 1217,
-      "kark_fish": 1144529
+      "kark_fish": 1144529,
+      "kark_kg": 1705417
+    },
+    {
+      "date": "2026-07-21",
+      "etas_per10k": 19.86,
+      "etas_mort": 2107,
+      "etas_fish": 1060790,
+      "etas_kg": 264256,
+      "kark_per10k": 8.93,
+      "kark_mort": 1019,
+      "kark_fish": 1141209,
+      "kark_kg": 1700520
     }
   ],
   "systems": {
     "etas": [
       {
         "system": "ETAS 2",
-        "fish": 1066574,
-        "mort": 2319,
-        "per10k": 21.74
+        "fish": 1060790,
+        "mort": 2107,
+        "per10k": 19.86
       }
     ],
     "kark": [
       {
         "system": "On sistem",
-        "fish": 346242,
-        "mort": 438,
-        "per10k": 12.65
+        "fish": 345087,
+        "mort": 294,
+        "per10k": 8.52
       },
       {
         "system": "Orta sistem",
-        "fish": 238777,
-        "mort": 238,
-        "per10k": 9.97
+        "fish": 238037,
+        "mort": 243,
+        "per10k": 10.21
       },
       {
         "system": "Alt sistem",
-        "fish": 238110,
-        "mort": 128,
-        "per10k": 5.38
+        "fish": 237662,
+        "mort": 151,
+        "per10k": 6.35
       },
       {
         "system": "Mersin sistem",
-        "fish": 197318,
-        "mort": 292,
-        "per10k": 14.8
+        "fish": 196731,
+        "mort": 196,
+        "per10k": 9.96
       },
       {
         "system": "Incedere sistem",
-        "fish": 124082,
-        "mort": 121,
-        "per10k": 9.75
+        "fish": 123692,
+        "mort": 135,
+        "per10k": 10.91
       }
     ]
   },
@@ -1670,48 +1852,48 @@ const EMBEDDED_MORTALITY_DATA = {
     "etas": [
       {
         "bucket": "0-200g",
-        "mort": 1791,
-        "fish": 823768,
-        "per10k": 21.74
+        "mort": 1627,
+        "fish": 818894,
+        "per10k": 19.87
       },
       {
         "bucket": "500-1000g",
-        "mort": 65,
-        "fish": 30088,
-        "per10k": 21.6
+        "mort": 60,
+        "fish": 29993,
+        "per10k": 20.0
       },
       {
         "bucket": "1000-1500g",
-        "mort": 463,
-        "fish": 212718,
-        "per10k": 21.77
+        "mort": 421,
+        "fish": 211903,
+        "per10k": 19.87
       }
     ],
     "kark": [
       {
         "bucket": "0-200g",
-        "mort": 365,
-        "fish": 288801,
-        "per10k": 12.64
+        "mort": 245,
+        "fish": 287794,
+        "per10k": 8.51
       },
       {
         "bucket": "1500-2500g",
-        "mort": 814,
-        "fish": 827194,
-        "per10k": 9.84
+        "mort": 745,
+        "fish": 825096,
+        "per10k": 9.03
       },
       {
         "bucket": "3500g+",
-        "mort": 38,
-        "fish": 28534,
-        "per10k": 13.32
+        "mort": 28,
+        "fish": 28319,
+        "per10k": 9.89
       }
     ]
   }
 };
 async function loadMortality() {
   const el = document.getElementById('page-mort');
-  el.innerHTML='<div class="loading"><div class="spin"></div>Loading Mortality Rate…</div>';
+  el.innerHTML='<div class="loading"><div class="spin"></div>Loading Mortality & Stock…</div>';
   // Try the live JSON first (fresh on GitHub Pages); fall back to embedded data so the
   // page also works when opened as a local file:// (where fetching a local file is blocked).
   let d = null;
@@ -1719,26 +1901,66 @@ async function loadMortality() {
     const resp = await fetch('mortality_snapshot.json?t='+Date.now());
     if(resp.ok) d = await resp.json();
   } catch(e) { /* file:// or offline — use embedded */ }
-  if(!d) d = (typeof EMBEDDED_MORTALITY_DATA!=='undefined') ? EMBEDDED_MORTALITY_DATA : null;
+  if(!d) d = (typeof EMBEDDED_MORTALITY_DATA!=='undefined') ? JSON.parse(JSON.stringify(EMBEDDED_MORTALITY_DATA)) : null;
   if(!d) {
     el.innerHTML='<div class="err">❌ No mortality data. It is generated by the daily snapshot task (farm_snapshot.py).</div>';
     return;
   }
+  d.history = d.history || [];
+  // The by-system / by-weight panels stay snapshot-based — remember their data date.
+  const snapDate = { etas: d.farms?.etas?.date || '—', kark: d.farms?.kark?.date || '—' };
+
+  // ── LIVE OVERLAY ── today's mortality + stock straight from the sheets, so KPIs are
+  // never stale when the snapshot task hasn't fired. Also fills the daily-deaths series
+  // from the cage logs for days the snapshot task missed.
+  let liveErr = null;
+  try {
+    const live = await getLiveFarmStats();
+    const byDate = {};
+    d.history.forEach(h => byDate[h.date] = h);
+    for (const fa of ['etas','kark']) {
+      const L = live[fa];
+      if (!L || !L.mortByDate) continue;
+      Object.keys(L.mortByDate).forEach(k => {
+        if (L.mortFrom && k < L.mortFrom) return;
+        const h = byDate[k] || (byDate[k] = { date: k });
+        if (h[fa+'_mort'] == null) h[fa+'_mort'] = Math.round(L.mortByDate[k]);
+      });
+      const md = lastCageDate(L.mortByDate);
+      if (!md) continue;
+      const mort = Math.round(L.mortByDate[md]);
+      const per10k = L.fish ? +(mort / L.fish * 10000).toFixed(2) : 0;
+      const h = byDate[md] || (byDate[md] = { date: md });
+      h[fa+'_mort'] = mort; h[fa+'_per10k'] = per10k;
+      h[fa+'_fish'] = Math.round(L.fish); h[fa+'_kg'] = Math.round(L.kg);
+      d.farms[fa] = { ...(d.farms[fa]||{}), farm: fa==='etas'?'Elazig':'Karkamis',
+        date: md, total_fish: Math.round(L.fish), total_kg: Math.round(L.kg),
+        mortality: mort, per10k: per10k, live: true };
+    }
+    d.history = Object.values(byDate).sort((a,b)=>a.date<b.date?-1:1);
+  } catch(e) { liveErr = e; }
+
   const E = d.farms.etas, K = d.farms.kark;
   const fmt = n => (n==null?'—':Number(n).toLocaleString('tr-TR',{maximumFractionDigits:n<100?2:0}));
   const upd = new Date(d.lastUpdated);
+  const todayISO = (()=>{ const t=new Date(); return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; })();
+  const liveNote = f => f.live
+    ? `<span style="color:#48bb78">● live from sheets${f.date===todayISO?' · today, still logging':''}</span>`
+    : `<span style="color:#f6ad55">⚠ snapshot only (${f.date||'—'})</span>`;
 
-  let html = `<div class="section-label">📉 Mortality Rate — deaths per 10,000 fish · normalized by live stock · updated ${upd.toLocaleDateString('tr-TR')}</div>
+  let html = `<div class="section-label">📉 Mortality Rate — deaths per 10,000 fish · normalized by live stock · snapshot ${upd.toLocaleDateString('tr-TR')}${liveErr?' · <span style=\"color:#f6ad55\">live refresh failed — showing snapshot</span>':''}</div>
   <div class="kpi-grid">
     <div class="kpi-card kpi-mort">
       <div class="kpi-lbl">Elazığ — per 10k</div>
       <div class="kpi-val">${fmt(E.per10k)}<span class="kpi-unit">/10k</span></div>
       <div class="kpi-tr tr-stable">${fmt(E.mortality)} deaths · ${(E.total_fish/1000).toFixed(0)}k fish · ${E.date}</div>
+      <div class="kpi-tr">${liveNote(E)}</div>
     </div>
     <div class="kpi-card kpi-mort" style="--bar:#68d391">
       <div class="kpi-lbl">Karkamış — per 10k</div>
       <div class="kpi-val">${fmt(K.per10k)}<span class="kpi-unit">/10k</span></div>
       <div class="kpi-tr tr-stable">${fmt(K.mortality)} deaths · ${(K.total_fish/1000).toFixed(0)}k fish · ${K.date}</div>
+      <div class="kpi-tr">${liveNote(K)}</div>
     </div>
     <div class="kpi-card kpi-bio">
       <div class="kpi-lbl">Elazığ vs Karkamış</div>
@@ -1746,37 +1968,68 @@ async function loadMortality() {
       <div class="kpi-tr ${E.per10k>K.per10k?'tr-bad':'tr-good'}">${E.per10k>K.per10k?'Elazığ higher':'Karkamış higher'}</div>
     </div>
     <div class="kpi-card kpi-bio">
-      <div class="kpi-lbl">Total Stock (both)</div>
+      <div class="kpi-lbl">Salmon Stock (both farms)</div>
       <div class="kpi-val" style="font-size:18px">${((E.total_fish+K.total_fish)/1e6).toFixed(2)}<span class="kpi-unit">M fish</span></div>
       <div class="kpi-tr tr-stable">→ ${fmt(Math.round((E.total_kg+K.total_kg)/1000))} t biomass</div>
     </div>
   </div>`;
 
-  // charts
+  // range bar + time-series charts (per10k, absolute deaths, stock count, stock tonnes)
+  html += rangeBarHtml('mort', (rangeState['mort']&&rangeState['mort'].range&&rangeState['mort'].range.days!=null)?rangeState['mort'].range.days:0);
   html += '<div class="charts-grid">';
   html += `<div class="chart-card"><div class="chart-title">Mortality Rate Trend (per 10k)</div><div class="chart-wrap"><canvas id="mort-trend"></canvas></div></div>`;
-  html += `<div class="chart-card"><div class="chart-title">By System — per 10k (latest)</div><div class="chart-wrap"><canvas id="mort-sys"></canvas></div></div>`;
-  html += `<div class="chart-card"><div class="chart-title">By Weight Class — per 10k</div><div class="chart-wrap"><canvas id="mort-weight"></canvas></div></div>`;
-  html += `<div class="chart-card"><div class="chart-title">Daily Deaths (absolute)</div><div class="chart-wrap"><canvas id="mort-abs"></canvas></div></div>`;
+  html += `<div class="chart-card"><div class="chart-title">Daily Deaths (absolute · cage logs)</div><div class="chart-wrap"><canvas id="mort-abs"></canvas></div></div>`;
+  html += `<div class="chart-card"><div class="chart-title">Salmon Stock — fish count</div><div class="chart-wrap"><canvas id="stock-count"></canvas></div></div>`;
+  html += `<div class="chart-card"><div class="chart-title">Salmon Biomass — tonnes</div><div class="chart-wrap"><canvas id="stock-tonnes"></canvas></div></div>`;
   html += '</div>';
 
-  // note about weight-class measurement quality
+  // snapshot-based breakdowns
+  html += `<div class="section-label" style="margin-top:18px">🔎 Breakdowns — from daily snapshot (Elazığ ${snapDate.etas} · Karkamış ${snapDate.kark})</div>`;
+  html += '<div class="charts-grid">';
+  html += `<div class="chart-card"><div class="chart-title">By System — per 10k</div><div class="chart-wrap"><canvas id="mort-sys"></canvas></div></div>`;
+  html += `<div class="chart-card"><div class="chart-title">By Weight Class — per 10k</div><div class="chart-wrap"><canvas id="mort-weight"></canvas></div></div>`;
+  html += '</div>';
+
+  // note about weight-class measurement quality + stock-history provenance
   const wmE = E.weightMeasuredPct, wmK = K.weightMeasuredPct;
   html += `<div class="section-label" style="margin-top:14px;font-size:11px;color:#a0aec0">
     ⓘ Weight-class split is <b>measured</b> when the mortality log's avg-weight (gram) column is filled;
-    otherwise it is <b>estimated</b> from each system's size profile. Today's measured coverage —
-    Elazığ ${wmE}%, Karkamış ${wmK}%. Filling the gram column per cage at time of death makes this fully measured.</div>`;
+    otherwise it is <b>estimated</b> from each system's size profile. Measured coverage at snapshot —
+    Elazığ ${wmE??'—'}%, Karkamış ${wmK??'—'}%. Stock history comes from the daily snapshot
+    (biomass tabs overwrite — days without a snapshot run have no stock point); today's point is live.
+    Per-system &amp; per-size history: MORTALITY_BY_SYSTEM.csv / SIZE_BREAKDOWN_SNAPSHOT.csv in Claude raw knowledge.</div>`;
 
   el.innerHTML = html;
 
   setTimeout(()=>{
     const hist = d.history||[];
-    const labels = hist.map(h=>h.date);
-    makeChart('mort-trend', labels, [
-      ds('Elazığ', hist.map(h=>h.etas_per10k??null), '#fc8181'),
-      ds('Karkamış', hist.map(h=>h.kark_per10k??null), '#68d391'),
-    ]);
-    // by system (both farms, sorted desc)
+    const isoDates = hist.map(h=>h.date);
+    if (!rangeState['mort']) rangeState['mort'] = {};
+    if (!rangeState['mort'].range) rangeState['mort'].range = { days: 0 };
+    const redraw = () => {
+      const [lo,hi] = sliceByRange('mort', isoDates);
+      const hs = hist.slice(lo,hi);
+      const labels = hs.map(h=>h.date);
+      makeChart('mort-trend', labels, [
+        ds('Elazığ', hs.map(h=>h.etas_per10k??null), '#fc8181'),
+        ds('Karkamış', hs.map(h=>h.kark_per10k??null), '#68d391'),
+      ]);
+      makeChart('mort-abs', labels, [
+        ds('Elazığ', hs.map(h=>h.etas_mort??null), '#fc8181'),
+        ds('Karkamış', hs.map(h=>h.kark_mort??null), '#68d391'),
+      ]);
+      makeChart('stock-count', labels, [
+        ds('Elazığ', hs.map(h=>h.etas_fish??null), '#fc8181'),
+        ds('Karkamış', hs.map(h=>h.kark_fish??null), '#68d391'),
+      ]);
+      makeChart('stock-tonnes', labels, [
+        ds('Elazığ', hs.map(h=>h.etas_kg!=null?+(h.etas_kg/1000).toFixed(1):null), '#fc8181'),
+        ds('Karkamış', hs.map(h=>h.kark_kg!=null?+(h.kark_kg/1000).toFixed(1):null), '#68d391'),
+      ]);
+    };
+    attachRangeBar('mort', redraw);
+    redraw();
+    // by system (both farms, sorted desc) — snapshot-based
     const sys = [...(d.systems.etas||[]).map(s=>({...s,farm:'Elazığ',c:'#fc8181'})),
                  ...(d.systems.kark||[]).map(s=>({...s,farm:'Karkamış',c:'#68d391'}))]
                  .sort((a,b)=>b.per10k-a.per10k);
@@ -1790,11 +2043,6 @@ async function loadMortality() {
       dsBar('Elazığ', buckets.map(b=>wE[b]??null), '#fc8181'),
       dsBar('Karkamış', buckets.map(b=>wK[b]??null), '#68d391'),
     ], 'bar', {});
-    // absolute daily deaths
-    makeChart('mort-abs', labels, [
-      ds('Elazığ', hist.map(h=>h.etas_mort??null), '#fc8181'),
-      ds('Karkamış', hist.map(h=>h.kark_mort??null), '#68d391'),
-    ]);
   },60);
 }
 
@@ -1814,23 +2062,30 @@ async function loadETAS() {
       api(ID,'Yem-kafes baz'),
     ])).map(normalizeETAS);
     const bioTotals = computeBioTotals(somonBio, mersinBio);
+    // Gunluk column map — re-verified against the live header 21.07.2026:
+    //   2=Ölü (somon) · 10=Ölü (mersin) · 15=Somon yem · 17=Mersin yem · 22=Temp · 23=Oksijen
+    // (previous map had somon_feed:16 → a Biomass column that is always empty — that's why
+    //  the ETAS feed chart showed nothing — and mersin_mort:11 → 'Gelen balik (adet)'.)
     const c = {
-      date:0,somon_mort:2,hasat:4,mersin_mort:11,
-      somon_feed:16,somon_biomass:17,mersin_feed:18,mersin_biomass:19,
+      date:0,somon_mort:2,hasat:4,mersin_mort:10,
+      somon_feed:15,mersin_feed:17,
       temperature:22,oxygen:23
     };
     // Cage-level aggregates (salmon only — Mersin sturgeon stays from Günlük).
-    // ETAS as of 11 May 2026: mortality cage discipline OK through ~08.05, feed cage discipline
-    // poor (Saman not logging — last Yem-kafes baz entry 04.05). So:
-    //   - useCageMort: true (cage data closer to truth than Günlük)
-    //   - useCageFeed: false (Günlük is more complete until Saman catches up)
+    // Saman's Yem-kafes baz logging caught up (current through yesterday as of 21.07.2026),
+    // so BOTH mortality and feed now come from the cage logs per the 11.05 directive.
+    // cageMortFrom skips the 17–23 Apr migration-backfill lump (56,585 booked on 23.04);
+    // Günlük carries the true daily shape for those early dates.
     const cageData = {
       mortByDate: aggCageByDate(olumCage, 3),  // col D = Ölüm adet
       feedByDate: aggCageByDate(yemCage, 5),   // col F = Yem kg
       useCageMort: true,
-      useCageFeed: false,
+      useCageFeed: true,
+      cageMortFrom: '2026-04-24',
       farm: 'etas'
     };
+    _liveFarm.etas = { fish: bioTotals.somonCnt, kg: bioTotals.somonKg,
+                       mortByDate: cageData.mortByDate, mortFrom: cageData.cageMortFrom };
     el.innerHTML='';
     renderOps('etas', c, gunluk, 3, { somonKg:bioTotals.somonKg, mersinKg:bioTotals.mersinKg }, el, cageData);
     renderBioETAS(somonBio, mersinBio, el);
@@ -1847,25 +2102,35 @@ async function loadKark() {
   el.innerHTML='<div class="loading"><div class="spin"></div>Loading Karkamish 26…</div>';
   const ID='15Ck8hhqdYMsmBju1wTznQOsiNuEFQPMg_y3X7sCTA4o';
   try {
-    const [gunluk,hasat,bio,yem,olumCage,yemCage] = await Promise.all([
+    const [gunluk,hasatLog,hasatB,bio,yem,olumCage,yemCage] = await Promise.all([
       api(ID,'GÜNLÜK'),
-      api(ID,'HASAT'),
+      api(ID,'Hasat log'),
+      api(ID,'Hasat B log'),
       api(ID,'Biomass'),
       api(ID,'YEM'),
       api(ID,'Olum-kafes baz'),
       api(ID,'Yem-kafes baz'),
     ]);
+    // Harvest: the legacy 'HASAT' tab froze on 07.05.2026. Live sources are the cage-app
+    // 'Hasat log' (export/bulk — Toplam kg col 7; NOTE Karkamış schema differs from ETAS:
+    // Ürün col shifts everything after col 4) + 'Hasat B log' (daily domestic TRY sales —
+    // Toplam kg col 3). Normalize both to [date, customer, kg] rows for renderHasat.
+    const hasat = [['Tarih','Müşteri','KG']];
+    hasatLog.slice(1).forEach(r=>{ if(r&&r[0]) hasat.push([r[0], r[1]||'', r[7]||'']); });
+    hasatB.slice(1).forEach(r=>{ if(r&&r[0]) hasat.push([r[0], r[1]||'', r[3]||'']); });
     const bioTotals = computeKarkBioTotals(bio);
+    _liveFarm.kark = { fish: bioTotals.salmonCnt, kg: bioTotals.salmonKg,
+                       mortByDate: aggCageByDate(olumCage, 3), mortFrom: null };
     const c = {
       date:0,somon_mort:2,hasat:5,mersin_mort:12,
       total_feed:17,somon_biomass:18,mersin_feed:19,
       temperature:24,oxygen:25
     };
     // Cage-level aggregates — Karkamış cage app is salmon-only (Sterlet tab ignored).
-    // All 4 systems (On / Orta / Alt / Mersin Sistem) are salmon despite "Mersin" name.
+    // All 5 systems (On / Orta / Alt / Mersin / Incedere) are salmon despite "Mersin" name.
     // Karkamış cage tracker is the primary source of truth (deployed 06.05.2026, clean discipline).
     const cageData = {
-      mortByDate: aggCageByDate(olumCage, 3),  // col D = Ölüm adet
+      mortByDate: _liveFarm.kark.mortByDate,   // col D = Ölüm adet
       feedByDate: aggCageByDate(yemCage, 5),   // col F = Yem kg
       useCageMort: true,
       useCageFeed: true,
@@ -1876,7 +2141,7 @@ async function loadKark() {
     renderBioKark(bio, el);
     renderYem('kark', {kark:yem}, el);
     renderHasat('kark', hasat,
-      {date:0,customer:1,kg:2,product:3,dateFormat:'DD/MM/YYYY'}, el);
+      {date:0,customer:1,kg:2,dateFormat:'DD.MM.YYYY'}, el);
   } catch(e) {
     el.innerHTML=`<div class="err">❌ Karkamish 26 failed: ${e.message}</div>`;
   }
