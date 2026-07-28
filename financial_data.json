@@ -1,27 +1,27 @@
 {
-  "lastUpdated": "2026-07-24T15:31:25.787358+03:00",
-  "usdKur": 47.3206,
-  "euroUsd": 1.1385,
-  "eurKur": 53.8725,
-  "rateSource": "TCMB efektif satış 24.07.2026",
+  "lastUpdated": "2026-07-28T11:54:48.226800+03:00",
+  "usdKur": 47.4243,
+  "euroUsd": 1.1398,
+  "eurKur": 54.0527,
+  "rateSource": "TCMB efektif satış 27.07.2026",
   "receivables": {
-    "usd": 1771185.33,
-    "euroUsd": 56.92,
-    "tlUsd": 258169.09,
-    "total": 2029411.34
+    "usd": 1691315.33,
+    "euroUsd": 56.99,
+    "tlUsd": 193648.21,
+    "total": 1885020.53
   },
   "bank": {
-    "tlUsd": 433841.14,
-    "usd": 23833.310000000005,
-    "total": 457674.45
+    "tlUsd": 389386.4,
+    "usd": 21776.340000000004,
+    "total": 411162.74
   },
   "checks": {
-    "tlUsd": 98265.87,
-    "total": 98265.87
+    "tlUsd": 98051.0,
+    "total": 98051.0
   },
-  "totalAssets": 2585351.67,
-  "payables": 3317045.66,
-  "netPosition": -731693.99,
+  "totalAssets": 2394234.26,
+  "payables": 3229827.02,
+  "netPosition": -835592.76,
   "topReceivables": [
     {
       "name": "TK FİSH",
@@ -30,25 +30,25 @@
     },
     {
       "name": "GÜMÜŞDOĞA",
-      "amount": 450667,
+      "amount": 370797,
       "currency": "USD"
     },
     {
       "name": "TK FİSH",
-      "amount": 219201,
+      "amount": 143906,
       "currency": "TL",
-      "origAmount": 10372740
+      "origAmount": 6824651
     }
   ],
   "topPayables": [
     {
       "name": "GÜMÜŞDOĞA (USD)",
-      "amount": 2094214,
+      "amount": 2014344,
       "currency": "USD"
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 446436,
+      "amount": 445459,
       "currency": "TL",
       "origAmount": 21125597
     },
