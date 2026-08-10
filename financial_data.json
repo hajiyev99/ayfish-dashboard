@@ -1,27 +1,27 @@
 {
-  "lastUpdated": "2026-08-07T09:10:54.827153+03:00",
-  "usdKur": 47.6625,
-  "euroUsd": 1.1543,
-  "eurKur": 55.0168,
-  "rateSource": "TCMB efektif satış 06.08.2026",
+  "lastUpdated": "2026-08-10T11:34:47.009148+03:00",
+  "usdKur": 47.6799,
+  "euroUsd": 1.1526,
+  "eurKur": 54.9559,
+  "rateSource": "TCMB efektif satış 07.08.2026",
   "receivables": {
-    "usd": 1559302.15,
-    "euroUsd": 57.71,
-    "tlUsd": 87553.3,
-    "total": 1646913.16
+    "usd": 1497690.13,
+    "euroUsd": 57.63,
+    "tlUsd": 90978.72,
+    "total": 1588726.48
   },
   "bank": {
-    "tlUsd": 464036.84,
-    "usd": 125642.72,
-    "total": 589679.56
+    "tlUsd": 535832.76,
+    "usd": 106946.8,
+    "total": 642779.56
   },
   "checks": {
-    "tlUsd": 82874.38,
-    "total": 82874.38
+    "tlUsd": 63758.52,
+    "total": 63758.52
   },
-  "totalAssets": 2319467.1,
-  "payables": 3270988.73,
-  "netPosition": -951521.63,
+  "totalAssets": 2295264.56,
+  "payables": 3266176.64,
+  "netPosition": -970912.08,
   "topReceivables": [
     {
       "name": "TK FİSH",
@@ -34,8 +34,8 @@
       "currency": "USD"
     },
     {
-      "name": "PAKYÜREK TARIM",
-      "amount": 118356,
+      "name": "NAM SU",
+      "amount": 83279,
       "currency": "USD"
     }
   ],
@@ -47,7 +47,7 @@
     },
     {
       "name": "BEDRİ TÜRKAY/TL",
-      "amount": 445180,
+      "amount": 445018,
       "currency": "TL",
       "origAmount": 21218397
     },
