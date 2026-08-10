@@ -1501,7 +1501,7 @@ async function getLiveFarmStats() {
 // EMBEDDED_MORTALITY_DATA is refreshed daily by farm_snapshot.py (same mechanism as
 // EMBEDDED_FINANCIAL_DATA) so the page renders offline / on file:// too.
 const EMBEDDED_MORTALITY_DATA = {
-  "lastUpdated": "2026-08-09T08:38:32.866132+03:00",
+  "lastUpdated": "2026-08-10T08:30:30.083025+03:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
@@ -1516,11 +1516,11 @@ const EMBEDDED_MORTALITY_DATA = {
     },
     "kark": {
       "farm": "Karkamis",
-      "date": "2026-08-08",
-      "total_fish": 1118499,
-      "total_kg": 2140647,
-      "mortality": 837,
-      "per10k": 7.48,
+      "date": "2026-08-09",
+      "total_fish": 1117710,
+      "total_kg": 2138980,
+      "mortality": 789,
+      "per10k": 7.06,
       "weightMeasuredPct": 0.0
     }
   },
@@ -1940,6 +1940,13 @@ const EMBEDDED_MORTALITY_DATA = {
       "kark_mort": 837,
       "kark_fish": 1118499,
       "kark_kg": 2140647
+    },
+    {
+      "date": "2026-08-09",
+      "kark_per10k": 7.06,
+      "kark_mort": 789,
+      "kark_fish": 1117710,
+      "kark_kg": 2138980
     }
   ],
   "systems": {
@@ -1954,33 +1961,33 @@ const EMBEDDED_MORTALITY_DATA = {
     "kark": [
       {
         "system": "On sistem",
-        "fish": 340450,
-        "mort": 195,
-        "per10k": 5.73
+        "fish": 340202,
+        "mort": 248,
+        "per10k": 7.29
       },
       {
         "system": "Orta sistem",
-        "fish": 230362,
-        "mort": 307,
-        "per10k": 13.33
+        "fish": 230153,
+        "mort": 209,
+        "per10k": 9.08
       },
       {
         "system": "Alt sistem",
-        "fish": 234617,
-        "mort": 125,
-        "per10k": 5.33
+        "fish": 234477,
+        "mort": 140,
+        "per10k": 5.97
       },
       {
         "system": "Mersin sistem",
-        "fish": 191100,
-        "mort": 161,
-        "per10k": 8.42
+        "fish": 190947,
+        "mort": 153,
+        "per10k": 8.01
       },
       {
         "system": "Incedere sistem",
-        "fish": 121970,
-        "mort": 49,
-        "per10k": 4.02
+        "fish": 121931,
+        "mort": 39,
+        "per10k": 3.2
       }
     ]
   },
@@ -2002,27 +2009,27 @@ const EMBEDDED_MORTALITY_DATA = {
     "kark": [
       {
         "bucket": "0-200g",
-        "mort": 163,
-        "fish": 284274,
-        "per10k": 5.73
+        "mort": 207,
+        "fish": 284084,
+        "per10k": 7.29
       },
       {
         "bucket": "1500-2500g",
-        "mort": 338,
-        "fish": 435351,
-        "per10k": 7.76
+        "mort": 295,
+        "fish": 435076,
+        "per10k": 6.78
       },
       {
         "bucket": "2500-3500g",
-        "mort": 314,
-        "fish": 376581,
-        "per10k": 8.34
+        "mort": 269,
+        "fish": 376339,
+        "per10k": 7.15
       },
       {
         "bucket": "3500g+",
-        "mort": 22,
-        "fish": 22293,
-        "per10k": 9.87
+        "mort": 18,
+        "fish": 22211,
+        "per10k": 8.1
       }
     ]
   }
