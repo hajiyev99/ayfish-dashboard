@@ -1,24 +1,24 @@
 {
-  "lastUpdated": "2026-08-10T08:30:30.083025+03:00",
+  "lastUpdated": "2026-08-11T08:30:57.016514+03:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
     "etas": {
       "farm": "Elazig",
-      "date": "2026-08-08",
+      "date": "2026-08-10",
       "total_fish": 1015560,
       "total_kg": 316879,
-      "mortality": 1811,
-      "per10k": 17.83,
+      "mortality": 2762,
+      "per10k": 27.2,
       "weightMeasuredPct": 0.0
     },
     "kark": {
       "farm": "Karkamis",
-      "date": "2026-08-09",
-      "total_fish": 1117710,
-      "total_kg": 2138980,
-      "mortality": 789,
-      "per10k": 7.06,
+      "date": "2026-08-10",
+      "total_fish": 1116864,
+      "total_kg": 2137235,
+      "mortality": 846,
+      "per10k": 7.57,
       "weightMeasuredPct": 0.0
     }
   },
@@ -445,6 +445,17 @@
       "kark_mort": 789,
       "kark_fish": 1117710,
       "kark_kg": 2138980
+    },
+    {
+      "date": "2026-08-10",
+      "etas_per10k": 27.2,
+      "etas_mort": 2762,
+      "etas_fish": 1015560,
+      "etas_kg": 316879,
+      "kark_per10k": 7.57,
+      "kark_mort": 846,
+      "kark_fish": 1116864,
+      "kark_kg": 2137235
     }
   ],
   "systems": {
@@ -452,40 +463,40 @@
       {
         "system": "ETAS 2",
         "fish": 1015560,
-        "mort": 1811,
-        "per10k": 17.83
+        "mort": 2762,
+        "per10k": 27.2
       }
     ],
     "kark": [
       {
         "system": "On sistem",
-        "fish": 340202,
-        "mort": 248,
-        "per10k": 7.29
+        "fish": 339938,
+        "mort": 264,
+        "per10k": 7.77
       },
       {
         "system": "Orta sistem",
-        "fish": 230153,
-        "mort": 209,
-        "per10k": 9.08
+        "fish": 229947,
+        "mort": 206,
+        "per10k": 8.96
       },
       {
         "system": "Alt sistem",
-        "fish": 234477,
-        "mort": 140,
-        "per10k": 5.97
+        "fish": 234334,
+        "mort": 143,
+        "per10k": 6.1
       },
       {
         "system": "Mersin sistem",
-        "fish": 190947,
-        "mort": 153,
-        "per10k": 8.01
+        "fish": 190770,
+        "mort": 177,
+        "per10k": 9.28
       },
       {
         "system": "Incedere sistem",
-        "fish": 121931,
-        "mort": 39,
-        "per10k": 3.2
+        "fish": 121875,
+        "mort": 56,
+        "per10k": 4.59
       }
     ]
   },
@@ -493,41 +504,41 @@
     "etas": [
       {
         "bucket": "0-200g",
-        "mort": 1403,
+        "mort": 2140,
         "fish": 786691,
-        "per10k": 17.83
+        "per10k": 27.2
       },
       {
         "bucket": "1000-1500g",
-        "mort": 408,
+        "mort": 622,
         "fish": 228869,
-        "per10k": 17.83
+        "per10k": 27.18
       }
     ],
     "kark": [
       {
         "bucket": "0-200g",
-        "mort": 207,
-        "fish": 284084,
-        "per10k": 7.29
+        "mort": 220,
+        "fish": 283883,
+        "per10k": 7.75
       },
       {
         "bucket": "1500-2500g",
-        "mort": 295,
-        "fish": 435076,
-        "per10k": 6.78
+        "mort": 335,
+        "fish": 434754,
+        "per10k": 7.71
       },
       {
         "bucket": "2500-3500g",
-        "mort": 269,
-        "fish": 376339,
-        "per10k": 7.15
+        "mort": 270,
+        "fish": 376083,
+        "per10k": 7.18
       },
       {
         "bucket": "3500g+",
-        "mort": 18,
-        "fish": 22211,
-        "per10k": 8.1
+        "mort": 20,
+        "fish": 22144,
+        "per10k": 9.03
       }
     ]
   }
