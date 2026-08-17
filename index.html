@@ -1101,29 +1101,29 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-08-16T03:00:47.347830+03:00",
+  "lastUpdated": "2026-08-17T15:04:17.497649+03:00",
   "usdKur": 47.8783,
   "euroUsd": 1.1555,
   "eurKur": 55.3213,
   "rateSource": "TCMB efektif satış 14.08.2026",
   "receivables": {
-    "usd": 581756.2,
+    "usd": 525022.43,
     "euroUsd": 57.77,
-    "tlUsd": 58798.55,
-    "total": 640612.52
+    "tlUsd": 42089.52,
+    "total": 567169.72
   },
   "bank": {
-    "tlUsd": 749528.85,
+    "tlUsd": 790123.41,
     "usd": 72646.8,
-    "total": 822175.65
+    "total": 862770.21
   },
   "checks": {
-    "tlUsd": 63494.32,
-    "total": 63494.32
+    "tlUsd": 57228.43,
+    "total": 57228.43
   },
-  "totalAssets": 1526282.49,
+  "totalAssets": 1487168.36,
   "payables": 2885984.82,
-  "netPosition": -1359702.33,
+  "netPosition": -1398816.46,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -1148,22 +1148,26 @@ const EMBEDDED_FINANCIAL_DATA = {
       "currency": "USD"
     },
     {
-      "name": "KEMAL BALIKÇILIK",
-      "amount": 234805,
+      "name": "BİOMAR SAGUN / KEMAL BALIKÇILIK",
+      "amount": 426052,
       "currency": "USD",
-      "note": "− Kemal rec $36K = net $198K owed"
+      "note": "combined entity, gross $426K − Kemal rec $36K = net $390K owed"
     },
     {
-      "name": "BİOMAR SAGUN",
-      "amount": 191247,
-      "currency": "USD",
-      "note": "− Kemal rec $36K = net $155K owed"
+      "name": "AKVAPLAST PLASTİK",
+      "amount": 52601,
+      "currency": "EURO",
+      "origAmount": 45522
     }
   ],
   "_biomarKemalOffset": {
     "payUsd": 426052,
     "recUsd": 36468,
-    "netUsd": 389585
+    "netUsd": 389584,
+    "entities": [
+      "BİOMAR SAGUN",
+      "KEMAL BALIKÇILIK"
+    ]
   }
 };
 
