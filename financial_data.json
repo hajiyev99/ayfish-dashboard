@@ -1,27 +1,32 @@
 {
-  "lastUpdated": "2026-08-17T15:04:17.497649+03:00",
-  "usdKur": 47.8783,
-  "euroUsd": 1.1555,
-  "eurKur": 55.3213,
-  "rateSource": "TCMB efektif satış 14.08.2026",
+  "lastUpdated": "2026-08-19T21:16:08.412851+03:00",
+  "usdKur": 48.0048,
+  "euroUsd": 1.1601,
+  "eurKur": 55.6895,
+  "rateSource": "TCMB efektif satış 19.08.2026",
   "receivables": {
-    "usd": 525022.43,
-    "euroUsd": 57.77,
-    "tlUsd": 42089.52,
-    "total": 567169.72
+    "usd": 550697.44,
+    "euroUsd": 58.0,
+    "tlUsd": 38998.26,
+    "total": 589753.7
   },
   "bank": {
-    "tlUsd": 790123.41,
-    "usd": 72646.8,
-    "total": 862770.21
+    "tlUsd": 111986.34,
+    "usd": 720646.7999999999,
+    "total": 832633.14
   },
   "checks": {
-    "tlUsd": 57228.43,
-    "total": 57228.43
+    "tlUsd": 52911.38,
+    "total": 52911.38
   },
-  "totalAssets": 1487168.36,
-  "payables": 2885984.82,
-  "netPosition": -1398816.46,
+  "payablesBreakdown": {
+    "usd": 2496877.78,
+    "euroUsd": 52809.5,
+    "tlUsd": 37150.2
+  },
+  "totalAssets": 1475298.22,
+  "payables": 2586837.49,
+  "netPosition": -1111539.27,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -49,11 +54,11 @@
       "name": "BİOMAR SAGUN / KEMAL BALIKÇILIK",
       "amount": 426052,
       "currency": "USD",
-      "note": "combined entity, gross $426K − Kemal rec $36K = net $390K owed"
+      "note": "gross $426K (Biomar $191K + Kemal $235K) − Kemal rec $36K = net $390K owed"
     },
     {
       "name": "AKVAPLAST PLASTİK",
-      "amount": 52601,
+      "amount": 52810,
       "currency": "EURO",
       "origAmount": 45522
     }
@@ -61,7 +66,7 @@
   "_biomarKemalOffset": {
     "payUsd": 426052,
     "recUsd": 36468,
-    "netUsd": 389584,
+    "netUsd": 389585,
     "entities": [
       "BİOMAR SAGUN",
       "KEMAL BALIKÇILIK"
