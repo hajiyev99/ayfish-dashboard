@@ -175,6 +175,58 @@ tr:hover td { background:#131d2a; }
 .share-bar { height:5px; background:#68d391; border-radius:3px; min-width:1px; }
 .share-pct { font-size:11px; color:#4a6080; white-space:nowrap; }
 
+
+/* ── GROWTH & PROJECTION ─────────────────────────────────────── */
+.tab-btn.active-growth { color:#a78bfa; border-bottom-color:#a78bfa; }
+.gwrap { display:flex; flex-direction:column; gap:16px; }
+.gnote { background:#151b2e; border:1px solid #2a2145; border-left:3px solid #a78bfa; border-radius:8px;
+         padding:13px 16px; font-size:12px; color:#a9b6cc; line-height:1.65; }
+.gnote b { color:#c4b5fd; }
+.mono { font-family:ui-monospace,'SF Mono',Menlo,monospace; color:#c4d4e8; }
+.gcontrols { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+.gctl { background:#111927; border:1px solid #1e2d40; border-radius:10px; padding:12px 14px;
+        display:flex; flex-direction:column; gap:7px; }
+.gctl label { font-size:10px; color:#4a6080; text-transform:uppercase; letter-spacing:.07em; }
+.gctl label b { color:#a78bfa; font-size:13px; margin-left:5px; letter-spacing:0; }
+.gctl input[type=range] { width:100%; accent-color:#a78bfa; }
+.ghint { font-size:10px; color:#3d5170; }
+.gbtn { background:#1a2333; border:1px solid #2f4460; color:#c4d4e8; border-radius:7px;
+        padding:6px 12px; font-size:12px; cursor:pointer; align-self:flex-start; }
+.gbtn:hover { border-color:#a78bfa; color:#c4b5fd; }
+.gpick { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:900px){ .gpick { grid-template-columns:1fr; } }
+.gpick h4 { font-size:11px; color:#718096; margin:0 0 8px; font-weight:600; }
+.gpick i { font-size:11px; color:#3d5170; }
+.gchips { display:flex; flex-wrap:wrap; gap:7px; }
+.gchip { display:inline-flex; align-items:center; gap:7px; background:#111927; border:1px solid #1e2d40;
+         border-radius:8px; padding:6px 11px; cursor:pointer; font-size:11px; color:#8fa3bd; user-select:none; }
+.gchip:hover { border-color:#2f4460; }
+.gchip.on { border-color:#a78bfa; background:#1a1630; color:#e2e8f0; }
+.gchip b { color:#c4d4e8; font-size:12px; }
+.gchip.on b { color:#c4b5fd; }
+.gchip span { color:#4a6080; font-size:10px; }
+.gchip input { accent-color:#a78bfa; margin:0; }
+.gcard { background:#111927; border:1px solid #1e2d40; border-radius:12px; padding:14px; }
+.gh { font-size:13px; color:#718096; margin:6px 0 0; font-weight:600; }
+.gtbl-wrap { background:#111927; border:1px solid #1e2d40; border-radius:12px; overflow-x:auto; }
+.gtable { width:100%; border-collapse:collapse; white-space:nowrap; }
+.gtable .num { text-align:right; font-variant-numeric:tabular-nums; }
+.gwarn { display:inline-block; background:#3a2a12; color:#f6ad55; border-radius:4px;
+         padding:0 5px; font-size:9px; font-weight:700; cursor:help; }
+.gdone { color:#68d391; font-weight:600; }
+.gmuted { color:#3d5170; }
+.gcov { display:flex; flex-wrap:wrap; gap:10px; }
+.gcovitem { font-size:11px; color:#8fa3bd; background:#111927; border:1px solid #1e2d40;
+            border-radius:7px; padding:6px 11px; }
+.gcovitem b { color:#c4d4e8; }
+.gcovitem i { color:#4a6080; font-style:normal; }
+.gcovitem.low { border-color:#5c4318; color:#f6ad55; }
+.gcovitem.low b { color:#f6ad55; }
+.gpast { color:#f6ad55; font-style:italic; }
+.gfast { color:#68d391; font-weight:700; }
+.gslow { color:#fc8181; font-weight:700; }
+
+
 /* ── STATES ──────────────────────────────────────────────────── */
 .loading { display:flex; align-items:center; justify-content:center; min-height:120px; gap:12px; color:#4a6080; font-size:13px; }
 .spin { width:20px; height:20px; border:3px solid #1e2d40; border-top-color:#63b3ed; border-radius:50%; animation:spin .8s linear infinite; flex-shrink:0; }
@@ -230,6 +282,7 @@ tr:hover td { background:#131d2a; }
     <button class="tab-btn" id="tab-kark" onclick="showPage('kark')">🟢 Karkamish 26 — Gaziantep</button>
     <button class="tab-btn" id="tab-mort" onclick="showPage('mort')">📉 Mortality & Stock</button>
     <button class="tab-btn" id="tab-fin" onclick="showPage('fin')">💰 Financial Overview</button>
+    <button class="tab-btn" id="tab-growth" onclick="showPage('growth')">📈 Growth &amp; Projection</button>
   </div>
 </div>
 
@@ -244,6 +297,9 @@ tr:hover td { background:#131d2a; }
 </div>
 <div class="page" id="page-fin">
   <div class="loading"><div class="spin"></div>Loading Financial Overview…</div>
+</div>
+<div class="page" id="page-growth">
+  <div class="loading"><div class="spin"></div>Loading Growth &amp; Projection…</div>
 </div>
 
 <div class="footer">Auto-refreshes every 30 min · Shows latest available data (falls back to last entry if yesterday is blank)</div>
@@ -260,11 +316,13 @@ function showPage(pid) {
   document.getElementById('page-'+pid).classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b => { b.className='tab-btn'; });
   document.getElementById('tab-'+pid).classList.add('active-'+pid);
-  document.getElementById('refreshBtn').style.display = (pid === 'fin' || pid === 'mort') ? 'none' : '';
+  document.getElementById('refreshBtn').style.display = (pid === 'fin' || pid === 'mort' || pid === 'growth') ? 'none' : '';
   if(pid === 'fin') {
     loadFinancial();
   } else if(pid === 'mort') {
     loadMortality();
+  } else if(pid === 'growth') {
+    loadGrowth();
   } else if (rangeState[pid] && rangeState[pid].redraw) {
     // Charts created while this tab was hidden rendered into a 0-size canvas — redraw on reveal.
     rangeState[pid].redraw();
@@ -2433,6 +2491,402 @@ async function loadAll() {
   }
   document.getElementById('updated').textContent=`Last updated: ${new Date().toLocaleTimeString()}`;
   btn.disabled=false; btn.textContent='⟳ Refresh';
+}
+
+
+// ── GROWTH & PROJECTION ────────────────────────────────────────────────────
+// Batch codes decode as DD + month-initial + optional supplier-initial + YY.
+// Month letters: O=Ocak S=Şubat M=Mart N=Nisan Y=Mayıs H=Haziran T=Temmuz
+//                G=Ağustos L=Eylül E=Ekim K=Kasım A=Aralık
+// Supplier: V=Viviers (invoiced via Golden Group)  A=Aqualande
+// ⚠ Ağustos and Aralık both start with A in Turkish — confirmed codes are pinned
+// in KNOWN_EGG_DATES so the parser can never mis-date them.
+const KNOWN_EGG_DATES = {
+  '5M25'  : '2025-03-05', '20M25' : '2025-03-20', '27M25' : '2025-03-27',
+  '10N25' : '2025-04-10', '1EA25' : '2025-10-01', '6KA25' : '2025-11-06',
+  '11AV25': '2025-12-11', '22MV26': '2026-03-22', '26MA26': '2026-03-26'
+};
+const MONTH_LETTER = {O:1,S:2,M:3,N:4,Y:5,H:6,T:7,G:8,L:9,E:10,K:11,A:12};
+const SUPPLIER_LETTER = {V:'Viviers (Golden Group)', A:'Aqualande'};
+// Codes that predate the supplier-letter convention — taken from the egg invoices.
+const KNOWN_SUPPLIER = { '5M25':'Viviers (Golden Group)', '20M25':'Viviers (Golden Group)',
+                         '27M25':'Viviers (Golden Group)', '10N25':'Viviers (Golden Group)' };
+
+function normalizeCode(raw) {
+  if (!raw) return null;
+  const first = String(raw).split(/[,_/]/)[0];
+  const c = first.replace(/\s+/g,'').toUpperCase();
+  return /^\d{1,2}[A-Z]{1,2}\d{2}$/.test(c) ? c : null;
+}
+function decodeBatch(code) {
+  if (KNOWN_EGG_DATES[code]) {
+    const d = new Date(KNOWN_EGG_DATES[code] + 'T00:00:00');
+    const m = code.match(/^\d{1,2}([A-Z]{1,2})\d{2}$/);
+    const sup = KNOWN_SUPPLIER[code] || (m && m[1].length === 2 ? SUPPLIER_LETTER[m[1][1]] : null);
+    return { egg: d, supplier: sup, confirmed: true };
+  }
+  const m = code.match(/^(\d{1,2})([A-Z]{1,2})(\d{2})$/);
+  if (!m) return null;
+  const mon = MONTH_LETTER[m[2][0]];
+  if (!mon) return null;
+  const sup = m[2].length === 2 ? SUPPLIER_LETTER[m[2][1]] : null;
+  return { egg: new Date(2000 + parseInt(m[3],10), mon - 1, parseInt(m[1],10)),
+           supplier: sup, confirmed: false };
+}
+
+// Generic cage-block reader: finds every "Kafes" header anywhere in the grid and
+// reads the rows beneath it. Works for both farms despite differing column order.
+function readCageBlocks(rows, farm) {
+  const out = [];
+  for (let r = 0; r < rows.length; r++) {
+    const row = rows[r] || [];
+    for (let c = 0; c < row.length; c++) {
+      if (String(row[c] || '').trim().toLowerCase() !== 'kafes') continue;
+      const hdr = {};
+      for (let k = c; k < Math.min(c + 9, row.length); k++) {
+        const h = String(row[k] || '').trim().toLowerCase().replace(/ı/g,'i').replace(/ş/g,'s');
+        if (h === 'adet') hdr.adet = k;
+        else if (h === 'gram') hdr.gram = k;
+        else if (h.startsWith('balik kod') || h.startsWith('balık kod')) hdr.kod = k;
+        else if (h.startsWith('son tartim')) hdr.tartim = k;
+      }
+      if (hdr.adet == null || hdr.gram == null || hdr.kod == null) continue;
+      for (let rr = r + 1; rr < rows.length; rr++) {
+        const dr = rows[rr] || [];
+        const cage = String(dr[c] || '').trim();
+        if (!cage) break;
+        if (cage.toLowerCase() === 'kafes') break;
+        const adet = parseNum(dr[hdr.adet]);
+        const gram = parseNum(dr[hdr.gram]);
+        const rawKod = dr[hdr.kod];
+        const code = normalizeCode(rawKod);
+        if (!adet || !gram) continue;
+        out.push({ farm, cage, adet, gram, code,
+                   mixed: /[,_/]/.test(String(rawKod || '')),
+                   tartim: hdr.tartim != null ? String(dr[hdr.tartim] || '').trim() : '' });
+      }
+    }
+  }
+  return out;
+}
+
+// Feeding rate as % of body weight per day — AyFish practice at the small end,
+// standard trout table above it. Validated against Karkamış: 20.8 t/day over
+// 2,111 t of biomass = 0.985 %/day at a 1,910 g average, table says 1.00 %.
+function feedPct(w) {
+  if (w < 20)   return 3.0;
+  if (w < 50)   return 2.5;
+  if (w < 100)  return 2.0;
+  if (w < 300)  return 1.6;
+  if (w < 800)  return 1.3;
+  if (w < 1500) return 1.1;
+  if (w < 2500) return 1.0;
+  return 0.85;
+}
+const XBASE_Y = 2025;
+function toX(d) { return (d.getFullYear() - XBASE_Y) * 12 + d.getMonth() + (d.getDate() - 1) / 30.44; }
+function xLabel(x) {
+  const mi = Math.round(x);
+  const y = XBASE_Y + Math.floor(mi / 12), m = ((mi % 12) + 12) % 12;
+  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m] + ' ' + String(y).slice(2);
+}
+function staleDays(d) { return Math.round((Date.now() - d.getTime()) / 86400000); }
+function fmtDate(d) {
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+const GROWTH_ID_ETAS = '1d5auEs3o0st7z3Bt46uuVzuHK0Bw-K70Lb1R5m4ok4Y';
+const GROWTH_ID_KARK = '15Ck8hhqdYMsmBju1wTznQOsiNuEFQPMg_y3X7sCTA4o';
+const GROWTH_MILESTONES = [1000, 2000, 3000, 3500, 4000];
+let growthState = { batches: [], selected: new Set(), adjust: 1.0, logY: true };
+
+// Each batch is calibrated against its OWN history: we solve for the growth index k
+// that takes 0.15 g at first feeding (egg + 60 d) to the weight the farm actually
+// measured, then run that same k forward. k = 1.00 means the batch tracked the
+// standard feed table exactly; 0.80 means it grew 20 % slower than the table predicts.
+const FIRST_FEED_DAYS = 60, START_G = 0.15, MODEL_FCR = 1.5;
+
+function simulateTo(k, fromDate, w0, toDate) {
+  let w = w0, t = fromDate.getTime(), end = toDate.getTime();
+  let guard = 0;
+  while (t < end && guard++ < 3000) {
+    w += w * (feedPct(w) / 100) * k / MODEL_FCR;
+    t += 86400000;
+  }
+  return w;
+}
+function calibrate(b) {
+  const t0 = new Date(b.egg.getTime() + FIRST_FEED_DAYS * 86400000);
+  if (b.asOf <= t0) return 1;
+  let lo = 0.15, hi = 6;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    (simulateTo(mid, t0, START_G, b.asOf) < b.gram) ? (lo = mid) : (hi = mid);
+  }
+  return (lo + hi) / 2;
+}
+function projectBatch(b, adjust) {
+  const k = (b.k || 1) * adjust;
+  const pts = [], back = [], hits = {};
+
+  // history: first feeding -> the weighing (model, calibrated to land on the real number)
+  const t0 = new Date(b.egg.getTime() + FIRST_FEED_DAYS * 86400000);
+  let w = START_G, d = new Date(t0);
+  let guard = 0;
+  while (d < b.asOf && guard++ < 3000) {
+    w += w * (feedPct(w) / 100) * k / MODEL_FCR;
+    d = new Date(d.getTime() + 86400000);
+    if (guard % 5 === 0) back.push({ x: toX(d), y: w < 1 ? +w.toFixed(2) : Math.round(w) });
+  }
+
+  // forward from the weighing
+  w = b.gram; d = new Date(b.asOf);
+  const now = Date.now();
+  let estToday = b.gram;
+  pts.push({ x: toX(d), y: Math.round(w) });
+  for (let i = 0; i < 900 && w < 4500; i++) {
+    w += w * (feedPct(w) / 100) * k / MODEL_FCR;
+    d = new Date(d.getTime() + 86400000);
+    if (d.getTime() <= now) estToday = w;
+    for (const ms of GROWTH_MILESTONES) if (!hits[ms] && w >= ms) hits[ms] = new Date(d);
+    if (i % 5 === 0) pts.push({ x: toX(d), y: Math.round(w) });
+  }
+  pts.push({ x: toX(d), y: Math.round(w) });
+  return { pts, hits, back, k, estToday };
+}
+
+async function loadGrowth() {
+  const page = document.getElementById('page-growth');
+  if (growthState.loaded) { renderGrowth(); return; }
+  page.innerHTML = '<div class="loading"><div class="spin"></div>Loading Growth &amp; Projection…</div>';
+  try {
+    const [etRaw, kaRows] = await Promise.all([
+      api(GROWTH_ID_ETAS, 'Somon Biomass v2'),
+      api(GROWTH_ID_KARK, 'Biomass')
+    ]);
+    const allCages = readCageBlocks(normalizeETAS(etRaw), 'Elazığ')
+      .concat(readCageBlocks(kaRows, 'Karkamış'));
+    const cages = allCages.filter(c => c.code);
+    // Coverage: how much of each farm actually carries a batch code
+    const cov = {};
+    for (const c of allCages) {
+      cov[c.farm] = cov[c.farm] || { total: 0, coded: 0 };
+      cov[c.farm].total += c.adet;
+      if (c.code) cov[c.farm].coded += c.adet;
+    }
+    growthState.coverage = cov;
+
+    const map = new Map();
+    for (const c of cages) {
+      const key = c.code + '|' + c.farm;
+      if (!map.has(key)) map.set(key, { code: c.code, farm: c.farm, adet: 0, kg: 0, cages: 0, mixed: 0, dates: [] });
+      const g = map.get(key);
+      g.adet += c.adet; g.kg += c.adet * c.gram / 1000; g.cages++;
+      if (c.mixed) g.mixed++;
+      const dm = c.tartim.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      if (dm) g.dates.push(new Date(+dm[3], +dm[2] - 1, +dm[1]));
+    }
+    const batches = [];
+    for (const g of map.values()) {
+      const dec = decodeBatch(g.code);
+      if (!dec) continue;
+      g.dates.sort((a, b) => b - a);
+      batches.push({
+        code: g.code, farm: g.farm, adet: g.adet, kg: g.kg, cages: g.cages, mixed: g.mixed,
+        gram: g.kg * 1000 / g.adet, egg: dec.egg, supplier: dec.supplier,
+        confirmed: dec.confirmed, asOf: g.dates[0] || new Date()
+      });
+    }
+    batches.forEach(b => { b.k = calibrate(b); });
+    // Report each batch against the fleet median rather than the raw table, so the number
+    // answers "is this batch growing well for us" instead of restating a constant offset.
+    const ks = batches.map(b => b.k).sort((a, b) => a - b);
+    const medK = ks.length ? ks[Math.floor(ks.length / 2)] : 1;
+    batches.forEach(b => { b.kRel = b.k / medK; });
+    batches.sort((a, b) => b.gram - a.gram);
+    growthState.batches = batches;
+    growthState.selected = new Set(batches.filter(b => b.adet > 20000).map(b => b.code + '|' + b.farm));
+    growthState.loaded = true;
+    renderGrowth();
+  } catch (e) {
+    page.innerHTML = '<div class="err">Growth tab failed: ' + e.message + '</div>';
+  }
+}
+
+function renderGrowth() {
+  const S = growthState;
+  const page = document.getElementById('page-growth');
+  const byFarm = { 'Elazığ': [], 'Karkamış': [] };
+  S.batches.forEach(b => byFarm[b.farm] && byFarm[b.farm].push(b));
+
+  const chip = b => {
+    const k = b.code + '|' + b.farm, on = S.selected.has(k);
+    return `<label class="gchip ${on ? 'on' : ''}">
+      <input type="checkbox" ${on ? 'checked' : ''} onchange="toggleBatch('${k}')">
+      <b>${b.code}</b><span>${(b.adet / 1000).toFixed(0)}K · ${Math.round(b.gram)} g</span></label>`;
+  };
+
+  page.innerHTML = `
+  <div class="gwrap">
+    <div class="gnote">
+      <b>How this works.</b> Each batch code is an egg arrival date — <span class="mono">DD</span> +
+      month letter + supplier letter + <span class="mono">YY</span>. The solid line is real: egg date
+      through the farm's last weighing. The dashed line projects forward at the feeding rate for that
+      fish size, converted at the FCR you choose. Assumes feeding continues uninterrupted at current
+      rates; it does not model winter cooling or a harvest.
+    </div>
+    <div class="gcov" id="g-coverage"></div>
+
+    <div class="gcontrols">
+      <div class="gctl">
+        <label>Growth vs each batch's own record <b id="g-adj-v">${Math.round(S.adjust * 100)}%</b></label>
+        <input type="range" min="0.6" max="1.4" step="0.05" value="${S.adjust}"
+               oninput="growthState.adjust=parseFloat(this.value);document.getElementById('g-adj-v').textContent=Math.round(growthState.adjust*100)+'%';drawGrowth()">
+        <span class="ghint">100% = keeps growing exactly as it has so far</span>
+      </div>
+      <div class="gctl">
+        <label>Weight axis</label>
+        <button class="gbtn" onclick="growthState.logY=!growthState.logY;renderGrowth()">${S.logY ? 'Log' : 'Linear'}</button>
+        <span class="ghint">log shows fry, linear shows market fish</span>
+      </div>
+    </div>
+
+    <div class="gpick">
+      <div><h4>🔵 Elazığ</h4><div class="gchips">${byFarm['Elazığ'].map(chip).join('') || '<i>no coded batches</i>'}</div></div>
+      <div><h4>🟢 Karkamış</h4><div class="gchips">${byFarm['Karkamış'].map(chip).join('') || '<i>no coded batches</i>'}</div></div>
+    </div>
+
+    <div class="gcard"><div style="height:460px"><canvas id="growth-chart"></canvas></div></div>
+
+    <h3 class="gh">When each batch reaches market weight</h3>
+    <div class="gtbl-wrap"><table class="gtable" id="growth-table"></table></div>
+  </div>`;
+  const cov = S.coverage || {};
+  const covEl = document.getElementById('g-coverage');
+  if (covEl) {
+    covEl.innerHTML = Object.keys(cov).map(f => {
+      const c = cov[f], pct = c.total ? Math.round(c.coded / c.total * 100) : 0;
+      const warn = pct < 60 ? ' low' : '';
+      return `<span class="gcovitem${warn}"><b>${f}</b> ${pct}% of stock carries a batch code
+        <i>(${c.coded.toLocaleString('en-US')} of ${c.total.toLocaleString('en-US')} fish)</i></span>`;
+    }).join('');
+  }
+  drawGrowth();
+}
+
+function toggleBatch(k) {
+  growthState.selected.has(k) ? growthState.selected.delete(k) : growthState.selected.add(k);
+  renderGrowth();
+}
+
+const GROWTH_COLORS = ['#38bdf8','#34d399','#f59e0b','#f472b6','#a78bfa','#fb7185','#2dd4bf','#facc15','#60a5fa','#c084fc'];
+
+function drawGrowth() {
+  const S = growthState;
+  const sel = S.batches.filter(b => S.selected.has(b.code + '|' + b.farm));
+  const today = toX(new Date());
+  const datasets = [];
+  const rows = [];
+
+  sel.forEach((b, i) => {
+    const col = GROWTH_COLORS[i % GROWTH_COLORS.length];
+    const { pts, hits, back, k, estToday } = projectBatch(b, S.adjust);
+    const weighIdx = back.length;               // index of the one hard data point
+    const data = back.concat([{ x: toX(b.asOf), y: Math.round(b.gram) }], pts.slice(1));
+    datasets.push({
+      label: b.code + ' · ' + b.farm, data,
+      borderColor: col, backgroundColor: col + '33', borderWidth: 2.4,
+      pointRadius: ctx => (ctx.dataIndex === weighIdx ? 5.5 : 0), pointBackgroundColor: col,
+      pointBorderColor: '#0f172a', pointBorderWidth: 2, tension: 0.25,
+      segment: { borderDash: c => (c.p1.parsed.x > today ? [7, 5] : undefined) }
+    });
+    rows.push({ b, hits, k, estToday });
+  });
+
+  if (charts['growth-chart']) charts['growth-chart'].destroy();
+  const ctx = document.getElementById('growth-chart');
+  if (!ctx) return;
+
+  const todayLine = {
+    id: 'todayline',
+    afterDatasetsDraw(ch) {
+      const x = ch.scales.x.getPixelForValue(today);
+      if (!isFinite(x)) return;
+      const c = ch.ctx, a = ch.chartArea;
+      c.save();
+      c.strokeStyle = 'rgba(248,250,252,.45)'; c.lineWidth = 1.5; c.setLineDash([5, 4]);
+      c.beginPath(); c.moveTo(x, a.top); c.lineTo(x, a.bottom); c.stroke();
+      c.setLineDash([]);
+      c.fillStyle = 'rgba(248,250,252,.75)'; c.font = '600 11px system-ui'; c.textAlign = 'center';
+      c.fillText('today', x, a.top - 4);
+      // market-weight guides
+      [3000, 4000].forEach(v => {
+        const y = ch.scales.y.getPixelForValue(v);
+        if (!isFinite(y) || y < a.top || y > a.bottom) return;
+        c.strokeStyle = 'rgba(251,146,60,.35)'; c.setLineDash([3, 4]);
+        c.beginPath(); c.moveTo(a.left, y); c.lineTo(a.right, y); c.stroke();
+        c.setLineDash([]);
+        c.fillStyle = 'rgba(251,146,60,.85)'; c.textAlign = 'left';
+        c.fillText((v / 1000) + ' kg', a.left + 6, y - 5);
+      });
+      c.restore();
+    }
+  };
+
+  charts['growth-chart'] = new Chart(ctx, {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false },
+      scales: {
+        x: { type: 'linear', min: toX(new Date(2025, 0, 1)), max: toX(new Date(2028, 0, 1)),
+             ticks: { stepSize: 3, callback: v => xLabel(v), color: '#94a3b8', maxRotation: 0 },
+             grid: { color: 'rgba(148,163,184,.12)' } },
+        y: { type: S.logY ? 'logarithmic' : 'linear', min: S.logY ? 0.1 : 0,
+             max: S.logY ? 5000 : 4500,
+             title: { display: true, text: 'Average weight (g)', color: '#94a3b8' },
+             ticks: { color: '#94a3b8', callback: v => (v >= 1000 ? (v / 1000) + ' kg' : v + ' g') },
+             grid: { color: 'rgba(148,163,184,.12)' } }
+      },
+      plugins: {
+        legend: { labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8 } },
+        tooltip: { callbacks: {
+          title: it => xLabel(it[0].parsed.x),
+          label: it => it.dataset.label + ': ' + (it.parsed.y >= 1000
+            ? (it.parsed.y / 1000).toFixed(2) + ' kg' : Math.round(it.parsed.y) + ' g')
+        } }
+      }
+    },
+    plugins: [todayLine]
+  });
+
+  // milestone table
+  const t = document.getElementById('growth-table');
+  if (!t) return;
+  t.innerHTML = `<thead><tr>
+      <th>Batch</th><th>Farm</th><th>Eggs arrived</th><th>Supplier</th>
+      <th class="num">Fish</th><th class="num">Now</th><th class="num" title="growth against the median batch across both farms — 100% is fleet-average, higher is faster">vs fleet</th><th class="num" title="modelled forward from the last weighing at this batch's own growth rate">Est. today</th><th>Weighed</th>
+      ${GROWTH_MILESTONES.map(m => `<th>${m / 1000} kg</th>`).join('')}
+    </tr></thead><tbody>` +
+    rows.map(({ b, hits, k, estToday }) => `<tr>
+      <td><b>${b.code}</b>${b.confirmed ? '' : ' <span class="gwarn" title="egg date parsed from the code, not confirmed against a payment">?</span>'}
+          ${b.mixed ? ` <span class="gwarn" title="${b.mixed} of ${b.cages} cages hold mixed batches — counted under the first code">mix</span>` : ''}</td>
+      <td>${b.farm}</td>
+      <td>${fmtDate(b.egg)}</td>
+      <td>${b.supplier || '—'}</td>
+      <td class="num">${b.adet.toLocaleString('en-US')}</td>
+      <td class="num">${Math.round(b.gram).toLocaleString('en-US')} g</td>
+      <td class="num ${b.kRel>=1.08?"gfast":(b.kRel<=0.92?"gslow":"")}">${(b.kRel*100).toFixed(0)}%</td>
+      <td class="num">${Math.round(estToday).toLocaleString('en-US')} g</td>
+      <td>${fmtDate(b.asOf)}${staleDays(b.asOf) > 30 ? ` <span class="gwarn" title="last weighed ${staleDays(b.asOf)} days ago — every projection below starts from a stale number">${staleDays(b.asOf)}d</span>` : ''}</td>
+      ${GROWTH_MILESTONES.map(m => {
+        if (b.gram >= m) return '<td><span class="gdone">reached</span></td>';
+        if (!hits[m]) return '<td><span class="gmuted">—</span></td>';
+        const past = hits[m] < new Date();
+        return `<td${past ? ' title="projected date has already passed — the weighing behind it is stale"' : ''}>${past ? '<span class="gpast">≈ passed</span>' : fmtDate(hits[m])}</td>`;
+      }).join('')}
+    </tr>`).join('') + '</tbody>';
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────────
