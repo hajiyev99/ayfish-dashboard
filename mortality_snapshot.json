@@ -1,15 +1,15 @@
 {
-  "lastUpdated": "2026-08-24T11:25:32.652157+03:00",
+  "lastUpdated": "2026-08-25T09:03:11.651345+03:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
     "etas": {
       "farm": "Elazig",
-      "date": "2026-08-23",
+      "date": "2026-08-24",
       "total_fish": 961143,
       "total_kg": 406389,
-      "mortality": 4107,
-      "per10k": 42.73,
+      "mortality": 4668,
+      "per10k": 48.57,
       "weightMeasuredPct": 0.0
     },
     "kark": {
@@ -557,6 +557,10 @@
     },
     {
       "date": "2026-08-24",
+      "etas_per10k": 48.57,
+      "etas_mort": 4668,
+      "etas_fish": 961143,
+      "etas_kg": 406389,
       "kark_per10k": 6.9,
       "kark_mort": 762,
       "kark_fish": 1104452,
@@ -568,8 +572,8 @@
       {
         "system": "ETAS 2",
         "fish": 961143,
-        "mort": 4107,
-        "per10k": 42.73
+        "mort": 4668,
+        "per10k": 48.57
       }
     ],
     "kark": [
@@ -609,27 +613,27 @@
     "etas": [
       {
         "bucket": "0-200g",
-        "mort": 3056,
+        "mort": 3473,
         "fish": 715108,
-        "per10k": 42.73
+        "per10k": 48.57
       },
       {
         "bucket": "200-500g",
-        "mort": 104,
+        "mort": 119,
         "fish": 24411,
-        "per10k": 42.6
+        "per10k": 48.75
       },
       {
         "bucket": "1000-1500g",
-        "mort": 250,
+        "mort": 284,
         "fish": 58555,
-        "per10k": 42.69
+        "per10k": 48.5
       },
       {
         "bucket": "1500-2500g",
-        "mort": 697,
+        "mort": 792,
         "fish": 163069,
-        "per10k": 42.74
+        "per10k": 48.57
       }
     ],
     "kark": [
