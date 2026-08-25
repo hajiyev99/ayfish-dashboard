@@ -2435,7 +2435,9 @@ async function loadETAS() {
     renderBioETAS(somonBio, mersinBio, el);
     renderYem('etas', {somon:yem, mersin:yemM}, el);
     renderHasat('etas', hasat,
-      {date:0,customer:1,kg:6,product:8,dateFormat:'DD.MM.YYYY'}, el);
+      // Not column moved to col 16 (idx 15) in the 25.08.2026 ETAS Phase-5 reshuffle - Tahmini
+      // block now starts at idx 8; ETAS log rows are also stored newest-first since that date.
+      {date:0,customer:1,kg:6,product:15,dateFormat:'DD.MM.YYYY'}, el);
   } catch(e) {
     el.innerHTML=`<div class="err">❌ ETAS 26 failed: ${e.message}</div>`;
   }
