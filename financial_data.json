@@ -1,27 +1,27 @@
 {
-  "lastUpdated": "2026-08-24T11:27:52.105572+03:00",
-  "usdKur": 48.0381,
-  "euroUsd": 1.1699,
-  "eurKur": 56.201,
-  "rateSource": "TCMB efektif satış 21.08.2026",
+  "lastUpdated": "2026-08-25T09:03:39.658685+03:00",
+  "usdKur": 48.151,
+  "euroUsd": 1.1667,
+  "eurKur": 56.1789,
+  "rateSource": "TCMB efektif satış 24.08.2026",
   "receivables": {
     "usd": 550697.44,
-    "euroUsd": 58.5,
-    "tlUsd": 38971.23,
-    "total": 589727.16
+    "euroUsd": 58.34,
+    "tlUsd": 38879.85,
+    "total": 589635.63
   },
   "bank": {
-    "tlUsd": 111908.71,
+    "tlUsd": 111646.32,
     "usd": 720646.7999999999,
-    "total": 832555.51
+    "total": 832293.12
   },
   "checks": {
-    "tlUsd": 52874.7,
-    "total": 52874.7
+    "tlUsd": 52750.72,
+    "total": 52750.72
   },
-  "totalAssets": 1475157.37,
-  "payables": 2922108.71,
-  "netPosition": -1446951.34,
+  "totalAssets": 1474679.46,
+  "payables": 2914111.22,
+  "netPosition": -1439431.76,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
@@ -49,13 +49,13 @@
       "name": "KEMAL BALIKÇILIK",
       "amount": 234805,
       "currency": "USD",
-      "note": "same entity as Biomar Sagun; combined pay $426K − Kemal rec $36K = net $390K owed"
+      "note": "− Kemal rec $36K = net $198K owed"
     },
     {
       "name": "BİOMAR SAGUN",
       "amount": 191247,
       "currency": "USD",
-      "note": "same entity as Kemal Balıkçılık — offset shown on Kemal row"
+      "note": "− Kemal rec $36K = net $155K owed"
     }
   ],
   "_biomarKemalOffset": {
