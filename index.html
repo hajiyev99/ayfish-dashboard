@@ -223,6 +223,12 @@ tr:hover td { background:#131d2a; }
 .gcovitem.low { border-color:#5c4318; color:#f6ad55; }
 .gcovitem.low b { color:#f6ad55; }
 .gpast { color:#f6ad55; font-style:italic; }
+.gbtns { display:flex; gap:6px; flex-wrap:wrap; }
+.gbtn.on { border-color:#a78bfa; background:#241d3d; color:#c4b5fd; }
+.gchip.nocode { border-style:dashed; }
+.ghint2 { font-size:11px; color:#4a6080; margin:-4px 0 0; }
+.ghint2 b { color:#718096; }
+
 .glow { opacity:.6; }
 .glow .gt2 { color:#8a6a2f; }
 .gkpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
@@ -2435,8 +2441,8 @@ async function loadETAS() {
     renderBioETAS(somonBio, mersinBio, el);
     renderYem('etas', {somon:yem, mersin:yemM}, el);
     renderHasat('etas', hasat,
-      // Not column moved to col 16 (idx 15) in the 25.08.2026 ETAS Phase-5 reshuffle - Tahmini
-      // block now starts at idx 8; ETAS log rows are also stored newest-first since that date.
+      // Not column moved to col 16 (idx 15) in the 25.08.2026 Phase-5 reshuffle — Tahmini
+      // block now starts at idx 8; log rows are also stored newest-first since that date.
       {date:0,customer:1,kg:6,product:15,dateFormat:'DD.MM.YYYY'}, el);
   } catch(e) {
     el.innerHTML=`<div class="err">❌ ETAS 26 failed: ${e.message}</div>`;
@@ -2507,54 +2513,60 @@ async function loadAll() {
 
 
 // ── GROWTH & PROJECTION ────────────────────────────────────────────────────
-// Batch codes decode as DD + month-initial + optional supplier-initial + YY.
-// Month letters: O=Ocak S=Şubat M=Mart N=Nisan Y=Mayıs H=Haziran T=Temmuz
-//                G=Ağustos L=Eylül E=Ekim K=Kasım A=Aralık
-// Supplier: V=Viviers (invoiced via Golden Group)  A=Aqualande
-// ⚠ Ağustos and Aralık both start with A in Turkish — confirmed codes are pinned
-// in KNOWN_EGG_DATES so the parser can never mis-date them.
+// Engine: TGC (thermal growth coefficient) — the aquaculture-industry standard.
+//   W_end^(1/3) = W_start^(1/3) + (TGC/1000) x Temp x days
+// Cube-root-linear growth decelerates with size the way real fish do. The earlier
+// %-body-weight model was validated against literature on 25.08.2026 and ran
+// 25-60 % fast above 2 kg, so it was replaced. Published rainbow-trout TGC sits
+// around 1.74-2.5; AyFish's own grow-out batches calibrate near 2.0.
+const TGC_REF = { low: 1.74, mid: 2.0, high: 2.5 };
+const FARM_TEMP = { 'Karkamış': 16, 'Elazığ': 16 };   // °C, Savalan holds ETAS 2 at 15-19
+const FIRST_FEED_DAYS = 60, START_G = 0.15, WEIGHT_CAP = 5000;
+
 const KNOWN_EGG_DATES = {
   '5M25'  : '2025-03-05', '20M25' : '2025-03-20', '27M25' : '2025-03-27',
   '10N25' : '2025-04-10', '1EA25' : '2025-10-01', '6KA25' : '2025-11-06',
   '11AV25': '2025-12-11', '22MV26': '2026-03-22', '26MA26': '2026-03-26'
 };
+// Month letters: O=Ocak S=Şubat M=Mart N=Nisan Y=Mayıs H=Haziran T=Temmuz
+//                G=Ağustos L=Eylül E=Ekim K=Kasım A=Aralık
+// ⚠ Ağustos and Aralık both start with A — confirmed codes are pinned above so the
+// parser can never mis-date them. Add each new code as the farm confirms it.
 const MONTH_LETTER = {O:1,S:2,M:3,N:4,Y:5,H:6,T:7,G:8,L:9,E:10,K:11,A:12};
 const SUPPLIER_LETTER = {V:'Viviers (Golden Group)', A:'Aqualande'};
-// Codes that predate the supplier-letter convention — taken from the egg invoices.
 const KNOWN_SUPPLIER = { '5M25':'Viviers (Golden Group)', '20M25':'Viviers (Golden Group)',
                          '27M25':'Viviers (Golden Group)', '10N25':'Viviers (Golden Group)' };
 
 function normalizeCode(raw) {
   if (!raw) return null;
-  const first = String(raw).split(/[,_/]/)[0];
-  const c = first.replace(/\s+/g,'').toUpperCase();
+  const c = String(raw).split(/[,_/]/)[0].replace(/\s+/g,'').toUpperCase();
   return /^\d{1,2}[A-Z]{1,2}\d{2}$/.test(c) ? c : null;
 }
 function decodeBatch(code) {
   if (KNOWN_EGG_DATES[code]) {
-    const d = new Date(KNOWN_EGG_DATES[code] + 'T00:00:00');
     const m = code.match(/^\d{1,2}([A-Z]{1,2})\d{2}$/);
-    const sup = KNOWN_SUPPLIER[code] || (m && m[1].length === 2 ? SUPPLIER_LETTER[m[1][1]] : null);
-    return { egg: d, supplier: sup, confirmed: true };
+    return { egg: new Date(KNOWN_EGG_DATES[code] + 'T00:00:00'),
+             supplier: KNOWN_SUPPLIER[code] || (m && m[1].length === 2 ? SUPPLIER_LETTER[m[1][1]] : null),
+             confirmed: true };
   }
   const m = code.match(/^(\d{1,2})([A-Z]{1,2})(\d{2})$/);
-  if (!m) return null;
-  const mon = MONTH_LETTER[m[2][0]];
-  if (!mon) return null;
-  const sup = m[2].length === 2 ? SUPPLIER_LETTER[m[2][1]] : null;
-  return { egg: new Date(2000 + parseInt(m[3],10), mon - 1, parseInt(m[1],10)),
-           supplier: sup, confirmed: false };
+  if (!m || !MONTH_LETTER[m[2][0]]) return null;
+  return { egg: new Date(2000 + parseInt(m[3],10), MONTH_LETTER[m[2][0]] - 1, parseInt(m[1],10)),
+           supplier: m[2].length === 2 ? SUPPLIER_LETTER[m[2][1]] : null, confirmed: false };
 }
 
-// Generic cage-block reader: finds every "Kafes" header anywhere in the grid and
-// reads the rows beneath it. Works for both farms despite differing column order.
+// Reads every "Kafes" block in the grid and remembers which system column it sits under,
+// so uncoded cages can still be grouped and counted.
 function readCageBlocks(rows, farm) {
-  const out = [];
+  const out = [], sysAt = {}, hdrAt = {};
   for (let r = 0; r < rows.length; r++) {
     const row = rows[r] || [];
     for (let c = 0; c < row.length; c++) {
-      if (String(row[c] || '').trim().toLowerCase() !== 'kafes') continue;
-      const hdr = {};
+      const cell = String(row[c] || '').trim();
+      if (!cell) continue;
+      if (/sistem|etas/i.test(cell) && cell.length < 30) sysAt[c] = cell;
+      if (cell.toLowerCase() !== 'kafes') continue;
+      const hdr = {}, system = sysAt[c] || (farm + ' (other)');
       for (let k = c; k < Math.min(c + 9, row.length); k++) {
         const h = String(row[k] || '').trim().toLowerCase().replace(/ı/g,'i').replace(/ş/g,'s');
         if (h === 'adet') hdr.adet = k;
@@ -2562,18 +2574,27 @@ function readCageBlocks(rows, farm) {
         else if (h.startsWith('balik kod') || h.startsWith('balık kod')) hdr.kod = k;
         else if (h.startsWith('son tartim')) hdr.tartim = k;
       }
-      if (hdr.adet == null || hdr.gram == null || hdr.kod == null) continue;
+      // Continuation blocks repeat "Kafes | Notlar | Adet | Gram | ..." but DROP the
+      // "Balık Kod" / "Son Tartım" headers, even though the data columns are still there.
+      // Inherit the offsets from the last full header seen in this column, or the batch
+      // codes silently vanish and every cage below the first block reads as uncoded.
+      if (hdr.adet != null && hdr.gram != null) {
+        if (hdr.kod == null && hdrAt[c] && hdrAt[c].kod != null) hdr.kod = c + hdrAt[c].kod;
+        if (hdr.tartim == null && hdrAt[c] && hdrAt[c].tartim != null) hdr.tartim = c + hdrAt[c].tartim;
+        if (hdr.kod != null || hdr.tartim != null) {
+          hdrAt[c] = { kod: hdr.kod != null ? hdr.kod - c : null,
+                       tartim: hdr.tartim != null ? hdr.tartim - c : null };
+        }
+      }
+      if (hdr.adet == null || hdr.gram == null) continue;
       for (let rr = r + 1; rr < rows.length; rr++) {
         const dr = rows[rr] || [];
         const cage = String(dr[c] || '').trim();
-        if (!cage) break;
-        if (cage.toLowerCase() === 'kafes') break;
-        const adet = parseNum(dr[hdr.adet]);
-        const gram = parseNum(dr[hdr.gram]);
-        const rawKod = dr[hdr.kod];
-        const code = normalizeCode(rawKod);
+        if (!cage || cage.toLowerCase() === 'kafes') break;
+        const adet = parseNum(dr[hdr.adet]), gram = parseNum(dr[hdr.gram]);
         if (!adet || !gram) continue;
-        out.push({ farm, cage, adet, gram, code,
+        const rawKod = hdr.kod != null ? dr[hdr.kod] : null;
+        out.push({ farm, system, cage, adet, gram, code: normalizeCode(rawKod),
                    mixed: /[,_/]/.test(String(rawKod || '')),
                    tartim: hdr.tartim != null ? String(dr[hdr.tartim] || '').trim() : '' });
       }
@@ -2582,103 +2603,58 @@ function readCageBlocks(rows, farm) {
   return out;
 }
 
-// Feeding rate as % of body weight per day — AyFish practice at the small end,
-// standard trout table above it. Validated against Karkamış: 20.8 t/day over
-// 2,111 t of biomass = 0.985 %/day at a 1,910 g average, table says 1.00 %.
-function feedPct(w) {
-  if (w < 20)   return 3.0;
-  if (w < 50)   return 2.5;
-  if (w < 100)  return 2.0;
-  if (w < 300)  return 1.6;
-  if (w < 800)  return 1.3;
-  if (w < 1500) return 1.1;
-  if (w < 2500) return 1.0;
-  return 0.85;
-}
-const XBASE_Y = 2025;
-function toX(d) { return (d.getFullYear() - XBASE_Y) * 12 + d.getMonth() + (d.getDate() - 1) / 30.44; }
+const cbrt = x => Math.cbrt(Math.max(x, 1e-9));
+function toX(d) { return (d.getFullYear() - 2025) * 12 + d.getMonth() + (d.getDate() - 1) / 30.44; }
 function xLabel(x) {
-  const mi = Math.round(x);
-  const y = XBASE_Y + Math.floor(mi / 12), m = ((mi % 12) + 12) % 12;
+  const mi = Math.round(x), y = 2025 + Math.floor(mi / 12), m = ((mi % 12) + 12) % 12;
   return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m] + ' ' + String(y).slice(2);
 }
 function staleDays(d) { return Math.round((Date.now() - d.getTime()) / 86400000); }
-function fmtDate(d) {
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-}
+function fmtDate(d) { return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }); }
 
+const GROWTH_MILESTONES = [1000, 2000, 3000, 3500, 4000];
 const GROWTH_ID_ETAS = '1d5auEs3o0st7z3Bt46uuVzuHK0Bw-K70Lb1R5m4ok4Y';
 const GROWTH_ID_KARK = '15Ck8hhqdYMsmBju1wTznQOsiNuEFQPMg_y3X7sCTA4o';
-const GROWTH_MILESTONES = [1000, 2000, 3000, 3500, 4000];
-let growthState = { batches: [], selected: new Set(), adjust: 1.0, logY: true };
+let growthState = { batches: [], selected: new Set(), mode: 'own', adjust: 1.0, logY: true };
 
-// Each batch is calibrated against its OWN history: we solve for the growth index k
-// that takes 0.15 g at first feeding (egg + 60 d) to the weight the farm actually
-// measured, then run that same k forward. k = 1.00 means the batch tracked the
-// standard feed table exactly; 0.80 means it grew 20 % slower than the table predicts.
-const FIRST_FEED_DAYS = 60, START_G = 0.15, MODEL_FCR = 1.5;
-
-function simulateTo(k, fromDate, w0, toDate) {
-  let w = w0, t = fromDate.getTime(), end = toDate.getTime();
-  let guard = 0;
-  while (t < end && guard++ < 3000) {
-    w += w * (feedPct(w) / 100) * k / MODEL_FCR;
-    t += 86400000;
-  }
-  return w;
+// Calibrated TGC from the batch's own history: first feeding (0.15 g) -> the weighing.
+function calibrateTGC(b) {
+  if (!b.egg) return null;
+  const t0 = b.egg.getTime() + FIRST_FEED_DAYS * 86400000;
+  const days = (b.asOf.getTime() - t0) / 86400000;
+  if (days < 30) return null;
+  return (cbrt(b.gram) - cbrt(START_G)) * 1000 / (FARM_TEMP[b.farm] * days);
 }
-function calibrate(b) {
-  const t0 = new Date(b.egg.getTime() + FIRST_FEED_DAYS * 86400000);
-  if (b.asOf <= t0) return 1;
-  let lo = 0.15, hi = 6;
-  for (let i = 0; i < 40; i++) {
-    const mid = (lo + hi) / 2;
-    (simulateTo(mid, t0, START_G, b.asOf) < b.gram) ? (lo = mid) : (hi = mid);
-  }
-  return (lo + hi) / 2;
+function effTGC(b, S) {
+  const base = S.mode === 'own' ? (b.tgc || b.fleetTGC || TGC_REF.mid) : TGC_REF[S.mode];
+  return base * S.adjust;
 }
-// A batch's calibrated k is fitted over its life SO FAR. Applying a fry-derived rate to a
-// 3 kg fish overstates growth badly, so the edge over the standard table decays as the fish
-// grows past the weight it was actually measured at. At the weighing weight kEff = k; by 10x
-// that weight the batch is most of the way back to the standard curve.
-function kAt(k, calW, w) {
-  if (w <= calW) return k;
-  return 1 + (k - 1) * Math.pow(calW / w, 0.45);
-}
-function projectBatch(b, adjust) {
-  const k = (b.k || 1) * adjust;
-  const calW = b.gram;
-  const pts = [], back = [], hits = {};
-
-  // history: first feeding -> the weighing (model, calibrated to land on the real number)
-  const t0 = new Date(b.egg.getTime() + FIRST_FEED_DAYS * 86400000);
-  let w = START_G, d = new Date(t0);
-  let guard = 0;
-  while (d < b.asOf && guard++ < 3000) {
-    w += w * (feedPct(w) / 100) * k / MODEL_FCR;
-    d = new Date(d.getTime() + 86400000);
-    if (guard % 5 === 0) back.push({ x: toX(d), y: w < 1 ? +w.toFixed(2) : Math.round(w) });
+function projectBatch(b, S) {
+  const tgc = effTGC(b, S), T = FARM_TEMP[b.farm] || 16;
+  const rate = tgc * T / 1000;                       // growth of W^(1/3) per day
+  const weightAt = ms => {
+    const d = (ms - b.asOf.getTime()) / 86400000;
+    return Math.min(WEIGHT_CAP, Math.pow(Math.max(cbrt(b.gram) + rate * d, 0.05), 3));
+  };
+  const pts = [], hits = {}, back = [];
+  for (let i = 0; i <= 800; i += 5) {
+    const ms = b.asOf.getTime() + i * 86400000, w = weightAt(ms);
+    pts.push({ x: toX(new Date(ms)), y: Math.round(w) });
+    if (w >= WEIGHT_CAP) break;
   }
-
-  // forward from the weighing
-  w = b.gram; d = new Date(b.asOf);
-  const now = Date.now();
-  let estToday = b.gram;
-  const daily = [w];                      // daily[i] = weight i days after the weighing
-  pts.push({ x: toX(d), y: Math.round(w) });
-  for (let i = 0; i < 900 && w < 4500; i++) {
-    w += w * (feedPct(w) / 100) * kAt(k, calW, w) / MODEL_FCR;
-    d = new Date(d.getTime() + 86400000);
-    daily.push(w);
-    if (d.getTime() <= now) estToday = w;
-    for (const ms of GROWTH_MILESTONES) if (!hits[ms] && w >= ms) hits[ms] = new Date(d);
-    if (i % 5 === 0) pts.push({ x: toX(d), y: Math.round(w) });
+  for (const m of GROWTH_MILESTONES) {
+    if (b.gram >= m) continue;
+    const d = (cbrt(m) - cbrt(b.gram)) / rate;
+    if (isFinite(d) && d > 0 && d < 1200) hits[m] = new Date(b.asOf.getTime() + d * 86400000);
   }
-  pts.push({ x: toX(d), y: Math.round(w) });
-  const asOfMs = b.asOf.getTime();
-  // weight (g) on any date — flat once the model stops at 4.5 kg
-  const weightAt = ms => daily[Math.max(0, Math.min(daily.length - 1, Math.floor((ms - asOfMs) / 86400000)))];
-  return { pts, hits, back, k, estToday, weightAt };
+  if (b.egg) {
+    const t0 = b.egg.getTime() + FIRST_FEED_DAYS * 86400000;
+    for (let ms = t0; ms < b.asOf.getTime(); ms += 5 * 86400000) {
+      const w = weightAt(ms);
+      if (w > 0.05) back.push({ x: toX(new Date(ms)), y: w < 1 ? +w.toFixed(2) : Math.round(w) });
+    }
+  }
+  return { pts, hits, back, tgc, weightAt, estToday: weightAt(Date.now()) };
 }
 
 async function loadGrowth() {
@@ -2687,48 +2663,46 @@ async function loadGrowth() {
   page.innerHTML = '<div class="loading"><div class="spin"></div>Loading Growth &amp; Projection…</div>';
   try {
     const [etRaw, kaRows] = await Promise.all([
-      api(GROWTH_ID_ETAS, 'Somon Biomass v2'),
-      api(GROWTH_ID_KARK, 'Biomass')
+      api(GROWTH_ID_ETAS, 'Somon Biomass v2'), api(GROWTH_ID_KARK, 'Biomass')
     ]);
-    const allCages = readCageBlocks(normalizeETAS(etRaw), 'Elazığ')
-      .concat(readCageBlocks(kaRows, 'Karkamış'));
-    const cages = allCages.filter(c => c.code);
-    // Coverage: how much of each farm actually carries a batch code
-    const cov = {};
-    for (const c of allCages) {
+    const all = readCageBlocks(normalizeETAS(etRaw), 'Elazığ').concat(readCageBlocks(kaRows, 'Karkamış'));
+
+    const cov = {}, map = new Map();
+    for (const c of all) {
       cov[c.farm] = cov[c.farm] || { total: 0, coded: 0 };
       cov[c.farm].total += c.adet;
       if (c.code) cov[c.farm].coded += c.adet;
-    }
-    growthState.coverage = cov;
-
-    const map = new Map();
-    for (const c of cages) {
-      const key = c.code + '|' + c.farm;
-      if (!map.has(key)) map.set(key, { code: c.code, farm: c.farm, adet: 0, kg: 0, cages: 0, mixed: 0, dates: [] });
+      // Uncoded cages are grouped by system so ALL stock is counted, not just coded batches.
+      const key = c.code ? c.code + '|' + c.farm : '~' + c.system + '|' + c.farm;
+      if (!map.has(key)) map.set(key, { code: c.code, system: c.system, farm: c.farm,
+                                        adet: 0, kg: 0, cages: 0, mixed: 0, dates: [] });
       const g = map.get(key);
       g.adet += c.adet; g.kg += c.adet * c.gram / 1000; g.cages++;
       if (c.mixed) g.mixed++;
       const dm = c.tartim.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
       if (dm) g.dates.push(new Date(+dm[3], +dm[2] - 1, +dm[1]));
     }
+    growthState.coverage = cov;
+
     const batches = [];
     for (const g of map.values()) {
-      const dec = decodeBatch(g.code);
-      if (!dec) continue;
+      const dec = g.code ? decodeBatch(g.code) : null;
+      if (g.code && !dec) continue;
       g.dates.sort((a, b) => b - a);
       batches.push({
-        code: g.code, farm: g.farm, adet: g.adet, kg: g.kg, cages: g.cages, mixed: g.mixed,
-        gram: g.kg * 1000 / g.adet, egg: dec.egg, supplier: dec.supplier,
-        confirmed: dec.confirmed, asOf: g.dates[0] || new Date()
+        code: g.code || g.system, isCoded: !!g.code, system: g.system, farm: g.farm,
+        adet: g.adet, kg: g.kg, cages: g.cages, mixed: g.mixed,
+        gram: g.kg * 1000 / g.adet, egg: dec ? dec.egg : null,
+        supplier: dec ? dec.supplier : null, confirmed: dec ? dec.confirmed : false,
+        asOf: g.dates[0] || new Date()
       });
     }
-    batches.forEach(b => { b.k = calibrate(b); });
-    // Report each batch against the fleet median rather than the raw table, so the number
-    // answers "is this batch growing well for us" instead of restating a constant offset.
-    const ks = batches.map(b => b.k).sort((a, b) => a - b);
-    const medK = ks.length ? ks[Math.floor(ks.length / 2)] : 1;
-    batches.forEach(b => { b.kRel = b.k / medK; });
+    batches.forEach(b => { b.tgc = calibrateTGC(b); });
+    const known = batches.filter(b => b.tgc).map(b => b.tgc).sort((a, b) => a - b);
+    const fleet = known.length ? known[Math.floor(known.length / 2)] : TGC_REF.mid;
+    batches.forEach(b => { b.fleetTGC = fleet; });
+    growthState.fleetTGC = fleet;
+
     batches.sort((a, b) => b.gram - a.gram);
     growthState.batches = batches;
     growthState.selected = new Set(batches.filter(b => b.adet > 20000).map(b => b.code + '|' + b.farm));
@@ -2740,147 +2714,142 @@ async function loadGrowth() {
 }
 
 function renderGrowth() {
-  const S = growthState;
-  const page = document.getElementById('page-growth');
+  const S = growthState, page = document.getElementById('page-growth');
   const byFarm = { 'Elazığ': [], 'Karkamış': [] };
   S.batches.forEach(b => byFarm[b.farm] && byFarm[b.farm].push(b));
-
   const chip = b => {
     const k = b.code + '|' + b.farm, on = S.selected.has(k);
-    return `<label class="gchip ${on ? 'on' : ''}">
-      <input type="checkbox" ${on ? 'checked' : ''} onchange="toggleBatch('${k}')">
-      <b>${b.code}</b><span>${(b.adet / 1000).toFixed(0)}K · ${Math.round(b.gram)} g</span></label>`;
+    return `<label class="gchip ${on ? 'on' : ''}${b.isCoded ? '' : ' nocode'}">
+      <input type="checkbox" ${on ? 'checked' : ''} onchange="toggleBatch('${k.replace(/'/g,"\\'")}')">
+      <b>${b.code}</b><span>${(b.adet/1000).toFixed(0)}K · ${Math.round(b.gram)} g</span></label>`;
   };
+  const modeBtn = (m, lbl) => `<button class="gbtn ${S.mode===m?'on':''}" onclick="growthState.mode='${m}';renderGrowth()">${lbl}</button>`;
 
   page.innerHTML = `
   <div class="gwrap">
     <div class="gnote">
-      <b>How this works.</b> Each batch code is an egg arrival date — <span class="mono">DD</span> +
-      month letter + supplier letter + <span class="mono">YY</span>. The solid line is real: egg date
-      through the farm's last weighing. The dashed line projects forward at the feeding rate for that
-      fish size, converted at the FCR you choose. Assumes feeding continues uninterrupted at current
-      rates; it does not model winter cooling or a harvest.
+      <b>How this works.</b> Growth uses the industry-standard <b>TGC</b> model —
+      <span class="mono">W_end^⅓ = W_start^⅓ + (TGC/1000) × °C × days</span> — which decelerates with size
+      the way real fish do. Published rainbow-trout TGC is <b>1.74–2.5</b>; AyFish's own grow-out batches
+      calibrate near <b>2.0</b>, so our fish are performing in line with the industry, not above it.
+      <br><b>The only hard number on each line is the large dot</b> — the farm's last weighing. Everything
+      left of it is the model run backwards, everything right is the model run forwards. A batch weighed
+      weeks ago carries that staleness into every date below. Weights cap at <b>5 kg</b>.
     </div>
     <div class="gcov" id="g-coverage"></div>
 
     <div class="gcontrols">
       <div class="gctl">
-        <label>Growth vs each batch's own record <b id="g-adj-v">${Math.round(S.adjust * 100)}%</b></label>
+        <label>Growth model</label>
+        <div class="gbtns">${modeBtn('own',"Each batch's own")}${modeBtn('low','TGC 1.74')}${modeBtn('mid','TGC 2.0')}${modeBtn('high','TGC 2.5')}</div>
+        <span class="ghint">fleet median calibrates to TGC ${(S.fleetTGC||2).toFixed(2)}</span>
+      </div>
+      <div class="gctl">
+        <label>Adjust <b id="g-adj-v">${Math.round(S.adjust*100)}%</b></label>
         <input type="range" min="0.6" max="1.4" step="0.05" value="${S.adjust}"
                oninput="growthState.adjust=parseFloat(this.value);document.getElementById('g-adj-v').textContent=Math.round(growthState.adjust*100)+'%';drawGrowth()">
-        <span class="ghint">100% = keeps growing exactly as it has so far</span>
+        <span class="ghint">scales whichever model is selected</span>
       </div>
       <div class="gctl">
         <label>Weight axis</label>
-        <button class="gbtn" onclick="growthState.logY=!growthState.logY;renderGrowth()">${S.logY ? 'Log' : 'Linear'}</button>
+        <button class="gbtn" onclick="growthState.logY=!growthState.logY;renderGrowth()">${S.logY?'Log':'Linear'}</button>
         <span class="ghint">log shows fry, linear shows market fish</span>
       </div>
     </div>
 
     <div class="gpick">
-      <div><h4>🔵 Elazığ</h4><div class="gchips">${byFarm['Elazığ'].map(chip).join('') || '<i>no coded batches</i>'}</div></div>
-      <div><h4>🟢 Karkamış</h4><div class="gchips">${byFarm['Karkamış'].map(chip).join('') || '<i>no coded batches</i>'}</div></div>
+      <div><h4>🔵 Elazığ</h4><div class="gchips">${byFarm['Elazığ'].map(chip).join('')||'<i>none</i>'}</div></div>
+      <div><h4>🟢 Karkamış</h4><div class="gchips">${byFarm['Karkamış'].map(chip).join('')||'<i>none</i>'}</div></div>
     </div>
+    <p class="ghint2">Dashed chips have <b>no batch code</b> — grouped by system, no egg date, so they run on the fleet-median TGC.</p>
 
     <div class="gcard"><div style="height:460px"><canvas id="growth-chart"></canvas></div></div>
 
     <h3 class="gh">Projected biomass of the selected batches</h3>
     <div class="gkpis" id="g-kpis"></div>
     <div class="gcard"><div style="height:380px"><canvas id="growth-biomass"></canvas></div></div>
-    <div class="gnote gsmall">Biomass = <b>today's headcount × projected average weight</b>. It assumes
-      <b>no further mortality and no harvest</b> — so read it as "what this batch is worth if nothing
-      is taken out and nothing dies", not as a stock forecast. Hover any point for the batch split and
-      the total on that date. Weights are capped at <b>4.5 kg</b> — the model does not project beyond market size, so a batch already there shows a flat line rather than fictional growth.</div>
+    <div class="gnote gsmall">Biomass = <b>today's headcount × projected average weight</b>. Assumes
+      <b>no further mortality and no harvest</b> — read it as "what this batch is worth if nothing is
+      taken out", not a stock forecast. Hover for the batch split and the total on any date.</div>
 
     <h3 class="gh">When each batch reaches market weight</h3>
     <div class="gtbl-wrap"><table class="gtable" id="growth-table"></table></div>
   </div>`;
-  const cov = S.coverage || {};
-  const covEl = document.getElementById('g-coverage');
-  if (covEl) {
-    covEl.innerHTML = Object.keys(cov).map(f => {
-      const c = cov[f], pct = c.total ? Math.round(c.coded / c.total * 100) : 0;
-      const warn = pct < 60 ? ' low' : '';
-      return `<span class="gcovitem${warn}"><b>${f}</b> ${pct}% of stock carries a batch code
-        <i>(${c.coded.toLocaleString('en-US')} of ${c.total.toLocaleString('en-US')} fish)</i></span>`;
-    }).join('');
-  }
+
+  const cov = S.coverage || {}, covEl = document.getElementById('g-coverage');
+  if (covEl) covEl.innerHTML = Object.keys(cov).map(f => {
+    const c = cov[f], pct = c.total ? Math.round(c.coded / c.total * 100) : 0;
+    return `<span class="gcovitem${pct<60?' low':''}"><b>${f}</b> ${pct}% of stock carries a batch code
+      <i>(${c.coded.toLocaleString('en-US')} of ${c.total.toLocaleString('en-US')} fish — all of it is charted)</i></span>`;
+  }).join('');
   drawGrowth();
 }
-
 function toggleBatch(k) {
   growthState.selected.has(k) ? growthState.selected.delete(k) : growthState.selected.add(k);
   renderGrowth();
 }
 
-const GROWTH_COLORS = ['#38bdf8','#34d399','#f59e0b','#f472b6','#a78bfa','#fb7185','#2dd4bf','#facc15','#60a5fa','#c084fc'];
+const GROWTH_COLORS = ['#38bdf8','#34d399','#f59e0b','#f472b6','#a78bfa','#fb7185','#2dd4bf','#facc15','#60a5fa','#c084fc','#94a3b8','#fda4af'];
 
 function drawGrowth() {
   const S = growthState;
   const sel = S.batches.filter(b => S.selected.has(b.code + '|' + b.farm));
   const today = toX(new Date());
-  const datasets = [];
-  const rows = [];
+  const datasets = [], rows = [];
 
   sel.forEach((b, i) => {
     const col = GROWTH_COLORS[i % GROWTH_COLORS.length];
-    const { pts, hits, back, k, estToday, weightAt } = projectBatch(b, S.adjust);
-    const weighIdx = back.length;               // index of the one hard data point
-    const data = back.concat([{ x: toX(b.asOf), y: Math.round(b.gram) }], pts.slice(1));
+    const p = projectBatch(b, S);
+    const weighIdx = p.back.length;
     datasets.push({
-      label: b.code + ' · ' + b.farm, data,
+      label: b.code + ' · ' + b.farm,
+      data: p.back.concat([{ x: toX(b.asOf), y: Math.round(b.gram) }], p.pts.slice(1)),
       borderColor: col, backgroundColor: col + '33', borderWidth: 2.4,
-      pointRadius: ctx => (ctx.dataIndex === weighIdx ? 5.5 : 0), pointBackgroundColor: col,
+      pointRadius: c => (c.dataIndex === weighIdx ? 5.5 : 0), pointBackgroundColor: col,
       pointBorderColor: '#0f172a', pointBorderWidth: 2, tension: 0.25,
-      segment: { borderDash: c => (c.p1.parsed.x > today ? [7, 5] : undefined) }
+      borderDash: b.isCoded ? undefined : [6, 4],
+      segment: { borderDash: c => (c.p1.parsed.x > today ? [7, 5] : (b.isCoded ? undefined : [6, 4])) }
     });
-    rows.push({ b, hits, k, estToday, weightAt });
+    rows.push({ b, ...p });
   });
 
   if (charts['growth-chart']) charts['growth-chart'].destroy();
   const ctx = document.getElementById('growth-chart');
   if (!ctx) return;
-
-  const todayLine = {
-    id: 'todayline',
+  const guides = {
+    id: 'guides',
     afterDatasetsDraw(ch) {
-      const x = ch.scales.x.getPixelForValue(today);
-      if (!isFinite(x)) return;
-      const c = ch.ctx, a = ch.chartArea;
+      const c = ch.ctx, a = ch.chartArea, x = ch.scales.x.getPixelForValue(today);
       c.save();
-      c.strokeStyle = 'rgba(248,250,252,.45)'; c.lineWidth = 1.5; c.setLineDash([5, 4]);
-      c.beginPath(); c.moveTo(x, a.top); c.lineTo(x, a.bottom); c.stroke();
-      c.setLineDash([]);
-      c.fillStyle = 'rgba(248,250,252,.75)'; c.font = '600 11px system-ui'; c.textAlign = 'center';
-      c.fillText('today', x, a.top - 4);
-      // market-weight guides
+      if (isFinite(x)) {
+        c.strokeStyle = 'rgba(248,250,252,.45)'; c.lineWidth = 1.5; c.setLineDash([5,4]);
+        c.beginPath(); c.moveTo(x, a.top); c.lineTo(x, a.bottom); c.stroke(); c.setLineDash([]);
+        c.fillStyle = 'rgba(248,250,252,.75)'; c.font = '600 11px system-ui'; c.textAlign = 'center';
+        c.fillText('today', x, a.top - 4);
+      }
       [3000, 4000].forEach(v => {
         const y = ch.scales.y.getPixelForValue(v);
         if (!isFinite(y) || y < a.top || y > a.bottom) return;
-        c.strokeStyle = 'rgba(251,146,60,.35)'; c.setLineDash([3, 4]);
-        c.beginPath(); c.moveTo(a.left, y); c.lineTo(a.right, y); c.stroke();
-        c.setLineDash([]);
-        c.fillStyle = 'rgba(251,146,60,.85)'; c.textAlign = 'left';
-        c.fillText((v / 1000) + ' kg', a.left + 6, y - 5);
+        c.strokeStyle = 'rgba(251,146,60,.35)'; c.setLineDash([3,4]);
+        c.beginPath(); c.moveTo(a.left, y); c.lineTo(a.right, y); c.stroke(); c.setLineDash([]);
+        c.fillStyle = 'rgba(251,146,60,.85)'; c.font = '600 11px system-ui'; c.textAlign = 'left';
+        c.fillText((v/1000) + ' kg', a.left + 6, y - 5);
       });
       c.restore();
     }
   };
-
   charts['growth-chart'] = new Chart(ctx, {
-    type: 'line',
-    data: { datasets },
+    type: 'line', data: { datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'nearest', intersect: false },
       scales: {
-        x: { type: 'linear', min: toX(new Date(2025, 0, 1)), max: toX(new Date(2028, 0, 1)),
+        x: { type: 'linear', min: toX(new Date(2025,0,1)), max: toX(new Date(2028,0,1)),
              ticks: { stepSize: 3, callback: v => xLabel(v), color: '#94a3b8', maxRotation: 0 },
              grid: { color: 'rgba(148,163,184,.12)' } },
-        y: { type: S.logY ? 'logarithmic' : 'linear', min: S.logY ? 0.1 : 0,
-             max: S.logY ? 5000 : 4500,
+        y: { type: S.logY ? 'logarithmic' : 'linear', min: S.logY ? 0.1 : 0, max: S.logY ? 6000 : 5200,
              title: { display: true, text: 'Average weight (g)', color: '#94a3b8' },
-             ticks: { color: '#94a3b8', callback: v => (v >= 1000 ? (v / 1000) + ' kg' : v + ' g') },
+             ticks: { color: '#94a3b8', callback: v => (v >= 1000 ? (v/1000) + ' kg' : v + ' g') },
              grid: { color: 'rgba(148,163,184,.12)' } }
       },
       plugins: {
@@ -2888,40 +2857,37 @@ function drawGrowth() {
         tooltip: { callbacks: {
           title: it => xLabel(it[0].parsed.x),
           label: it => it.dataset.label + ': ' + (it.parsed.y >= 1000
-            ? (it.parsed.y / 1000).toFixed(2) + ' kg' : Math.round(it.parsed.y) + ' g')
-        } }
+            ? (it.parsed.y/1000).toFixed(2) + ' kg' : Math.round(it.parsed.y) + ' g') } }
       }
     },
-    plugins: [todayLine]
+    plugins: [guides]
   });
 
-  // milestone table
   const t = document.getElementById('growth-table');
-  if (!t) return;
-  t.innerHTML = `<thead><tr>
+  if (t) t.innerHTML = `<thead><tr>
       <th>Batch</th><th>Farm</th><th>Eggs arrived</th><th>Supplier</th>
-      <th class="num">Fish</th><th class="num">Now</th><th class="num" title="growth against the median batch across both farms — 100% is fleet-average, higher is faster">vs fleet</th><th class="num" title="modelled forward from the last weighing at this batch's own growth rate">Est. today</th><th>Weighed</th>
-      ${GROWTH_MILESTONES.map(m => `<th>${m / 1000} kg</th>`).join('')}
+      <th class="num">Fish</th><th class="num">Now</th>
+      <th class="num" title="calibrated from this batch's own history; published rainbow-trout range is 1.74–2.5">TGC</th>
+      <th class="num">Est. today</th><th>Weighed</th>
+      ${GROWTH_MILESTONES.map(m => `<th>${m/1000} kg</th>`).join('')}
     </tr></thead><tbody>` +
-    rows.map(({ b, hits, k, estToday }) => `<tr>
-      <td><b>${b.code}</b>${b.confirmed ? '' : ' <span class="gwarn" title="egg date parsed from the code, not confirmed against a payment">?</span>'}
+    rows.map(({ b, hits, tgc, estToday }) => `<tr>
+      <td><b>${b.code}</b>${b.isCoded ? (b.confirmed ? '' : ' <span class="gwarn" title="egg date parsed from the code, not confirmed against a payment">?</span>') : ' <span class="gwarn" title="no batch code on these cages — grouped by system, running on the fleet-median TGC">no code</span>'}
           ${b.mixed ? ` <span class="gwarn" title="${b.mixed} of ${b.cages} cages hold mixed batches — counted under the first code">mix</span>` : ''}</td>
       <td>${b.farm}</td>
-      <td>${fmtDate(b.egg)}</td>
+      <td>${b.egg ? fmtDate(b.egg) : '<span class="gmuted">unknown</span>'}</td>
       <td>${b.supplier || '—'}</td>
       <td class="num">${b.adet.toLocaleString('en-US')}</td>
       <td class="num">${Math.round(b.gram).toLocaleString('en-US')} g</td>
-      <td class="num ${b.kRel>=1.08?"gfast":(b.kRel<=0.92?"gslow":"")}">${(b.kRel*100).toFixed(0)}%</td>
+      <td class="num ${tgc>2.5?'gfast':(tgc<1.74?'gslow':'')}">${tgc ? tgc.toFixed(2) : '—'}</td>
       <td class="num">${Math.round(estToday).toLocaleString('en-US')} g</td>
-      <td>${fmtDate(b.asOf)}${staleDays(b.asOf) > 30 ? ` <span class="gwarn" title="last weighed ${staleDays(b.asOf)} days ago — every projection below starts from a stale number">${staleDays(b.asOf)}d</span>` : ''}</td>
+      <td>${fmtDate(b.asOf)}${staleDays(b.asOf) > 30 ? ` <span class="gwarn" title="last weighed ${staleDays(b.asOf)} days ago — every projection here starts from a stale number">${staleDays(b.asOf)}d</span>` : ''}</td>
       ${GROWTH_MILESTONES.map(m => {
-        const t = (b.adet * m / 1e6).toFixed(0) + ' t';
-        if (b.gram >= m) return `<td><span class="gdone">reached</span><span class="gt2">${t}</span></td>`;
+        const tn = (b.adet * m / 1e6).toFixed(0) + ' t';
+        if (b.gram >= m) return `<td><span class="gdone">reached</span><span class="gt2">${tn}</span></td>`;
         if (!hits[m]) return '<td><span class="gmuted">—</span></td>';
-        const stretch = m / b.gram;
-        if (stretch > 6) return `<td class="glow" title="this batch was last weighed at ${Math.round(b.gram)} g — reaching ${m/1000} kg is a ${stretch.toFixed(0)}x extrapolation, treat the date as indicative only">${fmtDate(hits[m])}<span class="gt2">${t} · low confidence</span></td>`;
         const past = hits[m] < new Date();
-        return `<td${past ? ' title="projected date has already passed — the weighing behind it is stale"' : ''}>${past ? '<span class="gpast">≈ passed</span>' : fmtDate(hits[m])}<span class="gt2">${t}</span></td>`;
+        return `<td>${past ? '<span class="gpast">≈ passed</span>' : fmtDate(hits[m])}<span class="gt2">${tn}</span></td>`;
       }).join('')}
     </tr>`).join('') + '</tbody>';
 
@@ -2933,29 +2899,24 @@ function drawBiomass(rows) {
   const cv = document.getElementById('growth-biomass');
   if (!cv) return;
   if (charts['growth-biomass']) charts['growth-biomass'].destroy();
-
-  const start = new Date(); start.setHours(0, 0, 0, 0);
+  const start = new Date(); start.setHours(0,0,0,0);
   const grid = [];
   for (let i = 0; i <= 36; i++) grid.push(new Date(start.getTime() + i * 15 * 86400000));
 
   const datasets = rows.map(({ b, weightAt }, i) => {
     const col = GROWTH_COLORS[i % GROWTH_COLORS.length];
-    return {
-      label: b.code + ' · ' + b.farm,
+    return { label: b.code + ' · ' + b.farm,
       data: grid.map(d => ({ x: toX(d), y: +(b.adet * weightAt(d.getTime()) / 1e6).toFixed(1) })),
       borderColor: col, backgroundColor: col + '55', borderWidth: 1.6,
-      pointRadius: 0, fill: true, tension: 0.3
-    };
+      pointRadius: 0, fill: true, tension: 0.3 };
   });
-
   charts['growth-biomass'] = new Chart(cv, {
-    type: 'line',
-    data: { datasets },
+    type: 'line', data: { datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       scales: {
-        x: { type: 'linear', min: toX(start), max: toX(grid[grid.length - 1]),
+        x: { type: 'linear', min: toX(start), max: toX(grid[grid.length-1]),
              ticks: { stepSize: 2, callback: v => xLabel(v), color: '#94a3b8', maxRotation: 0 },
              grid: { color: 'rgba(148,163,184,.12)' } },
         y: { stacked: true, beginAtZero: true,
@@ -2965,30 +2926,26 @@ function drawBiomass(rows) {
       },
       plugins: {
         legend: { labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8 } },
-        tooltip: {
-          callbacks: {
+        tooltip: { callbacks: {
             title: it => xLabel(it[0].parsed.x),
             label: it => it.dataset.label + ': ' + it.parsed.y.toLocaleString('en-US') + ' t',
-            footer: it => 'TOTAL: ' + it.reduce((a, x) => a + x.parsed.y, 0)
-              .toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' t'
-          },
-          footerColor: '#c4b5fd', footerFont: { weight: '700' }
-        }
+            footer: it => 'TOTAL: ' + it.reduce((a,x) => a + x.parsed.y, 0).toLocaleString('en-US',{maximumFractionDigits:0}) + ' t'
+          }, footerColor: '#c4b5fd', footerFont: { weight: '700' } }
       }
     }
   });
 
-  // headline totals across the selling window
   const totalOn = d => rows.reduce((a, r) => a + r.b.adet * r.weightAt(d.getTime()) / 1e6, 0);
-  const marks = [['Today', start], ['30 Nov 2026', new Date(2026, 10, 30)],
-                 ['31 Dec 2026', new Date(2026, 11, 31)], ['31 Jan 2027', new Date(2027, 0, 31)]];
+  const base = totalOn(start);
+  const marks = [['Today', start], ['30 Nov 2026', new Date(2026,10,30)],
+                 ['31 Dec 2026', new Date(2026,11,31)], ['31 Jan 2027', new Date(2027,0,31)]];
   const kp = document.getElementById('g-kpis');
   if (kp) kp.innerHTML = marks.map(([lbl, d]) => {
-    const t = totalOn(d), base = totalOn(start);
-    const delta = lbl === 'Today' ? '' : (t - base >= 0 ? '+' : '') + Math.round(t - base).toLocaleString('en-US') + ' t vs today';
+    const v = totalOn(d);
+    const delta = lbl === 'Today' ? rows.length + ' batches selected'
+      : ((v-base >= 0 ? '+' : '') + Math.round(v-base).toLocaleString('en-US') + ' t vs today');
     return `<div class="gkpi"><div class="l">${lbl}</div>
-      <div class="v">${Math.round(t).toLocaleString('en-US')} t</div>
-      <div class="s">${delta || rows.length + ' batches selected'}</div></div>`;
+      <div class="v">${Math.round(v).toLocaleString('en-US')} t</div><div class="s">${delta}</div></div>`;
   }).join('');
 }
 
