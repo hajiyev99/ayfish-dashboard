@@ -1,0 +1,23 @@
+{
+  "_comment": "Off-report obligations the günlük rapor holds but EXCLUDES from its totals, because their 'Rapora Gelsin' flag is blank. The dashboard merges these on top of financial_data.json to show the economic position alongside the reported one. This file is maintained by hand / by Claude — the update-farm-financials scheduled task rewrites financial_data.json only and never touches this file.",
+  "lastUpdated": "2026-08-25",
+  "verifiedAgainst": "2026 GÜNLÜK RAPOR v5.xlsx, Müşteri Alacak row 8 + Firma Borç row 15",
+  "items": [
+    {
+      "name": "Gümüşdoğa $3M advance",
+      "amountUsd": 3000000,
+      "type": "obligation",
+      "source": "Müşteri Alacak row 8",
+      "raporFlag": "blank — excluded from every reported total",
+      "note": "Cash received 16.07.2026 against 1,500 t of this season's fish. Booked as −$3,000,000 (\"16.07.2026 tarihli ödeme olup sonrasında yapılacak olan satışlardan düşülecektir\") but flagged out of the report. The fish are already paid for and still have to be delivered."
+    }
+  ],
+  "counterparty": {
+    "name": "GÜMÜŞDOĞA",
+    "receivableUsd": 370797.44,
+    "feedDebtUsd": 2067383.6,
+    "advanceUsd": 3000000,
+    "totalExposureUsd": 4696586.16,
+    "feedDebtNote": "2026 faturalı alış $2,243,373.60 − $175,990 paid. This is FEED debt, not the advance. Sheet note: 'ilk yem borç vadesi 23.08.2026' — first instalment fell due 23.08.2026."
+  }
+}
