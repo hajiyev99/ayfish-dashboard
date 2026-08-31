@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-29T13:41:25.248547+03:00",
+  "lastUpdated": "2026-08-31T10:50:36.750185+03:00",
   "usdKur": 48.2321,
   "euroUsd": 1.1646,
   "eurKur": 56.1695,
@@ -46,16 +46,16 @@
       "currency": "USD"
     },
     {
-      "name": "BİOMAR/KEMAL",
-      "amount": 426052,
+      "name": "KEMAL BALIKÇILIK",
+      "amount": 234805,
       "currency": "USD",
-      "note": "gross $426K − Kemal rec $36K = net $390K owed (Biomar Sagun + Kemal Balıkçılık combined)"
+      "note": "same entity as Biomar Sagun — combined pay $426K − Kemal rec $36K = net $390K owed"
     },
     {
-      "name": "AKVAPLAST PLASTİK",
-      "amount": 53014,
-      "currency": "EURO",
-      "origAmount": 45522
+      "name": "BİOMAR SAGUN",
+      "amount": 191247,
+      "currency": "USD",
+      "note": "same entity as Kemal Balıkçılık — offset noted there"
     }
   ],
   "_biomarKemalOffset": {
