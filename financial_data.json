@@ -1,27 +1,27 @@
 {
-  "lastUpdated": "2026-09-01T09:51:18.696002+03:00",
-  "usdKur": 48.3337,
-  "euroUsd": 1.1596,
-  "eurKur": 56.0498,
-  "rateSource": "TCMB efektif satış 31.08.2026",
+  "lastUpdated": "2026-09-02T09:02:10.427501+03:00",
+  "usdKur": 48.3484,
+  "euroUsd": 1.1595,
+  "eurKur": 56.0615,
+  "rateSource": "TCMB efektif satış 01.09.2026",
   "receivables": {
     "usd": 550697.44,
     "euroUsd": 57.98,
-    "tlUsd": 38732.88,
-    "total": 589488.31
+    "tlUsd": 38721.11,
+    "total": 589476.52
   },
   "bank": {
-    "tlUsd": 111224.3,
+    "tlUsd": 111190.48,
     "usd": 720646.7999999999,
-    "total": 831871.1
+    "total": 831837.28
   },
   "checks": {
-    "tlUsd": 52551.33,
-    "total": 52551.33
+    "tlUsd": 52535.35,
+    "total": 52535.35
   },
-  "totalAssets": 1473910.73,
-  "payables": 2896426.77,
-  "netPosition": -1422516.04,
+  "totalAssets": 1473849.15,
+  "payables": 2896150.36,
+  "netPosition": -1422301.2,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
