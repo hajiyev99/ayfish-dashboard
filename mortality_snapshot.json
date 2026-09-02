@@ -1,24 +1,24 @@
 {
-  "lastUpdated": "2026-09-01T08:43:11.634364+03:00",
+  "lastUpdated": "2026-09-02T08:43:28.459642+03:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
     "etas": {
       "farm": "Elazig",
-      "date": "2026-08-31",
-      "total_fish": 943468,
-      "total_kg": 399293,
-      "mortality": 1258,
-      "per10k": 13.33,
+      "date": "2026-09-01",
+      "total_fish": 940617,
+      "total_kg": 446215,
+      "mortality": 1593,
+      "per10k": 16.94,
       "weightMeasuredPct": 0.0
     },
     "kark": {
       "farm": "Karkamis",
-      "date": "2026-08-31",
-      "total_fish": 1170241,
-      "total_kg": 2103638,
-      "mortality": 629,
-      "per10k": 5.37,
+      "date": "2026-09-01",
+      "total_fish": 1167802,
+      "total_kg": 2479594,
+      "mortality": 666,
+      "per10k": 5.7,
       "weightMeasuredPct": 100.0
     }
   },
@@ -638,47 +638,58 @@
       "kark_mort": 629,
       "kark_fish": 1170241,
       "kark_kg": 2103638
+    },
+    {
+      "date": "2026-09-01",
+      "etas_per10k": 16.94,
+      "etas_mort": 1593,
+      "etas_fish": 940617,
+      "etas_kg": 446215,
+      "kark_per10k": 5.7,
+      "kark_mort": 666,
+      "kark_fish": 1167802,
+      "kark_kg": 2479594
     }
   ],
   "systems": {
     "etas": [
       {
         "system": "ETAS 2",
-        "fish": 943468,
-        "mort": 1258,
-        "per10k": 13.33
+        "fish": 940617,
+        "mort": 1593,
+        "per10k": 16.94
       }
     ],
     "kark": [
       {
         "system": "On sistem",
-        "fish": 401566,
-        "mort": 230,
-        "per10k": 5.73
+        "fish": 401367,
+        "mort": 199,
+        "per10k": 4.96
       },
       {
         "system": "Orta sistem",
-        "fish": 224906,
-        "mort": 146,
-        "per10k": 6.49
+        "fish": 223003,
+        "mort": 130,
+        "per10k": 5.83
       },
       {
         "system": "Alt sistem",
-        "fish": 231905,
-        "mort": 98,
-        "per10k": 4.23
+        "fish": 231784,
+        "mort": 121,
+        "per10k": 5.22
       },
       {
         "system": "Mersin sistem",
-        "fish": 191435,
-        "mort": 112,
-        "per10k": 5.85
+        "fish": 191305,
+        "mort": 130,
+        "per10k": 6.8
       },
       {
         "system": "Incedere sistem",
-        "fish": 120429,
-        "mort": 43,
-        "per10k": 3.57
+        "fish": 120343,
+        "mort": 86,
+        "per10k": 7.15
       }
     ]
   },
@@ -686,53 +697,53 @@
     "etas": [
       {
         "bucket": "0-200g",
-        "mort": 935,
-        "fish": 701589,
-        "per10k": 13.33
+        "mort": 866,
+        "fish": 511139,
+        "per10k": 16.94
       },
       {
         "bucket": "200-500g",
-        "mort": 32,
-        "fish": 24152,
-        "per10k": 13.25
+        "mort": 359,
+        "fish": 212041,
+        "per10k": 16.93
       },
       {
         "bucket": "1000-1500g",
-        "mort": 77,
-        "fish": 57649,
-        "per10k": 13.36
+        "mort": 97,
+        "fish": 57567,
+        "per10k": 16.85
       },
       {
         "bucket": "1500-2500g",
-        "mort": 213,
-        "fish": 160078,
-        "per10k": 13.31
+        "mort": 271,
+        "fish": 159870,
+        "per10k": 16.95
       }
     ],
     "kark": [
       {
         "bucket": "0-200g",
-        "mort": 179,
-        "fish": 350153,
-        "per10k": 5.11
+        "mort": 166,
+        "fish": 349987,
+        "per10k": 4.74
       },
       {
         "bucket": "1500-2500g",
-        "mort": 202,
-        "fish": 428419,
-        "per10k": 4.72
+        "mort": 230,
+        "fish": 12788,
+        "per10k": 179.86
       },
       {
         "bucket": "2500-3500g",
-        "mort": 204,
-        "fish": 371874,
-        "per10k": 5.49
+        "mort": 219,
+        "fish": 787056,
+        "per10k": 2.78
       },
       {
         "bucket": "3500g+",
-        "mort": 44,
-        "fish": 19795,
-        "per10k": 22.23
+        "mort": 51,
+        "fish": 17971,
+        "per10k": 28.38
       }
     ]
   }
