@@ -1,35 +1,36 @@
 {
-  "lastUpdated": "2026-09-03T10:18:27.995548+03:00",
+  "lastUpdated": "2026-09-04T13:34:50.984922+03:00",
   "sourceFile": "OneDrive-AyFish/AyFish/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-08-18T16:53",
-  "sourceDataAgeDays": 15,
-  "sourceStale": true,
-  "usdKur": 48.3668,
-  "euroUsd": 1.1573,
-  "eurKur": 55.9773,
-  "rateSource": "TCMB efektif satış 02.09.2026",
+  "sourceFileModified": "2026-09-04T10:48",
+  "sourceDataAgeDays": 0,
+  "sourceStale": false,
+  "raporSummaryDate": "2026-09-03",
+  "usdKur": 48.3831,
+  "euroUsd": 1.1607,
+  "eurKur": 56.1563,
+  "rateSource": "TCMB efektif satış 03.09.2026 (rapor TCMB Kur sheet still frozen at 06.07 = 46.7178)",
   "receivables": {
-    "usd": 550697.44,
-    "euroUsd": 57.87,
-    "tlUsd": 38706.38,
-    "total": 589461.68
+    "usd": 285981.47,
+    "euroUsd": 58.04,
+    "tlUsd": -39910.88,
+    "total": 246128.63
   },
   "bank": {
-    "tlUsd": 111148.18,
-    "usd": 720646.7999999999,
-    "total": 831794.98
+    "tlUsd": 5916.24,
+    "usd": 68485.01,
+    "total": 74401.25
   },
   "checks": {
-    "tlUsd": 52515.36,
-    "total": 52515.36
+    "tlUsd": 67998.95,
+    "total": 67998.95
   },
-  "totalAssets": 1473772.03,
-  "payables": 2890701.86,
-  "netPosition": -1416929.83,
+  "totalAssets": 388528.83,
+  "payables": 2726652.69,
+  "netPosition": -2338123.86,
   "topReceivables": [
     {
       "name": "GÜMÜŞDOĞA",
-      "amount": 370797,
+      "amount": 97847,
       "currency": "USD"
     },
     {
@@ -46,25 +47,26 @@
   "topPayables": [
     {
       "name": "GÜMÜŞDOĞA (USD)",
-      "amount": 2067384,
+      "amount": 2128629,
       "currency": "USD"
     },
     {
       "name": "KEMAL BALIKÇILIK",
-      "amount": 234805,
+      "amount": 338659,
       "currency": "USD",
-      "note": "− Kemal rec $36K = net $198K owed"
+      "note": "− Kemal rec $36K = net $302K owed"
     },
     {
       "name": "BİOMAR SAGUN",
       "amount": 191247,
       "currency": "USD",
-      "note": "− Kemal rec $36K = net $155K owed"
+      "note": "same entity as Kemal; combined net $493K owed"
     }
   ],
   "_biomarKemalOffset": {
-    "payUsd": 426052,
-    "recUsd": 36468,
-    "netUsd": 389585
-  }
+    "payUsd": 529906.9,
+    "recUsd": 36467.63,
+    "netUsd": 493439.27
+  },
+  "_note": "Refreshed manually 04.09.2026 (housekeeping) from the live rapor: Müşteri Alacak summary rows 209-214, Firma Borç F37/F38/F39 (block moved from F35-37 on 03.09 — the update-farm-financials task must read the new cells)."
 }
