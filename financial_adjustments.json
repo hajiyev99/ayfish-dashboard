@@ -1,7 +1,7 @@
 {
   "_comment": "Off-report obligations the günlük rapor holds but EXCLUDES from its totals, because their 'Rapora Gelsin' flag is blank. The dashboard merges these on top of financial_data.json to show the economic position alongside the reported one. This file is maintained by hand / by Claude — the update-farm-financials scheduled task rewrites financial_data.json only and never touches this file.",
-  "lastUpdated": "2026-08-25",
-  "verifiedAgainst": "2026 GÜNLÜK RAPOR v5.xlsx, Müşteri Alacak row 8 + Firma Borç row 15",
+  "lastUpdated": "2026-09-04",
+  "verifiedAgainst": "2026 GÜNLÜK RAPOR v5.xlsx (saved 04.09.2026 10:48, summary dated 03.09), Müşteri Alacak row 8 + Firma Borç row 15",
   "items": [
     {
       "name": "Gümüşdoğa $3M advance",
@@ -14,10 +14,10 @@
   ],
   "counterparty": {
     "name": "GÜMÜŞDOĞA",
-    "receivableUsd": 370797.44,
-    "feedDebtUsd": 2067383.6,
+    "receivableUsd": 97847.44,
+    "feedDebtUsd": 2128629.2,
     "advanceUsd": 3000000,
-    "totalExposureUsd": 4696586.16,
-    "feedDebtNote": "2026 faturalı alış $2,243,373.60 − $175,990 paid. This is FEED debt, not the advance. Sheet note: 'ilk yem borç vadesi 23.08.2026' — first instalment fell due 23.08.2026."
+    "totalExposureUsd": 5030781.76,
+    "feedDebtNote": "Firma Borç row 15 balance $2,128,629.20 on 03.09.2026 (was $2,067,383.60 on 18.08). FEED debt, not the advance. Settled in FISH, not cash (STANDING #14) — the 'ilk yem borç vadesi 23.08.2026' note is not a cash deadline."
   }
 }
