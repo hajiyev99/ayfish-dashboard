@@ -1,38 +1,51 @@
 {
-  "lastUpdated": "2026-09-04T13:34:50.984922+03:00",
-  "sourceFile": "OneDrive-AyFish/AyFish/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-09-04T10:48",
-  "sourceDataAgeDays": 0,
+  "lastUpdated": "2026-09-07T11:18:58.291118+03:00",
+  "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
+  "sourceFileModified": "2026-09-04T17:24",
+  "sourceDataAgeDays": 2,
   "sourceStale": false,
-  "raporSummaryDate": "2026-09-03",
-  "usdKur": 48.3831,
-  "euroUsd": 1.1607,
-  "eurKur": 56.1563,
-  "rateSource": "TCMB efektif satış 03.09.2026 (rapor TCMB Kur sheet still frozen at 06.07 = 46.7178)",
+  "usdKur": 48.392,
+  "euroUsd": 1.1622,
+  "eurKur": 56.2423,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 04.09.2026",
   "receivables": {
     "usd": 285981.47,
-    "euroUsd": 58.04,
-    "tlUsd": -39910.88,
-    "total": 246128.63
+    "euroUsd": 58.11,
+    "tlUsd": -39903.54,
+    "total": 246136.04
   },
   "bank": {
-    "tlUsd": 5916.24,
+    "tlUsd": 5915.15,
     "usd": 68485.01,
-    "total": 74401.25
+    "total": 74400.16
   },
   "checks": {
-    "tlUsd": 67998.95,
-    "total": 67998.95
+    "tlUsd": 67986.44,
+    "total": 67986.44
   },
-  "totalAssets": 388528.83,
-  "payables": 2726652.69,
-  "netPosition": -2338123.86,
+  "totalAssets": 388522.64,
+  "payables": 2726712.49,
+  "customerAdvances": {
+    "total": 3000000,
+    "items": [
+      {
+        "name": "GÜMÜŞDOĞA",
+        "amount": 3000000,
+        "currency": "USD",
+        "note": "16.07.2026 tarihli ödeme olup sonrasında yapılacak olan satışlardan düşülecektir."
+      }
+    ]
+  },
+  "totalLiabilities": 5726712.49,
+  "netPosition": -5338189.84,
+  "_gumusdogaExposure": {
+    "feedPayableUsd": 2128629,
+    "advanceUsd": 3000000,
+    "receivableUsd": 97847,
+    "netOwedToGumusdogaUsd": 5030782,
+    "settlement": "in fish, not cash"
+  },
   "topReceivables": [
-    {
-      "name": "GÜMÜŞDOĞA",
-      "amount": 97847,
-      "currency": "USD"
-    },
     {
       "name": "NAM SU",
       "amount": 83279,
@@ -42,31 +55,45 @@
       "name": "ADA BALIK",
       "amount": 77700,
       "currency": "USD"
+    },
+    {
+      "name": "MASAR AL",
+      "amount": 47500,
+      "currency": "USD"
     }
   ],
   "topPayables": [
+    {
+      "name": "GÜMÜŞDOĞA AVANS",
+      "amount": 3000000,
+      "currency": "USD",
+      "note": "müşteri avansı, balıkla mahsup edilecek (16.07.2026)"
+    },
     {
       "name": "GÜMÜŞDOĞA (USD)",
       "amount": 2128629,
       "currency": "USD"
     },
     {
-      "name": "KEMAL BALIKÇILIK",
-      "amount": 338659,
+      "name": "KEMAL BALIKÇILIK / BİOMAR SAGUN",
+      "amount": 529906,
       "currency": "USD",
-      "note": "− Kemal rec $36K = net $302K owed"
-    },
-    {
-      "name": "BİOMAR SAGUN",
-      "amount": 191247,
-      "currency": "USD",
-      "note": "same entity as Kemal; combined net $493K owed"
+      "components": [
+        {
+          "name": "BİOMAR SAGUN",
+          "amount": 191247
+        },
+        {
+          "name": "KEMAL BALIKÇILIK",
+          "amount": 338659
+        }
+      ],
+      "note": "− Kemal rec $36K = net $493K owed"
     }
   ],
   "_biomarKemalOffset": {
-    "payUsd": 529906.9,
-    "recUsd": 36467.63,
-    "netUsd": 493439.27
-  },
-  "_note": "Refreshed manually 04.09.2026 (housekeeping) from the live rapor: Müşteri Alacak summary rows 209-214, Firma Borç F37/F38/F39 (block moved from F35-37 on 03.09 — the update-farm-financials task must read the new cells)."
+    "payUsd": 529907,
+    "recUsd": 36468,
+    "netUsd": 493439
+  }
 }
