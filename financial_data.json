@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-09-08T10:18:50.564206+03:00",
+  "lastUpdated": "2026-09-09T10:16:12.137957+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-09-08T09:22",
+  "sourceFileModified": "2026-09-08T15:18",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 48.5063,
-  "euroUsd": 1.1621,
-  "eurKur": 56.3708,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 07.09.2026",
+  "usdKur": 48.5325,
+  "euroUsd": 1.1614,
+  "eurKur": 56.3657,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 08.09.2026",
   "receivables": {
     "usd": 285981.47,
-    "euroUsd": 58.11,
-    "tlUsd": -39809.52,
-    "total": 246230.06
+    "euroUsd": 58.07,
+    "tlUsd": 35990.3,
+    "total": 322029.84
   },
   "bank": {
-    "tlUsd": 5901.21,
-    "usd": 68485.01,
-    "total": 74386.22
+    "tlUsd": 9001.23,
+    "usd": 70646.81,
+    "total": 79648.04
   },
   "checks": {
-    "tlUsd": 67826.24,
-    "total": 67826.24
+    "tlUsd": 67789.63,
+    "total": 67789.63
   },
-  "totalAssets": 388442.53,
-  "payables": 2963825.49,
+  "totalAssets": 469467.5,
+  "payables": 3024244.23,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,13 +36,13 @@
       }
     ]
   },
-  "totalLiabilities": 5963825.49,
-  "netPosition": -5575382.96,
+  "totalLiabilities": 6024244.23,
+  "netPosition": -5554776.72,
   "_gumusdogaExposure": {
-    "feedPayableUsd": 2365868,
+    "feedPayableUsd": 2426348,
     "advanceUsd": 3000000,
     "receivableUsd": 97847,
-    "netOwedToGumusdogaUsd": 5268021,
+    "netOwedToGumusdogaUsd": 5328501,
     "settlement": "in fish, not cash"
   },
   "topReceivables": [
@@ -52,13 +52,14 @@
       "currency": "USD"
     },
     {
-      "name": "NAM SU",
-      "amount": 83279,
-      "currency": "USD"
+      "name": "RADBAM DIŞ",
+      "amount": 88155,
+      "currency": "TL",
+      "origAmount": 4278374
     },
     {
-      "name": "ADA BALIK",
-      "amount": 77700,
+      "name": "NAM SU",
+      "amount": 83279,
       "currency": "USD"
     }
   ],
@@ -71,7 +72,7 @@
     },
     {
       "name": "GÜMÜŞDOĞA (USD)",
-      "amount": 2365868,
+      "amount": 2426348,
       "currency": "USD"
     },
     {
