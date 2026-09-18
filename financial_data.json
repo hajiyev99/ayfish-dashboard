@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-09-17T15:24:27.679888+03:00",
+  "lastUpdated": "2026-09-18T09:42:56.711772+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
   "sourceFileModified": "2026-09-17T15:19",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 48.7384,
-  "euroUsd": 1.1541,
-  "eurKur": 56.2498,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 16.09.2026",
+  "usdKur": 48.7479,
+  "euroUsd": 1.1475,
+  "eurKur": 55.939,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 17.09.2026",
   "receivables": {
     "usd": -175348.53,
-    "euroUsd": 57.71,
-    "tlUsd": 42992.48,
-    "total": -132298.34
+    "euroUsd": 57.38,
+    "tlUsd": 42984.1,
+    "total": -132307.05
   },
   "bank": {
-    "tlUsd": 33439.58,
+    "tlUsd": 33433.06,
     "usd": 3709.0599999999995,
-    "total": 37148.64
+    "total": 37142.12
   },
   "checks": {
     "tlUsd": 0.0,
     "total": 0.0
   },
-  "totalAssets": -95149.71,
-  "payables": 2827446.11,
+  "totalAssets": -95164.93,
+  "payables": 2827135.61,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 5827446.11,
-  "netPosition": -5922595.82,
+  "totalLiabilities": 5827135.61,
+  "netPosition": -5922300.54,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -50,14 +50,14 @@
       },
       {
         "name": "KDS TL",
-        "amount": 18057,
+        "amount": 18053,
         "currency": "TL",
         "origAmount": 880047,
         "note": ""
       },
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 38793,
+        "amount": 38786,
         "currency": "TL",
         "origAmount": 1890712,
         "note": ""
@@ -87,7 +87,7 @@
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 87782,
+      "amount": 87765,
       "currency": "TL",
       "origAmount": 4278374
     }
