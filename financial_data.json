@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-09-22T10:52:44.293733+03:00",
+  "lastUpdated": "2026-09-23T12:01:26.265168+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-09-21T16:05",
+  "sourceFileModified": "2026-09-23T11:58",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 48.8741,
-  "euroUsd": 1.148,
-  "eurKur": 56.1091,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 21.09.2026",
+  "usdKur": 48.8934,
+  "euroUsd": 1.1461,
+  "eurKur": 56.0359,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 22.09.2026",
   "receivables": {
     "usd": 56456.07,
-    "euroUsd": 57.4,
-    "tlUsd": 51013.53,
-    "total": 107527.0
+    "euroUsd": 57.3,
+    "tlUsd": 91638.44,
+    "total": 148151.82
   },
   "bank": {
-    "tlUsd": 33346.73,
-    "usd": 3709.0599999999995,
-    "total": 37055.79
+    "tlUsd": 9490.66,
+    "usd": 2795.0599999999995,
+    "total": 12285.72
   },
   "checks": {
     "tlUsd": 0.0,
     "total": 0.0
   },
-  "totalAssets": 144582.79,
-  "payables": 3184313.65,
+  "totalAssets": 160437.54,
+  "payables": 3250141.84,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6184313.65,
-  "netPosition": -6039730.86,
+  "totalLiabilities": 6250141.84,
+  "netPosition": -6089704.3,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -50,16 +50,16 @@
       },
       {
         "name": "KDS TL",
-        "amount": 14957,
+        "amount": 12545,
         "currency": "TL",
-        "origAmount": 731034,
+        "origAmount": 613387,
         "note": ""
       },
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 37934,
+        "amount": 32727,
         "currency": "TL",
-        "origAmount": 1853997,
+        "origAmount": 1600134,
         "note": ""
       }
     ]
@@ -87,7 +87,7 @@
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 87539,
+      "amount": 87504,
       "currency": "TL",
       "origAmount": 4278374
     }
