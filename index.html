@@ -1181,32 +1181,32 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-09-23T12:01:26.265168+03:00",
+  "lastUpdated": "2026-09-24T11:11:24.888147+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-09-23T11:58",
+  "sourceFileModified": "2026-09-23T17:00",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 48.8934,
-  "euroUsd": 1.1461,
-  "eurKur": 56.0359,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 22.09.2026",
+  "usdKur": 48.911,
+  "euroUsd": 1.1416,
+  "eurKur": 55.836,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 23.09.2026",
   "receivables": {
     "usd": 56456.07,
-    "euroUsd": 57.3,
-    "tlUsd": 91638.44,
-    "total": 148151.82
+    "euroUsd": 57.08,
+    "tlUsd": 156008.16,
+    "total": 212521.31
   },
   "bank": {
-    "tlUsd": 9490.66,
+    "tlUsd": 9487.24,
     "usd": 2795.0599999999995,
-    "total": 12285.72
+    "total": 12282.3
   },
   "checks": {
     "tlUsd": 0.0,
     "total": 0.0
   },
-  "totalAssets": 160437.54,
-  "payables": 3250141.84,
+  "totalAssets": 224803.61,
+  "payables": 3249883.85,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -1218,8 +1218,8 @@ const EMBEDDED_FINANCIAL_DATA = {
       }
     ]
   },
-  "totalLiabilities": 6250141.84,
-  "netPosition": -6089704.3,
+  "totalLiabilities": 6249883.85,
+  "netPosition": -6025080.24,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -1232,14 +1232,14 @@ const EMBEDDED_FINANCIAL_DATA = {
       },
       {
         "name": "KDS TL",
-        "amount": 12545,
+        "amount": 12541,
         "currency": "TL",
         "origAmount": 613387,
         "note": ""
       },
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 32727,
+        "amount": 32715,
         "currency": "TL",
         "origAmount": 1600134,
         "note": ""
@@ -1258,6 +1258,12 @@ const EMBEDDED_FINANCIAL_DATA = {
   },
   "topReceivables": [
     {
+      "name": "RADBAM DIŞ",
+      "amount": 151875,
+      "currency": "TL",
+      "origAmount": 7428374
+    },
+    {
       "name": "PT.BUMI MENARA",
       "amount": 146735,
       "currency": "USD"
@@ -1266,12 +1272,6 @@ const EMBEDDED_FINANCIAL_DATA = {
       "name": "SUSONA VETERINERLIK",
       "amount": 127382,
       "currency": "USD"
-    },
-    {
-      "name": "RADBAM DIŞ",
-      "amount": 87504,
-      "currency": "TL",
-      "origAmount": 4278374
     }
   ],
   "topPayables": [
