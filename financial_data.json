@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-09-25T10:11:50.691201+03:00",
+  "lastUpdated": "2026-09-28T09:24:10.486146+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-09-24T17:24",
-  "sourceDataAgeDays": 0,
+  "sourceFileModified": "2026-09-25T16:30",
+  "sourceDataAgeDays": 2,
   "sourceStale": false,
-  "usdKur": 48.9282,
-  "euroUsd": 1.138,
-  "eurKur": 55.6779,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 24.09.2026",
+  "usdKur": 48.9514,
+  "euroUsd": 1.1393,
+  "eurKur": 55.7715,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 25.09.2026",
   "receivables": {
     "usd": 56456.07,
-    "euroUsd": 56.9,
-    "tlUsd": 163691.72,
-    "total": 220204.69
+    "euroUsd": 56.97,
+    "tlUsd": 200317.91,
+    "total": 256830.95
   },
   "bank": {
-    "tlUsd": 9483.91,
-    "usd": 2795.0599999999995,
-    "total": 12278.97
+    "tlUsd": 9479.41,
+    "usd": 0,
+    "total": 9479.41
   },
   "checks": {
-    "tlUsd": 135709.06,
-    "total": 135709.06
+    "tlUsd": 0.0,
+    "total": 0.0
   },
-  "totalAssets": 368192.72,
-  "payables": 3243644.97,
+  "totalAssets": 266310.36,
+  "payables": 3243674.48,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6243644.97,
-  "netPosition": -5875452.25,
+  "totalLiabilities": 6243674.48,
+  "netPosition": -5977364.12,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -50,14 +50,14 @@
       },
       {
         "name": "KDS TL",
-        "amount": 12536,
+        "amount": 12531,
         "currency": "TL",
         "origAmount": 613387,
         "note": ""
       },
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 29377,
+        "amount": 29363,
         "currency": "TL",
         "origAmount": 1437381,
         "note": ""
@@ -77,18 +77,18 @@
   "topReceivables": [
     {
       "name": "RADBAM DIŞ",
-      "amount": 151822,
+      "amount": 188454,
       "currency": "TL",
-      "origAmount": 7428374
-    },
-    {
-      "name": "PT.BUMI MENARA",
-      "amount": 146735,
-      "currency": "USD"
+      "origAmount": 9225075
     },
     {
       "name": "SUSONA VETERINERLIK",
       "amount": 127382,
+      "currency": "USD"
+    },
+    {
+      "name": "NAM SU",
+      "amount": 83279,
       "currency": "USD"
     }
   ],
