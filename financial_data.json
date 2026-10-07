@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-07T10:06:46.863471+03:00",
+  "lastUpdated": "2026-10-07T13:45:27.539377+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-07T09:14",
+  "sourceFileModified": "2026-10-07T12:23",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 49.254,
@@ -11,8 +11,8 @@
   "receivables": {
     "usd": -304046.41,
     "euroUsd": 56.21,
-    "tlUsd": 68021.8,
-    "total": -235968.4
+    "tlUsd": 74946.66,
+    "total": -229043.55
   },
   "bank": {
     "tlUsd": 168893.53,
@@ -23,8 +23,8 @@
     "tlUsd": 86084.38,
     "total": 86084.38
   },
-  "totalAssets": 20541.68,
-  "payables": 3287798.01,
+  "totalAssets": 27466.53,
+  "payables": 3295689.36,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6287798.01,
-  "netPosition": -6267256.33,
+  "totalLiabilities": 6295689.36,
+  "netPosition": -6268222.82,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
