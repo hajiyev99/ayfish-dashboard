@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-10-07T13:45:27.539377+03:00",
+  "lastUpdated": "2026-10-08T12:04:37.666939+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-07T12:23",
+  "sourceFileModified": "2026-10-08T10:08",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 49.254,
-  "euroUsd": 1.1241,
-  "eurKur": 55.3676,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 06.10.2026",
+  "usdKur": 49.2714,
+  "euroUsd": 1.1198,
+  "eurKur": 55.1724,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 07.10.2026",
   "receivables": {
     "usd": -304046.41,
-    "euroUsd": 56.21,
-    "tlUsd": 74946.66,
-    "total": -229043.55
+    "euroUsd": 55.99,
+    "tlUsd": 418304.14,
+    "total": 114313.72
   },
   "bank": {
-    "tlUsd": 168893.53,
+    "tlUsd": 168833.89,
     "usd": 1532.17,
-    "total": 170425.7
+    "total": 170366.06
   },
   "checks": {
-    "tlUsd": 86084.38,
-    "total": 86084.38
+    "tlUsd": 86053.98,
+    "total": 86053.98
   },
-  "totalAssets": 27466.53,
-  "payables": 3295689.36,
+  "totalAssets": 370733.76,
+  "payables": 3527208.7,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6295689.36,
-  "netPosition": -6268222.82,
+  "totalLiabilities": 6527208.7,
+  "netPosition": -6156474.94,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -50,28 +50,14 @@
       },
       {
         "name": "KDS TL",
-        "amount": 12707,
+        "amount": 12703,
         "currency": "TL",
         "origAmount": 625883,
         "note": ""
       },
       {
-        "name": "MEHMET ALİ",
-        "amount": 2758,
-        "currency": "TL",
-        "origAmount": 135839,
-        "note": ""
-      },
-      {
-        "name": "MENEKŞE GIDA",
-        "amount": 6890,
-        "currency": "TL",
-        "origAmount": 339352,
-        "note": ""
-      },
-      {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 9986,
+        "amount": 9983,
         "currency": "TL",
         "origAmount": 491869,
         "note": ""
@@ -86,16 +72,22 @@
     ]
   },
   "_gumusdogaExposure": {
-    "feedPayableUsd": 2404656,
+    "feedPayableUsd": 2644201,
     "advanceUsd": 3000000,
     "customerCreditUsd": 383318,
     "receivableUsd": 0,
-    "netOwedToGumusdogaUsd": 5787974,
-    "yemAlisRunningBalanceUsd": 6022789,
-    "tallyDiffUsd": 234815,
+    "netOwedToGumusdogaUsd": 6027519,
+    "yemAlisRunningBalanceUsd": 6141375,
+    "tallyDiffUsd": 113856,
     "settlement": "in fish, not cash"
   },
   "topReceivables": [
+    {
+      "name": "RADBAM DIŞ",
+      "amount": 385042,
+      "currency": "TL",
+      "origAmount": 18971578
+    },
     {
       "name": "KEMAL BALIKÇILIK",
       "amount": 99605,
@@ -105,11 +97,6 @@
     {
       "name": "NAM SU",
       "amount": 83279,
-      "currency": "USD"
-    },
-    {
-      "name": "ADA BALIK",
-      "amount": 77700,
       "currency": "USD"
     }
   ],
@@ -122,9 +109,9 @@
     },
     {
       "name": "GÜMÜŞDOĞA (USD)",
-      "amount": 2404656,
+      "amount": 2644201,
       "currency": "USD",
-      "note": "+ $383K mahsup bakiyesi (müşteri satırı eksi) → toplam $5.8M balıkla ödenecek"
+      "note": "+ $383K mahsup bakiyesi (müşteri satırı eksi) → toplam $6.0M balıkla ödenecek"
     },
     {
       "name": "KEMAL BALIKÇILIK / BİOMAR SAGUN",
