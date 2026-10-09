@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-09T11:40:52.658582+03:00",
+  "lastUpdated": "2026-10-09T12:16:48.058912+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-09T10:37",
+  "sourceFileModified": "2026-10-09T11:03",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 49.289,
@@ -114,20 +114,10 @@
       "note": "+ $383K mahsup bakiyesi (müşteri satırı eksi) → toplam $6.2M balıkla ödenecek"
     },
     {
-      "name": "KEMAL BALIKÇILIK / BİOMAR SAGUN",
-      "amount": 760063,
-      "currency": "USD",
-      "components": [
-        {
-          "name": "BİOMAR SAGUN",
-          "amount": 191247
-        },
-        {
-          "name": "KEMAL BALIKÇILIK",
-          "amount": 568816
-        }
-      ],
-      "note": "− Kemal rec $100K = net $660K owed"
+      "name": "ÖZBERK VETERİNER",
+      "amount": 1331605,
+      "currency": null,
+      "origAmount": 1331605
     }
   ],
   "_biomarKemalOffset": {
