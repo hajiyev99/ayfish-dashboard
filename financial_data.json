@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-10-09T12:16:48.058912+03:00",
+  "lastUpdated": "2026-10-10T09:15:07.193263+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-09T11:03",
+  "sourceFileModified": "2026-10-09T17:14",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 49.289,
-  "euroUsd": 1.1186,
-  "eurKur": 55.1364,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 08.10.2026",
+  "usdKur": 49.2898,
+  "euroUsd": 1.1218,
+  "eurKur": 55.2933,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 09.10.2026",
   "receivables": {
     "usd": -304046.41,
-    "euroUsd": 55.93,
-    "tlUsd": 117884.94,
-    "total": -186105.54
+    "euroUsd": 56.09,
+    "tlUsd": 117883.02,
+    "total": -186107.3
   },
   "bank": {
-    "tlUsd": 122020.2,
+    "tlUsd": 122018.22,
     "usd": 3803.8899999999994,
-    "total": 125824.09
+    "total": 125822.11
   },
   "checks": {
-    "tlUsd": 86023.25,
-    "total": 86023.25
+    "tlUsd": 86021.85,
+    "total": 86021.85
   },
-  "totalAssets": 25741.8,
-  "payables": 3662118.16,
+  "totalAssets": 25736.67,
+  "payables": 3636894.63,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6662118.16,
-  "netPosition": -6636376.37,
+  "totalLiabilities": 6636894.63,
+  "netPosition": -6611157.96,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -90,7 +90,7 @@
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 84635,
+      "amount": 84634,
       "currency": "TL",
       "origAmount": 4171578
     },
