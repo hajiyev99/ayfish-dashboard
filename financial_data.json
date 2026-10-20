@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-10-19T10:16:02.190842+03:00",
+  "lastUpdated": "2026-10-20T09:51:18.397573+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
   "sourceFileModified": "2026-10-09T17:14",
-  "sourceDataAgeDays": 9,
+  "sourceDataAgeDays": 10,
   "sourceStale": true,
-  "usdKur": 49.5204,
-  "euroUsd": 1.1248,
-  "eurKur": 55.7014,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 16.10.2026",
+  "usdKur": 49.6267,
+  "euroUsd": 1.1214,
+  "eurKur": 55.6509,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 19.10.2026",
   "receivables": {
     "usd": -304046.41,
-    "euroUsd": 56.24,
-    "tlUsd": 117334.08,
-    "total": -186656.09
+    "euroUsd": 56.07,
+    "tlUsd": 117082.75,
+    "total": -186907.59
   },
   "bank": {
-    "tlUsd": 121450.02,
+    "tlUsd": 121189.87,
     "usd": 3803.8899999999994,
-    "total": 125253.91
+    "total": 124993.76
   },
   "checks": {
-    "tlUsd": 85621.28,
-    "total": 85621.28
+    "tlUsd": 85437.88,
+    "total": 85437.88
   },
-  "totalAssets": 24219.1,
-  "payables": 3636848.46,
+  "totalAssets": 23524.06,
+  "payables": 3636552.18,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6636848.46,
-  "netPosition": -6612629.36,
+  "totalLiabilities": 6636552.18,
+  "netPosition": -6613028.12,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -50,14 +50,14 @@
       },
       {
         "name": "KDS TL",
-        "amount": 12639,
+        "amount": 12612,
         "currency": "TL",
         "origAmount": 625883,
         "note": ""
       },
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 9933,
+        "amount": 9911,
         "currency": "TL",
         "origAmount": 491869,
         "note": ""
@@ -90,7 +90,7 @@
     },
     {
       "name": "RADBAM DIŞ",
-      "amount": 84240,
+      "amount": 84059,
       "currency": "TL",
       "origAmount": 4171578
     },
