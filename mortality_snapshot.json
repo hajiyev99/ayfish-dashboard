@@ -1,24 +1,24 @@
 {
-  "lastUpdated": "2026-10-19T10:15:43.362485+03:00",
+  "lastUpdated": "2026-10-20T09:51:13.163355+03:00",
   "metric": "per10k",
   "metricLabel": "per 10,000 fish",
   "farms": {
     "etas": {
       "farm": "Elazig",
-      "date": "2026-10-18",
-      "total_fish": 917673,
-      "total_kg": 497563,
-      "mortality": 1180,
-      "per10k": 12.86,
+      "date": "2026-10-19",
+      "total_fish": 1004864,
+      "total_kg": 500321,
+      "mortality": 5350,
+      "per10k": 53.24,
       "weightMeasuredPct": 0.0
     },
     "kark": {
       "farm": "Karkamis",
-      "date": "2026-10-18",
-      "total_fish": 1003872,
-      "total_kg": 2548941,
-      "mortality": 695,
-      "per10k": 6.92,
+      "date": "2026-10-19",
+      "total_fish": 990060,
+      "total_kg": 2499149,
+      "mortality": 823,
+      "per10k": 8.31,
       "weightMeasuredPct": 100.0
     }
   },
@@ -1038,53 +1038,64 @@
       "kark_mort": 695,
       "kark_fish": 1003872,
       "kark_kg": 2548941
+    },
+    {
+      "date": "2026-10-19",
+      "etas_per10k": 53.24,
+      "etas_mort": 5350,
+      "etas_fish": 1004864,
+      "etas_kg": 500321,
+      "kark_per10k": 8.31,
+      "kark_mort": 823,
+      "kark_fish": 990060,
+      "kark_kg": 2499149
     }
   ],
   "systems": {
     "etas": [
       {
         "system": "ETAS 2",
-        "fish": 875404,
-        "mort": 1139,
-        "per10k": 13.01
+        "fish": 874432,
+        "mort": 972,
+        "per10k": 11.12
       },
       {
         "system": "ETAS 4",
-        "fish": 42269,
-        "mort": 41,
-        "per10k": 9.7
+        "fish": 130432,
+        "mort": 4378,
+        "per10k": 335.65
       }
     ],
     "kark": [
       {
         "system": "On sistem",
-        "fish": 316713,
-        "mort": 214,
-        "per10k": 6.76
+        "fish": 314937,
+        "mort": 251,
+        "per10k": 7.97
       },
       {
         "system": "Orta sistem",
-        "fish": 170725,
-        "mort": 129,
-        "per10k": 7.56
+        "fish": 159119,
+        "mort": 142,
+        "per10k": 8.92
       },
       {
         "system": "Alt sistem",
-        "fish": 225508,
-        "mort": 174,
-        "per10k": 7.72
+        "fish": 225260,
+        "mort": 248,
+        "per10k": 11.01
       },
       {
         "system": "Mersin sistem",
-        "fish": 174573,
-        "mort": 96,
-        "per10k": 5.5
+        "fish": 174463,
+        "mort": 110,
+        "per10k": 6.31
       },
       {
         "system": "Incedere sistem",
-        "fish": 116353,
-        "mort": 82,
-        "per10k": 7.05
+        "fish": 116281,
+        "mort": 72,
+        "per10k": 6.19
       }
     ]
   },
@@ -1092,47 +1103,47 @@
     "etas": [
       {
         "bucket": "0-200g",
-        "mort": 648,
-        "fish": 508624,
-        "per10k": 12.74
+        "mort": 4896,
+        "fish": 596184,
+        "per10k": 82.12
       },
       {
         "bucket": "200-500g",
-        "mort": 265,
-        "fish": 203944,
-        "per10k": 12.99
+        "mort": 227,
+        "fish": 203806,
+        "per10k": 11.14
       },
       {
         "bucket": "1500-2500g",
-        "mort": 267,
-        "fish": 205105,
-        "per10k": 13.02
+        "mort": 228,
+        "fish": 204874,
+        "per10k": 11.13
       }
     ],
     "kark": [
       {
         "bucket": "0-200g",
-        "mort": 71,
-        "fish": 60411,
-        "per10k": 11.75
+        "mort": 55,
+        "fish": 60318,
+        "per10k": 9.12
       },
       {
         "bucket": "200-500g",
-        "mort": 121,
-        "fish": 213417,
-        "per10k": 5.67
+        "mort": 125,
+        "fish": 213310,
+        "per10k": 5.86
       },
       {
         "bucket": "2500-3500g",
-        "mort": 263,
-        "fish": 405638,
-        "per10k": 6.48
+        "mort": 321,
+        "fish": 403812,
+        "per10k": 7.95
       },
       {
         "bucket": "3500g+",
-        "mort": 240,
-        "fish": 324406,
-        "per10k": 7.4
+        "mort": 322,
+        "fish": 312620,
+        "per10k": 10.3
       }
     ]
   }
