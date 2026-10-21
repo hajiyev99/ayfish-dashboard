@@ -1,7 +1,7 @@
 {
-  "_comment": "Off-report obligations the günlük rapor holds but EXCLUDES from its totals, because their 'Rapora Gelsin' flag is blank. The dashboard merges these on top of financial_data.json to show the economic position alongside the reported one. This file is maintained by hand / by Claude — the update-farm-financials scheduled task rewrites financial_data.json only and never touches this file.",
-  "lastUpdated": "2026-09-04",
-  "verifiedAgainst": "2026 GÜNLÜK RAPOR v5.xlsx (saved 04.09.2026 10:48, summary dated 03.09), Müşteri Alacak row 8 + Firma Borç row 15",
+  "_comment": "Off-report items the günlük rapor holds but EXCLUDES from its totals (blank 'Rapora Gelsin', or a block outside the summaries). Sign convention: amountUsd > 0 = obligation (reduces the economic net), amountUsd < 0 = asset/receivable (raises it). An item may carry amountTl instead of amountUsd — financials.py and the dashboard convert it at the day's TCMB kur. Items with 'countedBy' are already inside financial_data.json and are NOT added again by financials.py (the dashboard still lists them). Maintained by hand / by Claude on Abdu's instruction — daily-brief's financials.py only READS this file.",
+  "lastUpdated": "2026-10-21",
+  "verifiedAgainst": "2026 GÜNLÜK RAPOR v5.xlsx (saved 21.10.2026 16:09, summary dated 20.10): Müşteri Alacak row 8 (advance), row 57 (UNIFROST), Firma Borç row 67 (Irmak/Ziraat kredi)",
   "items": [
     {
       "name": "Gümüşdoğa $3M advance",
@@ -9,7 +9,24 @@
       "type": "obligation",
       "source": "Müşteri Alacak row 8",
       "raporFlag": "blank — excluded from every reported total",
-      "note": "Cash received 16.07.2026 against 1,500 t of this season's fish. Booked as −$3,000,000 (\"16.07.2026 tarihli ödeme olup sonrasında yapılacak olan satışlardan düşülecektir\") but flagged out of the report. The fish are already paid for and still have to be delivered."
+      "note": "Cash received 16.07.2026 against 1,500 t of this season's fish. Booked as −$3,000,000 (\"16.07.2026 tarihli ödeme olup sonrasında yapılacak olan satışlardan düşülecektir\") but flagged out of the report. The fish are already paid for and still have to be delivered.",
+      "countedBy": "financials.py customerAdvances (read live from Müşteri Alacak row 8)"
+    },
+    {
+      "name": "UNIFROST LLC receivable",
+      "amountUsd": -378671.11,
+      "type": "asset",
+      "source": "Müşteri Alacak row 57",
+      "raporFlag": "blank — excluded from the reported receivables",
+      "note": "First two Unifrost shipments: 13.10.2026 Huso huso 19,318 kg $185,453 + 16.10.2026 gueldenstaedtii 8,632 kg $100,237, huso 6,419 kg $61,688, alabalık 10–12 kg 4,370 kg $31,498 (Satis rows 955, 993–995). Abdu 21.10.2026: 'it's a real receivable — add it to our calculations'. Remove this item when Gülsem sets the row's Rapora Gelsin flag (then it is inside receivables.usd and would double count). Refresh the amount from row 57 when it moves."
+    },
+    {
+      "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
+      "amountTl": 44000000,
+      "type": "obligation",
+      "source": "Firma Borç row 67 (KREDİLER block)",
+      "raporFlag": "outside the Firma Borç summaries (Toplam USD borc excludes the KREDİLER block)",
+      "note": "Bank loan, rapor note 'ortalama rakam'. Abdu 21.10.2026: 'the Irmak loan is real — we gotta pay it back in February.' Converted at the day's TCMB kur by financials.py / the dashboard. Row 66 (Irmak/Vakıfbank ₺339,223 due 02.11.2026) is a normal instalment and stays out."
     }
   ],
   "counterparty": {
