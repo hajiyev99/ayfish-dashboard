@@ -1489,6 +1489,9 @@ async function loadFinancial() {
   // Pre-compute values for the summary bar
   const totalAssets = finData.bankBalance + finData.receivables + finData.checks;
   const netCash = totalAssets - finData.payables;
+  // off-report items: amountTl converted at the kur now loaded (adjustments load before the kur, so convert at render time)
+  const adjVal = (i) => i.amountUsd != null ? i.amountUsd : (i.amountTl != null && finJsonMeta.usdKur ? i.amountTl / finJsonMeta.usdKur : 0);
+  const offTotal = finAdj.items.reduce((a, i) => a + adjVal(i), 0);
   const totalSalmon = finData.etasSomonBio + finData.karkSalmonBio;
   const totalSturgeon = finData.etasMersinBio + finData.karkSterletBio;
   const salmonVal = totalSalmon * finData.salmonPrice;
@@ -1577,20 +1580,20 @@ async function loadFinancial() {
           <div class="fin-total-label" style="font-weight:700">Net Cash Position <span style="font-weight:400;color:#718096;font-size:11px">(as reported)</span></div>
           <div class="fin-total-val" id="fin-net-cash" style="color:#68d391;font-weight:700">$0</div>
         </div>
-        ${finAdj.offReportTotal ? `
+        ${offTotal ? `
         <div style="margin-top:10px;padding-top:8px;border-top:1px dashed rgba(252,129,129,0.35)">
-          ${finAdj.items.map(i => `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;color:${i.amountUsd < 0 ? '#68d391' : '#fc8181'}">
-              <span>${i.amountUsd < 0 ? '+' : '−'} ${i.name} <span class="fin-offrep" title="${(i.note||'').replace(/"/g,'&quot;')}">off-report</span></span>
-              <span>${fmtUSD(-i.amountUsd)}</span></div>`).join('')}
+          ${finAdj.items.map(i => `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;color:${adjVal(i) < 0 ? '#68d391' : '#fc8181'}">
+              <span>${adjVal(i) < 0 ? '+' : '−'} ${i.name} <span class="fin-offrep" title="${(i.note||'').replace(/"/g,'&quot;')}">off-report</span></span>
+              <span>${fmtUSD(-adjVal(i))}</span></div>`).join('')}
           <div class="fin-total-row" style="border-top:2px solid rgba(252,129,129,0.4);padding-top:10px;margin-top:6px">
             <div class="fin-total-label" style="font-weight:700;color:#fc8181">Economic Net Position</div>
-            <div class="fin-total-val" style="color:#fc8181;font-weight:700">${fmtUSD(netCash - finAdj.offReportTotal)}</div>
+            <div class="fin-total-val" style="color:#fc8181;font-weight:700">${fmtUSD(netCash - offTotal)}</div>
           </div>
         </div>` : ''}
       </div>
-      ${finAdj.offReportTotal ? `
+      ${offTotal ? `
       <div class="fin-warn">
-        <b>⚠️ Off-report items move the net by ${fmtUSD(-finAdj.offReportTotal)} (net of assets and obligations).</b>
+        <b>⚠️ Off-report items move the net by ${fmtUSD(-offTotal)} (net of assets and obligations).</b>
         These lines sit in the günlük rapor but outside its totals (blank <span class="mono">Rapora Gelsin</span> flag, or the KREDİLER block), so every total in the workbook — and the reported figure above — leaves them out.
         ${finJsonMeta.gd ? `<br><br><b>GÜMÜŞDOĞA total exposure ${fmtUSD(finJsonMeta.gd.netOwedToGumusdogaUsd)}</b> (live, ${lastUp})
           = feed debt ${fmtUSD(finJsonMeta.gd.feedPayableUsd)} + advance ${fmtUSD(finJsonMeta.gd.advanceUsd)}${finJsonMeta.gd.customerCreditUsd ? ` + customer-row credit ${fmtUSD(finJsonMeta.gd.customerCreditUsd)} (feed mahsup'd against the customer account)` : ''}
