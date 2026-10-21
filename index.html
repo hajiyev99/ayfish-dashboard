@@ -1181,32 +1181,32 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-10-20T09:51:18.397573+03:00",
+  "lastUpdated": "2026-10-21T11:39:20.280298+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-09T17:14",
-  "sourceDataAgeDays": 10,
-  "sourceStale": true,
-  "usdKur": 49.6267,
-  "euroUsd": 1.1214,
-  "eurKur": 55.6509,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 19.10.2026",
+  "sourceFileModified": "2026-10-21T11:30",
+  "sourceDataAgeDays": 0,
+  "sourceStale": false,
+  "usdKur": 49.6524,
+  "euroUsd": 1.1218,
+  "eurKur": 55.7025,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 20.10.2026",
   "receivables": {
-    "usd": -304046.41,
-    "euroUsd": 56.07,
-    "tlUsd": 117082.75,
-    "total": -186907.59
+    "usd": -193375.43,
+    "euroUsd": 56.09,
+    "tlUsd": -109901.63,
+    "total": -303220.97
   },
   "bank": {
-    "tlUsd": 121189.87,
+    "tlUsd": 121127.15,
     "usd": 3803.8899999999994,
-    "total": 124993.76
+    "total": 124931.04
   },
   "checks": {
-    "tlUsd": 85437.88,
-    "total": 85437.88
+    "tlUsd": 31015.62,
+    "total": 31015.62
   },
-  "totalAssets": 23524.06,
-  "payables": 3636552.18,
+  "totalAssets": -147274.31,
+  "payables": 3757514.28,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -1218,8 +1218,8 @@ const EMBEDDED_FINANCIAL_DATA = {
       }
     ]
   },
-  "totalLiabilities": 6636552.18,
-  "netPosition": -6613028.12,
+  "totalLiabilities": 6757514.28,
+  "netPosition": -6904788.59,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -1232,49 +1232,55 @@ const EMBEDDED_FINANCIAL_DATA = {
       },
       {
         "name": "KDS TL",
-        "amount": 12612,
+        "amount": 8810,
         "currency": "TL",
-        "origAmount": 625883,
+        "origAmount": 437444,
         "note": ""
       },
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 9911,
+        "amount": 114431,
         "currency": "TL",
-        "origAmount": 491869,
+        "origAmount": 5681777,
         "note": ""
       },
       {
-        "name": "UGA CAVIAR",
-        "amount": 171970,
+        "name": "RADBAM DIŞ",
+        "amount": 68525,
+        "currency": "TL",
+        "origAmount": 3402413,
+        "note": "AYFİSH/30.04.2026/38.322,28 USD / muh olan AYS61 FT-25.03.2026 TRHLİ -2.436.403,77 TL fatura ayrı takip edilmekte olup satış değildir"
+      },
+      {
+        "name": "TK FİSH",
+        "amount": 196165,
         "currency": "USD",
-        "origAmount": 171970,
-        "note": ""
+        "origAmount": 196165,
+        "note": "Ayfish/09.02.2026/20.649,60 kg/113.776,08 usd"
       }
     ]
   },
   "_gumusdogaExposure": {
-    "feedPayableUsd": 2779201,
+    "feedPayableUsd": 2900161,
     "advanceUsd": 3000000,
     "customerCreditUsd": 383318,
     "receivableUsd": 0,
-    "netOwedToGumusdogaUsd": 6162519,
+    "netOwedToGumusdogaUsd": 6283479,
     "yemAlisRunningBalanceUsd": 6443775,
-    "tallyDiffUsd": 281256,
+    "tallyDiffUsd": 160296,
     "settlement": "in fish, not cash"
   },
   "topReceivables": [
     {
-      "name": "KEMAL BALIKÇILIK",
-      "amount": 99605,
-      "currency": "USD",
-      "note": "− Biomar pay $760K = net $-660K owed to them"
+      "name": "UNIFROST LLC",
+      "amount": 378671,
+      "currency": "USD"
     },
     {
-      "name": "RADBAM DIŞ",
-      "amount": 84059,
-      "currency": "TL",
-      "origAmount": 4171578
+      "name": "KEMAL BALIKÇILIK",
+      "amount": 238276,
+      "currency": "USD",
+      "note": "− Biomar pay $760K = net $-522K owed to them"
     },
     {
       "name": "NAM SU",
@@ -1291,9 +1297,9 @@ const EMBEDDED_FINANCIAL_DATA = {
     },
     {
       "name": "GÜMÜŞDOĞA (USD)",
-      "amount": 2779201,
+      "amount": 2900161,
       "currency": "USD",
-      "note": "+ $383K mahsup bakiyesi (müşteri satırı eksi) → toplam $6.2M balıkla ödenecek"
+      "note": "+ $383K mahsup bakiyesi (müşteri satırı eksi) → toplam $6.3M balıkla ödenecek"
     },
     {
       "name": "ÖZBERK VETERİNER",
@@ -1304,8 +1310,8 @@ const EMBEDDED_FINANCIAL_DATA = {
   ],
   "_biomarKemalOffset": {
     "payUsd": 760064,
-    "recUsd": 99605,
-    "netUsd": 660458
+    "recUsd": 238276,
+    "netUsd": 521787
   }
 };
 
