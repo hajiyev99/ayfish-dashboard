@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-10-21T11:39:20.280298+03:00",
+  "lastUpdated": "2026-10-21T16:08:22.261820+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-21T11:30",
+  "sourceFileModified": "2026-10-21T14:21",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 49.6524,
-  "euroUsd": 1.1218,
-  "eurKur": 55.7025,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 20.10.2026",
+  "usdKur": 49.6759,
+  "euroUsd": 1.1225,
+  "eurKur": 55.7616,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 21.10.2026",
   "receivables": {
-    "usd": -193375.43,
-    "euroUsd": 56.09,
-    "tlUsd": -109901.63,
-    "total": -303220.97
+    "usd": 383985.23,
+    "euroUsd": 56.13,
+    "tlUsd": -109849.64,
+    "total": 274191.72
   },
   "bank": {
-    "tlUsd": 121127.15,
+    "tlUsd": 121069.84,
     "usd": 3803.8899999999994,
-    "total": 124931.04
+    "total": 124873.73
   },
   "checks": {
-    "tlUsd": 31015.62,
-    "total": 31015.62
+    "tlUsd": 31000.95,
+    "total": 31000.95
   },
-  "totalAssets": -147274.31,
-  "payables": 3757514.28,
+  "totalAssets": 430066.4,
+  "payables": 3757529.92,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,35 +36,28 @@
       }
     ]
   },
-  "totalLiabilities": 6757514.28,
-  "netPosition": -6904788.59,
+  "totalLiabilities": 6757529.92,
+  "netPosition": -6327463.52,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
-        "name": "GÜMÜŞDOĞA",
-        "amount": 383318,
-        "currency": "USD",
-        "origAmount": 383318,
-        "note": "2025 YEM BORÇ DEVİR 1.385.053,15 USD / BORÇ BAKİYEDEN KALAN"
-      },
-      {
         "name": "KDS TL",
-        "amount": 8810,
+        "amount": 8806,
         "currency": "TL",
         "origAmount": 437444,
         "note": ""
       },
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 114431,
+        "amount": 114377,
         "currency": "TL",
         "origAmount": 5681777,
         "note": ""
       },
       {
         "name": "RADBAM DIŞ",
-        "amount": 68525,
+        "amount": 68492,
         "currency": "TL",
         "origAmount": 3402413,
         "note": "AYFİSH/30.04.2026/38.322,28 USD / muh olan AYS61 FT-25.03.2026 TRHLİ -2.436.403,77 TL fatura ayrı takip edilmekte olup satış değildir"
@@ -81,11 +74,11 @@
   "_gumusdogaExposure": {
     "feedPayableUsd": 2900161,
     "advanceUsd": 3000000,
-    "customerCreditUsd": 383318,
-    "receivableUsd": 0,
-    "netOwedToGumusdogaUsd": 6283479,
+    "customerCreditUsd": 0,
+    "receivableUsd": 194043,
+    "netOwedToGumusdogaUsd": 5706118,
     "yemAlisRunningBalanceUsd": 6443775,
-    "tallyDiffUsd": 160296,
+    "tallyDiffUsd": 737656,
     "settlement": "in fish, not cash"
   },
   "topReceivables": [
@@ -116,8 +109,7 @@
     {
       "name": "GÜMÜŞDOĞA (USD)",
       "amount": 2900161,
-      "currency": "USD",
-      "note": "+ $383K mahsup bakiyesi (müşteri satırı eksi) → toplam $6.3M balıkla ödenecek"
+      "currency": "USD"
     },
     {
       "name": "ÖZBERK VETERİNER",
