@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-21T16:17:20.746028+03:00",
+  "lastUpdated": "2026-10-21T16:29:56.419815+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-21T16:09",
+  "sourceFileModified": "2026-10-21T16:25",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 49.6759,
@@ -38,6 +38,31 @@
   },
   "totalLiabilities": 6757529.92,
   "netPosition": -6327463.52,
+  "offReportAdjustments": {
+    "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
+    "appliedUsd": 507070.27,
+    "items": [
+      {
+        "name": "Gümüşdoğa $3M advance",
+        "amountUsd": 3000000,
+        "type": "obligation",
+        "countedBy": "financials.py customerAdvances (read live from Müşteri Alacak row 8)"
+      },
+      {
+        "name": "UNIFROST LLC receivable",
+        "amountUsd": -378671.11,
+        "type": "asset",
+        "countedBy": null
+      },
+      {
+        "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
+        "amountUsd": 885741.38,
+        "type": "obligation",
+        "countedBy": null
+      }
+    ]
+  },
+  "economicNet": -6834533.78,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -113,9 +138,9 @@
     },
     {
       "name": "ÖZBERK VETERİNER",
-      "amount": 1331605,
+      "amount": 1541705,
       "currency": null,
-      "origAmount": 1331605
+      "origAmount": 1541705
     }
   ],
   "_biomarKemalOffset": {
