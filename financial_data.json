@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-21T16:29:56.419815+03:00",
+  "lastUpdated": "2026-10-22T10:41:09.028304+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-21T16:25",
+  "sourceFileModified": "2026-10-22T10:11",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 49.6759,
@@ -11,19 +11,19 @@
   "receivables": {
     "usd": 383985.23,
     "euroUsd": 56.13,
-    "tlUsd": -109849.64,
-    "total": 274191.72
+    "tlUsd": -2571.83,
+    "total": 381469.53
   },
   "bank": {
-    "tlUsd": 121069.84,
+    "tlUsd": 211713.51,
     "usd": 3803.8899999999994,
-    "total": 124873.73
+    "total": 215517.4
   },
   "checks": {
     "tlUsd": 31000.95,
     "total": 31000.95
   },
-  "totalAssets": 430066.4,
+  "totalAssets": 627987.87,
   "payables": 3757529.92,
   "customerAdvances": {
     "total": 3000000,
@@ -37,7 +37,7 @@
     ]
   },
   "totalLiabilities": 6757529.92,
-  "netPosition": -6327463.52,
+  "netPosition": -6129542.05,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
     "appliedUsd": 507070.27,
@@ -62,7 +62,7 @@
       }
     ]
   },
-  "economicNet": -6834533.78,
+  "economicNet": -6636612.32,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -71,13 +71,6 @@
         "amount": 8806,
         "currency": "TL",
         "origAmount": 437444,
-        "note": ""
-      },
-      {
-        "name": "GÜMÜŞ DONDURMA",
-        "amount": 114377,
-        "currency": "TL",
-        "origAmount": 5681777,
         "note": ""
       },
       {
