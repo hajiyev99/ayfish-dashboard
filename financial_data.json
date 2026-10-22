@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-22T10:41:09.028304+03:00",
+  "lastUpdated": "2026-10-22T12:13:54.364302+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-22T10:11",
+  "sourceFileModified": "2026-10-22T12:08",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 49.6759,
@@ -9,10 +9,10 @@
   "eurKur": 55.7616,
   "rateSource": "TCMB efektif satış (BanknoteSelling) 21.10.2026",
   "receivables": {
-    "usd": 383985.23,
+    "usd": 457715.08,
     "euroUsd": 56.13,
-    "tlUsd": -2571.83,
-    "total": 381469.53
+    "tlUsd": 138341.57,
+    "total": 596112.78
   },
   "bank": {
     "tlUsd": 211713.51,
@@ -23,7 +23,7 @@
     "tlUsd": 31000.95,
     "total": 31000.95
   },
-  "totalAssets": 627987.87,
+  "totalAssets": 842631.12,
   "payables": 3757529.92,
   "customerAdvances": {
     "total": 3000000,
@@ -37,7 +37,7 @@
     ]
   },
   "totalLiabilities": 6757529.92,
-  "netPosition": -6129542.05,
+  "netPosition": -5914898.8,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
     "appliedUsd": 507070.27,
@@ -62,7 +62,7 @@
       }
     ]
   },
-  "economicNet": -6636612.32,
+  "economicNet": -6421969.06,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -72,13 +72,6 @@
         "currency": "TL",
         "origAmount": 437444,
         "note": ""
-      },
-      {
-        "name": "RADBAM DIŞ",
-        "amount": 68492,
-        "currency": "TL",
-        "origAmount": 3402413,
-        "note": "AYFİSH/30.04.2026/38.322,28 USD / muh olan AYS61 FT-25.03.2026 TRHLİ -2.436.403,77 TL fatura ayrı takip edilmekte olup satış değildir"
       },
       {
         "name": "TK FİSH",
@@ -112,8 +105,8 @@
       "note": "− Biomar pay $760K = net $-522K owed to them"
     },
     {
-      "name": "NAM SU",
-      "amount": 83279,
+      "name": "POLİTEK İNŞ.AMB.GID.VE",
+      "amount": 99405,
       "currency": "USD"
     }
   ],
