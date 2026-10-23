@@ -1181,32 +1181,32 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-10-22T12:13:54.364302+03:00",
+  "lastUpdated": "2026-10-23T08:52:32.446595+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-10-22T12:08",
+  "sourceFileModified": "2026-10-22T14:42",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 49.6759,
-  "euroUsd": 1.1225,
-  "eurKur": 55.7616,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 21.10.2026",
+  "usdKur": 49.7026,
+  "euroUsd": 1.1224,
+  "eurKur": 55.7878,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 22.10.2026",
   "receivables": {
     "usd": 457715.08,
-    "euroUsd": 56.13,
-    "tlUsd": 138341.57,
-    "total": 596112.78
+    "euroUsd": 56.12,
+    "tlUsd": 143048.06,
+    "total": 600819.27
   },
   "bank": {
-    "tlUsd": 211713.51,
+    "tlUsd": 211599.77,
     "usd": 3803.8899999999994,
-    "total": 215517.4
+    "total": 215403.66
   },
   "checks": {
-    "tlUsd": 31000.95,
-    "total": 31000.95
+    "tlUsd": 30984.29,
+    "total": 30984.29
   },
-  "totalAssets": 842631.12,
-  "payables": 3757529.92,
+  "totalAssets": 847207.22,
+  "payables": 3757500.53,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -1218,11 +1218,11 @@ const EMBEDDED_FINANCIAL_DATA = {
       }
     ]
   },
-  "totalLiabilities": 6757529.92,
-  "netPosition": -5914898.8,
+  "totalLiabilities": 6757500.53,
+  "netPosition": -5910293.31,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 507070.27,
+    "appliedUsd": 506594.45,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -1238,19 +1238,19 @@ const EMBEDDED_FINANCIAL_DATA = {
       },
       {
         "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
-        "amountUsd": 885741.38,
+        "amountUsd": 885265.56,
         "type": "obligation",
         "countedBy": null
       }
     ]
   },
-  "economicNet": -6421969.06,
+  "economicNet": -6416887.76,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
         "name": "KDS TL",
-        "amount": 8806,
+        "amount": 8801,
         "currency": "TL",
         "origAmount": 437444,
         "note": ""
