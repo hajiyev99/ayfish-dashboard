@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-10-26T11:21:57.507381+03:00",
+  "lastUpdated": "2026-10-27T17:45:10.577385+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
   "sourceFileModified": "2026-10-22T14:42",
-  "sourceDataAgeDays": 3,
-  "sourceStale": false,
-  "usdKur": 49.7285,
-  "euroUsd": 1.1197,
-  "eurKur": 55.6831,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 23.10.2026",
+  "sourceDataAgeDays": 5,
+  "sourceStale": true,
+  "usdKur": 49.8639,
+  "euroUsd": 1.1152,
+  "eurKur": 55.6074,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 27.10.2026",
   "receivables": {
     "usd": 457715.08,
-    "euroUsd": 55.99,
-    "tlUsd": 142973.56,
-    "total": 600744.63
+    "euroUsd": 55.76,
+    "tlUsd": 142585.33,
+    "total": 600356.17
   },
   "bank": {
-    "tlUsd": 211489.57,
+    "tlUsd": 210915.29,
     "usd": 3803.8899999999994,
-    "total": 215293.46
+    "total": 214719.18
   },
   "checks": {
-    "tlUsd": 30968.16,
-    "total": 30968.16
+    "tlUsd": 30884.07,
+    "total": 30884.07
   },
-  "totalAssets": 847006.24,
-  "payables": 3757322.33,
+  "totalAssets": 845959.42,
+  "payables": 3756935.0,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,11 +36,11 @@
       }
     ]
   },
-  "totalLiabilities": 6757322.33,
-  "netPosition": -5910316.09,
+  "totalLiabilities": 6756935.0,
+  "netPosition": -5910975.59,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 506133.38,
+    "appliedUsd": 503730.79,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -56,19 +56,19 @@
       },
       {
         "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
-        "amountUsd": 884804.49,
+        "amountUsd": 882401.9,
         "type": "obligation",
         "countedBy": null
       }
     ]
   },
-  "economicNet": -6416449.47,
+  "economicNet": -6414706.37,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
         "name": "KDS TL",
-        "amount": 8797,
+        "amount": 8773,
         "currency": "TL",
         "origAmount": 437444,
         "note": ""
