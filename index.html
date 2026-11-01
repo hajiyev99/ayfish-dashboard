@@ -1181,10 +1181,10 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-10-31T04:27:00.669981+03:00",
+  "lastUpdated": "2026-11-01T17:15:46.346071+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
   "sourceFileModified": "2026-10-22T14:42",
-  "sourceDataAgeDays": 8,
+  "sourceDataAgeDays": 10,
   "sourceStale": true,
   "usdKur": 49.9392,
   "euroUsd": 1.1193,
@@ -1222,7 +1222,7 @@ const EMBEDDED_FINANCIAL_DATA = {
   "netPosition": -5911722.83,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 502400.27,
+    "appliedUsd": 355665.43,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -1237,6 +1237,12 @@ const EMBEDDED_FINANCIAL_DATA = {
         "countedBy": null
       },
       {
+        "name": "PT.BUMI MENARA receivable (Indonesia)",
+        "amountUsd": -146734.84,
+        "type": "asset",
+        "countedBy": null
+      },
+      {
         "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
         "amountUsd": 881071.38,
         "type": "obligation",
@@ -1244,7 +1250,7 @@ const EMBEDDED_FINANCIAL_DATA = {
       }
     ]
   },
-  "economicNet": -6414123.11,
+  "economicNet": -6267388.27,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
