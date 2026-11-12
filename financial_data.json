@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-12T12:36:14.782417+03:00",
+  "lastUpdated": "2026-11-12T12:42:01.448537+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-11-11T17:26",
+  "sourceFileModified": "2026-11-12T12:29",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 50.3036,
@@ -11,20 +11,20 @@
   "receivables": {
     "usd": 2725617.7,
     "euroUsd": 55.73,
-    "tlUsd": 49283.92,
-    "total": 2774957.35
+    "tlUsd": 9525.34,
+    "total": 2735198.76
   },
   "bank": {
-    "tlUsd": 484310.11,
+    "tlUsd": 455690.39,
     "usd": 153262.52999999997,
-    "total": 637572.64
+    "total": 608952.92
   },
   "checks": {
     "tlUsd": 66396.84,
     "total": 66396.84
   },
-  "totalAssets": 3478926.83,
-  "payables": 3001802.37,
+  "totalAssets": 3410548.52,
+  "payables": 2996331.92,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6001802.37,
-  "netPosition": -2522875.54,
+  "totalLiabilities": 5996331.92,
+  "netPosition": -2585783.4,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
     "appliedUsd": 349282.94,
@@ -68,7 +68,7 @@
       }
     ]
   },
-  "economicNet": -2872158.48,
+  "economicNet": -2935066.34,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -78,6 +78,13 @@
         "currency": "TL",
         "origAmount": 131267,
         "note": ""
+      },
+      {
+        "name": "RADBAM DIŞ",
+        "amount": 5805,
+        "currency": "TL",
+        "origAmount": 291998,
+        "note": "AYFİSH/30.04.2026/38.322,28 USD / muh olan AYS61 FT-25.03.2026 TRHLİ -2.436.403,77 TL fatura ayrı takip edilmekte olup satış değildir"
       }
     ]
   },
