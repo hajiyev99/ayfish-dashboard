@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-11-10T11:46:04.777647+03:00",
+  "lastUpdated": "2026-11-12T12:36:14.782417+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-11-10T09:14",
+  "sourceFileModified": "2026-11-11T17:26",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 50.2533,
-  "euroUsd": 1.1183,
-  "eurKur": 56.1978,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 09.11.2026",
+  "usdKur": 50.3036,
+  "euroUsd": 1.1145,
+  "eurKur": 56.065,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 11.11.2026",
   "receivables": {
-    "usd": 1592043.13,
-    "euroUsd": 55.91,
-    "tlUsd": 54308.05,
-    "total": 1646407.09
+    "usd": 2725617.7,
+    "euroUsd": 55.73,
+    "tlUsd": 49283.92,
+    "total": 2774957.35
   },
   "bank": {
-    "tlUsd": 484794.87,
+    "tlUsd": 484310.11,
     "usd": 153262.52999999997,
-    "total": 638057.4
+    "total": 637572.64
   },
   "checks": {
-    "tlUsd": 66463.3,
-    "total": 66463.3
+    "tlUsd": 66396.84,
+    "total": 66396.84
   },
-  "totalAssets": 2350927.79,
-  "payables": 2593695.22,
+  "totalAssets": 3478926.83,
+  "payables": 3001802.37,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,11 +36,11 @@
       }
     ]
   },
-  "totalLiabilities": 5593695.22,
-  "netPosition": -3242767.43,
+  "totalLiabilities": 6001802.37,
+  "netPosition": -2522875.54,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 350158.44,
+    "appliedUsd": 349282.94,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -62,19 +62,19 @@
       },
       {
         "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
-        "amountUsd": 875564.39,
+        "amountUsd": 874688.89,
         "type": "obligation",
         "countedBy": null
       }
     ]
   },
-  "economicNet": -3592925.87,
+  "economicNet": -2872158.48,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 2612,
+        "amount": 2609,
         "currency": "TL",
         "origAmount": 131267,
         "note": ""
@@ -82,13 +82,13 @@
     ]
   },
   "_gumusdogaExposure": {
-    "feedPayableUsd": 1806875,
+    "feedPayableUsd": 2099875,
     "advanceUsd": 3000000,
     "customerCreditUsd": 0,
-    "receivableUsd": 700949,
-    "netOwedToGumusdogaUsd": 4105926,
-    "yemAlisRunningBalanceUsd": 6497775,
-    "tallyDiffUsd": 2391848,
+    "receivableUsd": 1578273,
+    "netOwedToGumusdogaUsd": 3521602,
+    "yemAlisRunningBalanceUsd": 6786675,
+    "tallyDiffUsd": 3265073,
     "settlement": "in fish, not cash"
   },
   "topReceivables": [
@@ -106,7 +106,7 @@
       "name": "KEMAL BALIKÇILIK",
       "amount": 305055,
       "currency": "USD",
-      "note": "− Biomar pay $760K = net $-455K owed to them"
+      "note": "− Biomar pay $818K = net $-513K owed to them"
     }
   ],
   "topPayables": [
@@ -118,7 +118,7 @@
     },
     {
       "name": "GÜMÜŞDOĞA (USD)",
-      "amount": 1806875,
+      "amount": 2099875,
       "currency": "USD"
     },
     {
@@ -129,8 +129,8 @@
     }
   ],
   "_biomarKemalOffset": {
-    "payUsd": 760064,
+    "payUsd": 818320,
     "recUsd": 305055,
-    "netUsd": 455008
+    "netUsd": 513264
   }
 }
