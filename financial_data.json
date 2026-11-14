@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-11-13T14:33:05.714104+03:00",
+  "lastUpdated": "2026-11-14T11:18:40.433284+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-11-13T10:57",
+  "sourceFileModified": "2026-11-13T17:19",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 50.3349,
-  "euroUsd": 1.109,
-  "eurKur": 55.8189,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 12.11.2026",
+  "usdKur": 50.3584,
+  "euroUsd": 1.1058,
+  "eurKur": 55.6867,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 13.11.2026",
   "receivables": {
     "usd": 2809188.34,
-    "euroUsd": 55.45,
-    "tlUsd": -1741.15,
-    "total": 2807502.64
+    "euroUsd": 55.29,
+    "tlUsd": -1740.33,
+    "total": 2807503.3
   },
   "bank": {
-    "tlUsd": 455407.03,
+    "tlUsd": 455194.51,
     "usd": 153262.52999999997,
-    "total": 608669.56
+    "total": 608457.04
   },
   "checks": {
-    "tlUsd": 66355.55,
-    "total": 66355.55
+    "tlUsd": 66324.59,
+    "total": 66324.59
   },
-  "totalAssets": 3482527.75,
-  "payables": 3307887.21,
+  "totalAssets": 3482284.92,
+  "payables": 3250942.41,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,11 +36,11 @@
       }
     ]
   },
-  "totalLiabilities": 6307887.21,
-  "netPosition": -2825359.46,
+  "totalLiabilities": 6250942.41,
+  "netPosition": -2768657.49,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 348739.03,
+    "appliedUsd": 348331.1,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -62,26 +62,26 @@
       },
       {
         "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
-        "amountUsd": 874144.98,
+        "amountUsd": 873737.05,
         "type": "obligation",
         "countedBy": null
       }
     ]
   },
-  "economicNet": -3174098.48,
+  "economicNet": -3116988.59,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 13868,
+        "amount": 13862,
         "currency": "TL",
         "origAmount": 698066,
         "note": ""
       },
       {
         "name": "RADBAM DIŞ",
-        "amount": 5801,
+        "amount": 5798,
         "currency": "TL",
         "origAmount": 291998,
         "note": "AYFİSH/30.04.2026/38.322,28 USD / muh olan AYS61 FT-25.03.2026 TRHLİ -2.436.403,77 TL fatura ayrı takip edilmekte olup satış değildir"
