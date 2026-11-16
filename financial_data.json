@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-11-15T13:32:10.330240+03:00",
+  "lastUpdated": "2026-11-16T12:10:15.817550+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-11-13T17:19",
-  "sourceDataAgeDays": 1,
+  "sourceFileModified": "2026-11-16T12:07",
+  "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 50.3584,
   "euroUsd": 1.1058,
   "eurKur": 55.6867,
   "rateSource": "TCMB efektif satış (BanknoteSelling) 13.11.2026",
   "receivables": {
-    "usd": 2809188.34,
+    "usd": 2609188.34,
     "euroUsd": 55.29,
-    "tlUsd": -1740.33,
-    "total": 2807503.3
+    "tlUsd": 16352.98,
+    "total": 2625596.61
   },
   "bank": {
-    "tlUsd": 455194.51,
-    "usd": 153262.52999999997,
-    "total": 608457.04
+    "tlUsd": 566616.07,
+    "usd": 338715.33,
+    "total": 905331.4
   },
   "checks": {
     "tlUsd": 66324.59,
     "total": 66324.59
   },
-  "totalAssets": 3482284.92,
-  "payables": 3250942.41,
+  "totalAssets": 3597252.59,
+  "payables": 3242694.53,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6250942.41,
-  "netPosition": -2768657.49,
+  "totalLiabilities": 6242694.53,
+  "netPosition": -2645441.94,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
     "appliedUsd": 348331.1,
@@ -68,15 +68,15 @@
       }
     ]
   },
-  "economicNet": -3116988.59,
+  "economicNet": -2993773.04,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 13862,
+        "amount": 1392,
         "currency": "TL",
-        "origAmount": 698066,
+        "origAmount": 70084,
         "note": ""
       },
       {
@@ -107,12 +107,12 @@
     },
     {
       "name": "TK FİSH",
-      "amount": 471819,
+      "amount": 271819,
       "currency": "USD"
     },
     {
       "name": "UNIFROST LLC",
-      "amount": 378671,
+      "amount": 193218,
       "currency": "USD"
     }
   ],
@@ -130,9 +130,9 @@
     },
     {
       "name": "ÖZBERK VETERİNER",
-      "amount": 1578500,
+      "amount": 1228040,
       "currency": null,
-      "origAmount": 1578500
+      "origAmount": 1228040
     }
   ],
   "_biomarKemalOffset": {
