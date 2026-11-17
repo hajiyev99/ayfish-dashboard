@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-17T12:08:50.618466+03:00",
+  "lastUpdated": "2026-11-17T12:11:28.632185+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-11-17T10:17",
+  "sourceFileModified": "2026-11-17T12:02",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 50.4698,
@@ -11,8 +11,8 @@
   "receivables": {
     "usd": 3738992.85,
     "euroUsd": 55.06,
-    "tlUsd": 16316.88,
-    "total": 3755364.8
+    "tlUsd": 16316.87,
+    "total": 3755364.78
   },
   "bank": {
     "tlUsd": 565365.4,
@@ -23,7 +23,7 @@
     "tlUsd": 66178.19,
     "total": 66178.19
   },
-  "totalAssets": 4725623.71,
+  "totalAssets": 4725623.7,
   "payables": 3238732.97,
   "customerAdvances": {
     "total": 3000000,
@@ -37,7 +37,7 @@
     ]
   },
   "totalLiabilities": 6238732.97,
-  "netPosition": -1513109.26,
+  "netPosition": -1513109.27,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
     "appliedUsd": 531855.34,
@@ -68,7 +68,7 @@
       }
     ]
   },
-  "economicNet": -2044964.6,
+  "economicNet": -2044964.61,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
