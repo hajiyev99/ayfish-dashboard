@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-19T13:03:05.477509+03:00",
+  "lastUpdated": "2026-11-19T15:20:33.772729+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-11-19T11:33",
+  "sourceFileModified": "2026-11-19T14:22",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
   "usdKur": 50.52,
@@ -11,8 +11,8 @@
   "receivables": {
     "usd": 3738992.85,
     "euroUsd": 54.86,
-    "tlUsd": 8383.0,
-    "total": 3747430.71
+    "tlUsd": 2444.76,
+    "total": 3741492.47
   },
   "bank": {
     "tlUsd": 641862.44,
@@ -23,7 +23,7 @@
     "tlUsd": 34441.81,
     "total": 34441.81
   },
-  "totalAssets": 4628680.28,
+  "totalAssets": 4622742.04,
   "payables": 3238737.45,
   "customerAdvances": {
     "total": 3000000,
@@ -37,10 +37,10 @@
     ]
   },
   "totalLiabilities": 6238737.45,
-  "netPosition": -1610057.17,
+  "netPosition": -1615995.41,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 530989.05,
+    "appliedUsd": 458813.88,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -51,6 +51,12 @@
       {
         "name": "UNIFROST LLC receivable",
         "amountUsd": -193218.31,
+        "type": "asset",
+        "countedBy": null
+      },
+      {
+        "name": "AKERKO receivable",
+        "amountUsd": -72175.17,
         "type": "asset",
         "countedBy": null
       },
@@ -68,15 +74,15 @@
       }
     ]
   },
-  "economicNet": -2141046.22,
+  "economicNet": -2074809.29,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 5346,
+        "amount": 11284,
         "currency": "TL",
-        "origAmount": 270084,
+        "origAmount": 570084,
         "note": ""
       },
       {
@@ -85,6 +91,13 @@
         "currency": "TL",
         "origAmount": 291998,
         "note": "AYFİSH/30.04.2026/38.322,28 USD / muh olan AYS61 FT-25.03.2026 TRHLİ -2.436.403,77 TL fatura ayrı takip edilmekte olup satış değildir"
+      },
+      {
+        "name": "AKERKO NAKLİYE",
+        "amount": 227825,
+        "currency": "USD",
+        "origAmount": 227825,
+        "note": ""
       }
     ]
   },
