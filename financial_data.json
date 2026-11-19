@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-19T15:20:33.772729+03:00",
+  "lastUpdated": "2026-11-19T15:20:58.615743+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
   "sourceFileModified": "2026-11-19T14:22",
   "sourceDataAgeDays": 0,
@@ -40,7 +40,7 @@
   "netPosition": -1615995.41,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 458813.88,
+    "appliedUsd": 758813.88,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -55,9 +55,9 @@
         "countedBy": null
       },
       {
-        "name": "AKERKO receivable",
-        "amountUsd": -72175.17,
-        "type": "asset",
+        "name": "AKERKO row 48 balance (customer credit after the $300K receipt)",
+        "amountUsd": 227824.83,
+        "type": "obligation",
         "countedBy": null
       },
       {
@@ -74,7 +74,7 @@
       }
     ]
   },
-  "economicNet": -2074809.29,
+  "economicNet": -2374809.29,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
