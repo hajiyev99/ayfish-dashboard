@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-11-19T15:20:58.615743+03:00",
+  "lastUpdated": "2026-11-20T11:12:28.217151+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-11-19T14:22",
+  "sourceFileModified": "2026-11-20T09:51",
   "sourceDataAgeDays": 0,
   "sourceStale": false,
-  "usdKur": 50.52,
-  "euroUsd": 1.0971,
-  "eurKur": 55.4276,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 18.11.2026",
+  "usdKur": 50.5451,
+  "euroUsd": 1.0988,
+  "eurKur": 55.541,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 19.11.2026",
   "receivables": {
     "usd": 3738992.85,
-    "euroUsd": 54.86,
-    "tlUsd": 2444.76,
-    "total": 3741492.47
+    "euroUsd": 54.94,
+    "tlUsd": 10164.61,
+    "total": 3749212.4
   },
   "bank": {
-    "tlUsd": 641862.44,
+    "tlUsd": 801174.25,
     "usd": 204945.33,
-    "total": 846807.77
+    "total": 1006119.58
   },
   "checks": {
-    "tlUsd": 34441.81,
-    "total": 34441.81
+    "tlUsd": 34424.7,
+    "total": 34424.7
   },
-  "totalAssets": 4622742.04,
-  "payables": 3238737.45,
+  "totalAssets": 4789756.69,
+  "payables": 3369993.17,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,11 +36,11 @@
       }
     ]
   },
-  "totalLiabilities": 6238737.45,
-  "netPosition": -1615995.41,
+  "totalLiabilities": 6369993.17,
+  "netPosition": -1580236.48,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 758813.88,
+    "appliedUsd": 758381.38,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -68,35 +68,35 @@
       },
       {
         "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
-        "amountUsd": 870942.2,
+        "amountUsd": 870509.7,
         "type": "obligation",
         "countedBy": null
       }
     ]
   },
-  "economicNet": -2374809.29,
+  "economicNet": -2338617.87,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 11284,
+        "amount": 3558,
         "currency": "TL",
-        "origAmount": 570084,
+        "origAmount": 179822,
         "note": ""
       },
       {
         "name": "RADBAM DIŞ",
-        "amount": 5780,
+        "amount": 5777,
         "currency": "TL",
         "origAmount": 291998,
         "note": "AYFİSH/30.04.2026/38.322,28 USD / muh olan AYS61 FT-25.03.2026 TRHLİ -2.436.403,77 TL fatura ayrı takip edilmekte olup satış değildir"
       },
       {
         "name": "AKERKO NAKLİYE",
-        "amount": 227825,
+        "amount": 156056,
         "currency": "USD",
-        "origAmount": 227825,
+        "origAmount": 156056,
         "note": ""
       }
     ]
@@ -116,7 +116,7 @@
       "name": "KEMAL BALIKÇILIK",
       "amount": 694876,
       "currency": "USD",
-      "note": "− Biomar pay $1.2M = net $-512K owed to them"
+      "note": "− Biomar pay $1.3M = net $-643K owed to them"
     },
     {
       "name": "TK FİSH",
@@ -149,8 +149,8 @@
     }
   ],
   "_biomarKemalOffset": {
-    "payUsd": 1206526,
+    "payUsd": 1337779,
     "recUsd": 694876,
-    "netUsd": 511650
+    "netUsd": 642903
   }
 }
