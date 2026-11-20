@@ -1181,7 +1181,7 @@ function saveFinancialInputs() {
 // Embedded financial data (from günlük rapor — updated by Claude)
 // This allows the dashboard to work when opened as file:// (no server needed)
 const EMBEDDED_FINANCIAL_DATA = {
-  "lastUpdated": "2026-11-20T11:12:28.217151+03:00",
+  "lastUpdated": "2026-11-20T11:18:38.524067+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
   "sourceFileModified": "2026-11-20T09:51",
   "sourceDataAgeDays": 0,
@@ -1222,7 +1222,7 @@ const EMBEDDED_FINANCIAL_DATA = {
   "netPosition": -1580236.48,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 758381.38,
+    "appliedUsd": 684216.71,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -1238,7 +1238,7 @@ const EMBEDDED_FINANCIAL_DATA = {
       },
       {
         "name": "AKERKO row 48 balance (customer credit after the $300K receipt)",
-        "amountUsd": 227824.83,
+        "amountUsd": 156056.18,
         "type": "obligation",
         "countedBy": null
       },
@@ -1253,10 +1253,16 @@ const EMBEDDED_FINANCIAL_DATA = {
         "amountUsd": 870509.7,
         "type": "obligation",
         "countedBy": null
+      },
+      {
+        "name": "CAVIAR CLASSIC SEA FOOD CANNING receivable",
+        "amountUsd": -2396.02,
+        "type": "asset",
+        "countedBy": null
       }
     ]
   },
-  "economicNet": -2338617.87,
+  "economicNet": -2264453.2,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
