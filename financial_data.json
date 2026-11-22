@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-21T16:30:22.321008+03:00",
+  "lastUpdated": "2026-11-22T14:36:57.156032+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
-  "sourceFileModified": "2026-11-20T09:51",
+  "sourceFileModified": "2026-11-20T17:40",
   "sourceDataAgeDays": 1,
   "sourceStale": false,
   "usdKur": 50.5694,
@@ -9,10 +9,10 @@
   "eurKur": 55.4801,
   "rateSource": "TCMB efektif satış (BanknoteSelling) 20.11.2026",
   "receivables": {
-    "usd": 3738992.85,
+    "usd": 3571009.09,
     "euroUsd": 54.86,
     "tlUsd": 10159.72,
-    "total": 3749207.43
+    "total": 3581223.67
   },
   "bank": {
     "tlUsd": 800789.27,
@@ -23,8 +23,8 @@
     "tlUsd": 34408.16,
     "total": 34408.16
   },
-  "totalAssets": 4789350.19,
-  "payables": 3369995.33,
+  "totalAssets": 4621366.43,
+  "payables": 2714835.89,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,8 +36,8 @@
       }
     ]
   },
-  "totalLiabilities": 6369995.33,
-  "netPosition": -1580645.15,
+  "totalLiabilities": 5714835.89,
+  "netPosition": -1093469.47,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
     "appliedUsd": 683798.41,
@@ -80,7 +80,7 @@
       }
     ]
   },
-  "economicNet": -2264443.56,
+  "economicNet": -1777267.88,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
@@ -122,16 +122,16 @@
       "name": "KEMAL BALIKÇILIK",
       "amount": 694876,
       "currency": "USD",
-      "note": "− Biomar pay $1.3M = net $-643K owed to them"
-    },
-    {
-      "name": "TK FİSH",
-      "amount": 271819,
-      "currency": "USD"
+      "note": "− Biomar pay $683K = net $12K owed to them"
     },
     {
       "name": "UNIFROST LLC",
       "amount": 193218,
+      "currency": "USD"
+    },
+    {
+      "name": "TK FİSH",
+      "amount": 103835,
       "currency": "USD"
     }
   ],
@@ -155,8 +155,8 @@
     }
   ],
   "_biomarKemalOffset": {
-    "payUsd": 1337779,
+    "payUsd": 682620,
     "recUsd": 694876,
-    "netUsd": 642903
+    "netUsd": -12256
   }
 }
