@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-11-27T08:49:22.616186+03:00",
+  "lastUpdated": "2026-11-28T10:46:52.417805+03:00",
   "sourceFile": "Personal finance/2026 GÜNLÜK RAPOR v5.xlsx",
   "sourceFileModified": "2026-11-25T11:48",
-  "sourceDataAgeDays": 1,
+  "sourceDataAgeDays": 2,
   "sourceStale": false,
-  "usdKur": 50.7537,
-  "euroUsd": 1.0971,
-  "eurKur": 55.6802,
-  "rateSource": "TCMB efektif satış (BanknoteSelling) 26.11.2026",
+  "usdKur": 50.7716,
+  "euroUsd": 1.0969,
+  "eurKur": 55.6892,
+  "rateSource": "TCMB efektif satış (BanknoteSelling) 27.11.2026",
   "receivables": {
     "usd": 3929160.16,
-    "euroUsd": 54.85,
-    "tlUsd": 32663.52,
-    "total": 3961878.53
+    "euroUsd": 54.84,
+    "tlUsd": 32652.0,
+    "total": 3961867.0
   },
   "bank": {
-    "tlUsd": 422842.32,
+    "tlUsd": 422693.24,
     "usd": 343636.63999999996,
-    "total": 766478.96
+    "total": 766329.88
   },
   "checks": {
-    "tlUsd": 34283.21,
-    "total": 34283.21
+    "tlUsd": 34271.13,
+    "total": 34271.13
   },
-  "totalAssets": 4762640.71,
-  "payables": 2050682.53,
+  "totalAssets": 4762468.02,
+  "payables": 2050684.11,
   "customerAdvances": {
     "total": 3000000,
     "items": [
@@ -36,11 +36,11 @@
       }
     ]
   },
-  "totalLiabilities": 5050682.53,
-  "netPosition": -288041.83,
+  "totalLiabilities": 5050684.11,
+  "netPosition": -288216.1,
   "offReportAdjustments": {
     "_note": "from financial_adjustments.json; items without countedBy are applied to economicNet (obligation > 0, asset < 0)",
-    "appliedUsd": 680638.88,
+    "appliedUsd": 680333.23,
     "items": [
       {
         "name": "Gümüşdoğa $3M advance",
@@ -68,7 +68,7 @@
       },
       {
         "name": "IRMAK NAKLİYE / ZİRAATBANK kredi (vade 26.02.2027)",
-        "amountUsd": 866931.87,
+        "amountUsd": 866626.22,
         "type": "obligation",
         "countedBy": null
       },
@@ -80,13 +80,13 @@
       }
     ]
   },
-  "economicNet": -968680.7,
+  "economicNet": -968549.33,
   "customerCredits": {
     "_note": "negative customer-row balances (already inside receivables.usd — not added to liabilities)",
     "items": [
       {
         "name": "GÜMÜŞ DONDURMA",
-        "amount": 13041,
+        "amount": 13036,
         "currency": "TL",
         "origAmount": 661867,
         "note": ""
